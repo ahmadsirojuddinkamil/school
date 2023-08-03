@@ -2,15 +2,14 @@
 
 namespace App\Services;
 
-use App\Models\Payment;
-use App\Models\Siswa;
+use App\Models\{Payment, Siswa};
 use Ramsey\Uuid\Uuid;
 
 class CreatePpdbService
 {
     public function SaveDataSiswaPpdb($ValidateData)
     {
-        $BuktiPendaftaranSiswaPath = $ValidateData['bukti_pendaftaran_siswa_baru']->store('public/document_bukti_pendaftaran_siswa');
+        $BuktiPendaftaranSiswaPath = $ValidateData['bukti_pendaftaran_siswa_baru']->store('public/document_bukti_pendaftaran_siswa_baru');
 
         $siswa = Siswa::create([
             'uuid_payment' => null,

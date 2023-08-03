@@ -22,7 +22,7 @@ class StorePpdbRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'email|required|unique:siswas',
+            'email' => 'email|required',
             'nisn' => 'numeric|required',
             'nama_lengkap' => 'string|required',
             'asal_sekolah' => 'string|required',
