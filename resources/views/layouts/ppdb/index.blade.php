@@ -1,12 +1,12 @@
 <div class="container border">
     @if (session()->has('success'))
-        <div class="alert alert-success d-flex justify-content-center" role="alert">
+        <div class="alert alert-success d-flex justify-content-center mt-3" role="alert">
             {{ session('success') }}
         </div>
     @endif
 
     @if (session()->has('error'))
-        <div class="alert alert-warning d-flex justify-content-center" role="alert">
+        <div class="alert alert-warning d-flex justify-content-center mt-3" role="alert">
             {{ session('error') }}
         </div>
     @endif
@@ -14,41 +14,59 @@
     <form action="/ppdb" method="POST" enctype="multipart/form-data">
         @csrf
 
-        <h4 class="d-flex justify-content-center mt-3">Data Siswa :</h4>
+        <h4 class="d-flex justify-content-center mt-3">Data PPDB :</h4>
 
         <div class="mb-3">
             <label for="email-siswa" class="form-label">Email</label>
             <input type="email" class="form-control" id="email-siswa" value="example@gmail.com" name="email"
                 required>
         </div>
+        @error('email')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label for="nisn-siswa" class="form-label">NISN</label>
             <input type="number" class="form-control" id="nisn-siswa" value="0201034059" name="nisn" required>
         </div>
+        @error('nisn')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label for="nama-siswa" class="form-label">Nama Lengkap</label>
             <input type="text" class="form-control" id="nama-siswa" value="Yudi Amanda" name="nama_lengkap" required>
         </div>
+        @error('nama_lengkap')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label for="asal-sekolah-siswa" class="form-label">Asal Sekolah</label>
             <input type="text" class="form-control" id="asal-sekolah-siswa" value="smp negeri 1 semarang"
                 name="asal_sekolah" required>
         </div>
+        @error('asal_sekolah')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label for="alamat-siswa" class="form-label">Alamat</label>
             <input type="text" class="form-control" id="alamat-siswa" value="jl. kebon jeruk" name="alamat"
                 required>
         </div>
+        @error('alamat')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label for="telpon-siswa" class="form-label">No Telp / WhatsApp</label>
             <input type="number" class="form-control" id="telpon-siswa" value="08121060302" name="telpon_siswa"
                 required maxlength="12">
         </div>
+        @error('telpon_siswa')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label class="form-label">Jenis Kelamin</label>
@@ -64,13 +82,18 @@
             <input type="text" class="form-control" id="tempat-lahir-siswa" value="Jakarta" name="tempat_lahir"
                 required>
         </div>
+        @error('tempat_lahir')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label for="tanggal-lahir-siswa" class="form-label">Tanggal Lahir</label>
             <input type="date" class="form-control" id="tanggal-lahir-siswa" name="tanggal_lahir" required
                 min="<?php echo $minDate; ?>" max="<?php echo $today->format('Y-m-d'); ?>">
         </div>
-
+        @error('tanggal_lahir')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-4">
             <label class="form-label">Bidang Peminatan</label>
@@ -88,25 +111,37 @@
             <label for="nama-ayah" class="form-label">Nama Ayah</label>
             <input type="text" class="form-control" id="nama-ayah" value="Sumandi" name="nama_ayah" required>
         </div>
+        @error('nama_ayah')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label for="nama-ibu" class="form-label">Nama Ibu</label>
             <input type="text" class="form-control" id="nama-ibu" value="Siti" name="nama_ibu" required>
         </div>
+        @error('nama_ibu')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label for="telpon-orang-tua" class="form-label">No Telp / WhatsApp</label>
             <input type="number" class="form-control" id="telpon-orang-tua" value="081232722384"
                 name="telpon_orang_tua" required maxlength="12">
         </div>
+        @error('telpon_orang_tua')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div class="mb-3">
             <label for="uang-pendaftaran" class="form-label">Uang Pendaftaran *100,000Rb transfer ke BCA 5220304312
                 A.N RAHARJO</label>
             <div class="text-danger mb-3">Simpan bukti pembayaran!</div>
             <input type="file" class="form-control" id="uang-pendaftaran" accept=".jpg, .jpeg, .png"
-                name="bukti_pendaftaran_siswa_baru" required>
+                name="bukti_pendaftaran" required>
         </div>
+        @error('bukti_pendaftaran')
+            <div class="alert alert-danger">{{ $message }}</div>
+        @enderror
 
         <div id="image-preview-container" class=" mb-2">
             <img id="image-preview" src="#" alt="Preview Gambar"

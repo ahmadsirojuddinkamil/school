@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->uuid('uuid_siswa')->nullable();
+            $table->uuid('uuid_ppdb')->nullable();
             $table->uuid('uuid')->unique();
 
-            $table->string('bukti_pendaftaran_siswa_baru');
+            $table->string('bukti_pendaftaran_siswa_baru')->nullable();
             $table->timestamps();
         });
     }

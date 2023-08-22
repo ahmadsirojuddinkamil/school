@@ -35,7 +35,7 @@ class StorePpdbRequest extends FormRequest
             'nama_ayah' => 'string|required',
             'nama_ibu' => 'string|required',
             'telpon_orang_tua' => 'numeric|required',
-            'bukti_pendaftaran_siswa_baru' => 'required|file|mimetypes:image/jpeg,image/png|max:3100',
+            'bukti_pendaftaran' => 'required|file|mimetypes:image/jpeg,image/png|max:3100',
         ];
     }
 }

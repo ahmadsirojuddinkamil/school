@@ -1,1 +1,4 @@
- laravel pint
+laravel pint
+laravel breeze
+vite
+spatie permission
