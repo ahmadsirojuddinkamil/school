@@ -57,10 +57,16 @@
                 </div>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
             </div>
-            {{-- @if (Request::is('/'))
-            @endif --}}
+
             <a href="/ppdb" class="btn btn-primary py-2 px-4 d-none d-lg-block mr-2">PPDB</a>
-            <a href="/elearning" class="btn btn-primary py-2 px-4 d-none d-lg-block">E-LEARNING</a>
+
+            @guest
+                <a href="/login" class="btn btn-primary py-2 px-4 d-none d-lg-block">E-LEARNING</a>
+            @endguest
+
+            @auth
+                <a href="/dashboard" class="btn btn-primary py-2 px-4 d-none d-lg-block">E-LEARNING</a>
+            @endauth
         </div>
     </nav>
 </div>

@@ -12,12 +12,18 @@ class Payment extends Model
     protected $fillable = [
         'uuid',
         'uuid_siswa',
+        'uuid_ppdb',
         'bukti_pendaftaran_siswa_baru',
     ];
 
     // relasi
     public function siswas()
     {
-        return $this->belongsTo(Siswa::class, 'uuid_siswa');
+        return $this->belongsTo(Siswa::class, 'uuid_payment', 'uuid');
+    }
+
+    public function ppdbs()
+    {
+        return $this->belongsTo(Ppdb::class, 'uuid_ppdb', 'uuid');
     }
 }
