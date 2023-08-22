@@ -14,7 +14,6 @@ class Siswa extends Model
         'uuid',
         'nama_lengkap',
         'email',
-        'password',
         'nisn',
         'asal_sekolah',
         'alamat',

@@ -11,13 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('siswas', function (Blueprint $table) {
-            $table->foreign('uuid_payment')->references('uuid')->on('payments')->onDelete('cascade');
-        });
+        // Schema::table('siswas', function (Blueprint $table) {
+        //     $table->foreign('uuid_payment')->references('uuid')->on('payments');
+        // });
 
-        Schema::table('payments', function (Blueprint $table) {
-            $table->foreign('uuid_siswa')->references('uuid')->on('siswas');
-        });
+        // Schema::table('ppdbs', function (Blueprint $table) {
+        //     $table->foreign('uuid_payment')->references('uuid')->on('payments');
+        // });
+
+        // Schema::table('payments', function (Blueprint $table) {
+        //     $table->foreign('uuid_siswa')->references('uuid')->on('siswas');
+        //     $table->foreign('uuid_ppdb')->references('uuid')->on('ppdbs');
+        // });
     }
 
     /**
@@ -27,5 +32,6 @@ return new class extends Migration
     {
         Schema::dropIfExists('siswas');
         Schema::dropIfExists('payments');
+        Schema::dropIfExists('ppdbs');
     }
 };
