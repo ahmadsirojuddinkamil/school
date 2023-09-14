@@ -15,11 +15,11 @@ jobs:
 
       - name: Build Apps
         run: |
-          composer install --no-scripts
+          composer install --no-scripts --no-interaction
 
       - name: Prepare Laravel Application
         run: |
-          cp .env .env
+          cp .env.example .env
       #     php artisan key:generate
 
       # - name: Standart Pint
