@@ -17,7 +17,8 @@ jobs:
         run: composer install --no-scripts
 
       - name: Prepare Laravel Application
-        run: cp .env.ci .env
+        run: |
+          cp .env.ci .env
           php artisan key:generate
 
       - name: Standart Pint
