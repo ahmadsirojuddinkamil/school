@@ -1,0 +1,11 @@
+{
+    "name": "Ppdb",
+    "alias": "ppdb",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Ppdb\\Providers\\PpdbServiceProvider"
+    ],
+    "files": []
+}
