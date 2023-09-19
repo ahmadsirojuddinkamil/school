@@ -5,6 +5,7 @@ namespace Modules\Ppdb\Tests\Feature;
 use App\Services\UserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Modules\Ppdb\Entities\OpenPpdb;
 use Tests\TestCase;
 
 class RegistrationTest extends TestCase
@@ -19,8 +20,10 @@ class RegistrationTest extends TestCase
         $this->roleService = new UserService();
     }
 
-    public function test_ppdb_register_page_is_displayed(): void
+    public function test_ppdb_register_page_success_is_displayed(): void
     {
+        OpenPpdb::factory()->create();
+
         $response = $this->get('/ppdb');
         $response->assertStatus(200);
         $response->assertViewIs('ppdb::pages.ppdb.register');
@@ -30,8 +33,19 @@ class RegistrationTest extends TestCase
         $response->assertViewHas('dataUserAuth');
     }
 
+    public function test_ppdb_register_page_failed_is_displayed(): void
+    {
+        $response = $this->get('/ppdb');
+        $response->assertStatus(302);
+        $response->assertRedirect('/');
+        $response = $this->followRedirects($response);
+        $response->assertSeeText('Pendaftaran ppdb belum dibuka!');
+    }
+
     public function test_ppdb_register_success(): void
     {
+        OpenPpdb::factory()->create();
+
         $response = $this->post('/ppdb', [
             'uuid' => '95d4c1b1-b856-41b5-90f7-62aa38673bd1',
             'nama_lengkap' => 'name ppdb',
@@ -57,6 +71,8 @@ class RegistrationTest extends TestCase
 
     public function test_ppdb_register_failed_due_to_existing_data(): void
     {
+        OpenPpdb::factory()->create();
+
         $response = $this->post('/ppdb', [
             'uuid' => '95d4c1b1-b856-41b5-90f7-62aa38673bd1',
             'nama_lengkap' => 'name ppdb',

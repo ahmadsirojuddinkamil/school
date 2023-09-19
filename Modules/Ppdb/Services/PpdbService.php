@@ -4,13 +4,23 @@ namespace Modules\Ppdb\Services;
 
 use App\Models\{User};
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
-use Modules\Ppdb\Entities\{Ppdb};
+use Modules\Ppdb\Entities\{OpenPpdb, Ppdb};
 use Modules\Siswa\Entities\{Siswa};
 use Ramsey\Uuid\Uuid;
 
 class PpdbService
 {
+    public function openPpdb($validateData)
+    {
+        OpenPpdb::create([
+            'uuid' => Uuid::uuid4()->toString(),
+            'tanggal_mulai' => $validateData['tanggal_mulai'],
+            'tanggal_akhir' => $validateData['tanggal_akhir'],
+        ]);
+    }
+
     public function saveDataSiswaPpdb($validateData)
     {
         $buktiPendaftaranPpdbPath = $validateData['bukti_pendaftaran']->store('public/document_bukti_pendaftaran_siswa_baru');

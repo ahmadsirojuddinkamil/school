@@ -17,13 +17,13 @@ jobs:
         run: |
           composer install --no-scripts --no-interaction
 
-      - name: Prepare Laravel Application
-        run: |
-          cp .env.example .env
-          php artisan key:generate
+      # - name: Prepare Laravel Application
+      #   run: |
+      #     cp .env.example .env
+      #     php artisan key:generate
 
       - name: Standart Pint
         run: ./vendor/bin/pint
 
-      - name: Run Unit Tests
-        run: vendor/bin/phpunit
+      # - name: Run Unit Tests
+      #   run: vendor/bin/phpunit

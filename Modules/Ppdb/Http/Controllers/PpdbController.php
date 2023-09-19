@@ -6,12 +6,12 @@ use App\Services\UserService;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use DateTime;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\{DB, File};
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
+use Modules\Ppdb\Entities\OpenPpdb;
 use Modules\Ppdb\Entities\Ppdb;
 use Modules\Ppdb\Exports\ExportPpdb;
-use Modules\Ppdb\Http\Requests\StorePpdbRequest;
-use Modules\Ppdb\Http\Requests\UpdatePpdbRequest;
+use Modules\Ppdb\Http\Requests\{OpenOrClosePpdbRequest, StorePpdbRequest, UpdatePpdbRequest};
 use Modules\Ppdb\Services\PpdbService;
 use Modules\Siswa\Entities\Siswa;
 
@@ -81,14 +81,36 @@ class PpdbController extends Controller
             $yearTotals[$previousYear] = ['key' => $previousYear, 'value' => $total];
         }
 
-        return view('ppdb::pages.ppdb.year', compact('dataUserAuth', 'yearTotals'));
+        $today = new DateTime();
+        $todayDate = $today->format('Y-m-d');
+        $maxDate = date_modify(clone $today, '+7 days')->format('Y-m-d');
+
+        $findOpenOrClosePpdb = OpenPpdb::first();
+
+        return view('ppdb::pages.ppdb.year', compact('dataUserAuth', 'yearTotals', 'todayDate', 'maxDate', 'findOpenOrClosePpdb'));
+    }
+
+    public function openPpdb(OpenOrClosePpdbRequest $request)
+    {
+        $validateData = $request->validated();
+
+        $this->ppdbService->openPpdb($validateData);
+
+        return redirect()->route('ppdb.year')->with(['success' => 'Berhasil membuka pendaftaran ppdb!']);
+    }
+
+    public function deleteOpenPpdb()
+    {
+        OpenPpdb::first()->delete();
+
+        return redirect()->route('ppdb.year')->with(['success' => 'Berhasil menutup pendaftaran ppdb!']);
     }
 
     public function showYear($saveYearFromRoute)
     {
         // helper
         $validateData = isValidYear($saveYearFromRoute);
-        if (! $validateData) {
+        if (!$validateData) {
             return abort(404);
         }
 
@@ -108,7 +130,7 @@ class PpdbController extends Controller
     {
         // helper
         $validateData = isValidYear($saveYearFromRoute);
-        if (! $validateData) {
+        if (!$validateData) {
             return abort(404);
         }
 
@@ -131,7 +153,7 @@ class PpdbController extends Controller
     {
         // helper
         $validateData = isValidYear($saveYearFromRoute);
-        if (! $validateData) {
+        if (!$validateData) {
             return abort(404);
         }
 
@@ -140,18 +162,18 @@ class PpdbController extends Controller
             return abort(404);
         }
 
-        return ExportExcel::download(new ExportPpdb($saveYearFromRoute), 'laporan ppdb tahun '.$saveYearFromRoute.'.xlsx');
+        return ExportExcel::download(new ExportPpdb($saveYearFromRoute), 'laporan ppdb tahun ' . $saveYearFromRoute . '.xlsx');
     }
 
     public function show($saveUuidFromRoute)
     {
         $validateData = isValidUuid($saveUuidFromRoute);
-        if (! $validateData) {
+        if (!$validateData) {
             return abort(404);
         }
 
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
-        if (! $getDataUserPpdb) {
+        if (!$getDataUserPpdb) {
             return abort(404);
         }
 
@@ -164,12 +186,12 @@ class PpdbController extends Controller
     public function accept($saveUuidFromRoute)
     {
         $validateData = isValidUuid($saveUuidFromRoute);
-        if (! $validateData) {
+        if (!$validateData) {
             return abort(404);
         }
 
         $findRoomYear = Ppdb::where('uuid', $saveUuidFromRoute)->first();
-        if (! $findRoomYear) {
+        if (!$findRoomYear) {
             return abort(404);
         }
 
@@ -181,12 +203,12 @@ class PpdbController extends Controller
     public function edit($saveUuidFromRoute)
     {
         $validateData = isValidUuid($saveUuidFromRoute);
-        if (! $validateData) {
+        if (!$validateData) {
             return abort(404);
         }
 
         $getPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
-        if (! $getPpdb) {
+        if (!$getPpdb) {
             return abort(404);
         }
 
@@ -201,7 +223,7 @@ class PpdbController extends Controller
     public function update(UpdatePpdbRequest $request, $saveUuidFromRoute)
     {
         $validateUuid = isValidUuid($saveUuidFromRoute);
-        if (! $validateUuid) {
+        if (!$validateUuid) {
             return abort(404);
         }
 
@@ -214,7 +236,7 @@ class PpdbController extends Controller
     public function delete($saveUuidFromRoute)
     {
         $validateData = isValidUuid($saveUuidFromRoute);
-        if (! $validateData) {
+        if (!$validateData) {
             return abort(404);
         }
 

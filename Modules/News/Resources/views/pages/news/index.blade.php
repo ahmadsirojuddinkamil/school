@@ -12,6 +12,12 @@
 </head>
 
 <body>
+    @if (session()->has('errorStatus'))
+        <script>
+            alert('Pendaftaran ppdb belum dibuka!');
+        </script>
+    @endif
+
     @include('news::templates.news.index')
 </body>
 

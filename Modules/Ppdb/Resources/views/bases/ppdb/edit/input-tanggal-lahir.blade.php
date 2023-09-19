@@ -6,5 +6,3 @@
 @error('tanggal_lahir')
     <div class="alert alert-danger">{{ $message }}</div>
 @enderror
-
-{{-- @dd($todayDate) --}}

@@ -9,11 +9,6 @@ class Ppdb extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
-    {
-        return \Modules\Ppdb\Database\factories\PpdbFactory::new();
-    }
-
     protected $fillable = [
         'uuid',
         'nama_lengkap',
@@ -32,4 +27,9 @@ class Ppdb extends Model
         'telpon_orang_tua',
         'bukti_pendaftaran',
     ];
+
+    protected static function newFactory()
+    {
+        return \Modules\Ppdb\Database\factories\PpdbFactory::new();
+    }
 }
