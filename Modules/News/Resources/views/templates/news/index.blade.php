@@ -1,0 +1,5 @@
+@include('news::layouts.news.header')
+@include('news::layouts.news.hero')
+@include('news::layouts.news.about')
+@include('news::layouts.news.main')
+@include('news::layouts.news.footer')
