@@ -34,6 +34,33 @@ class OpenPpdbTest extends TestCase
         $this->assertEquals('Berhasil membuka pendaftaran ppdb!', session('success'));
     }
 
+    public function test_ppdb_open_failed_because_form_has_not_been(): void
+    {
+        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->actingAs($user);
+
+        $response = $this->post('/ppdb-data/open', [
+            'uuid' => '',
+            'tanggal_mulai' => '',
+            'tanggal_akhir' => '',
+        ]);
+        $response->assertStatus(302);
+        $this->assertTrue(session()->has('errors'));
+    }
+
+    public function test_ppdb_open_failed_because_not_role_admin(): void
+    {
+        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->actingAs($user);
+
+        $response = $this->post('/ppdb-data/open', [
+            'uuid' => '95d4c1b1-b856-41b5-90f7-62aa38673bd1',
+            'tanggal_mulai' => '2023-09-18',
+            'tanggal_akhir' => '2023-09-19',
+        ]);
+        $response->assertStatus(404);
+    }
+
     public function test_ppdb_close_success(): void
     {
         $user = $this->roleService->createRoleAndUserAdmin();
@@ -44,5 +71,15 @@ class OpenPpdbTest extends TestCase
         $response->assertStatus(302);
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Berhasil menutup pendaftaran ppdb!', session('success'));
+    }
+
+    public function test_ppdb_close_failed_because_not_admin(): void
+    {
+        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->actingAs($user);
+        OpenPpdb::factory()->create();
+
+        $response = $this->delete('/ppdb-data/status');
+        $response->assertStatus(404);
     }
 }

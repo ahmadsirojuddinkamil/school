@@ -1,4 +1,4 @@
-@if (!$findSiswa)
+@if (!$checkSiswaOrNot)
     <button type="button" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#exampleModal">
         <img src="{{ asset('assets/dashboard/img/icons/plus.svg') }}" alt="img" class="me-2">
         Terima PPDB

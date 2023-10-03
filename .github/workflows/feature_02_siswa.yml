@@ -1,9 +1,9 @@
 on:
   push:
     branches:
-      - feature_01_ppdb
+      - feature_02_siswa
 
-name: feature_01_ppdb
+name: feature_02_siswa
 
 jobs:
   ContinuousIntegration:

@@ -5,7 +5,7 @@
                 <h4>Data PPDB</h4>
             </div>
 
-            @if ($findOpenOrClosePpdb)
+            @if ($openOrClosePpdb)
                 <button type="button" class="btn btn-added" data-bs-toggle="modal" data-bs-target="#exampleModal">
                     <img src="{{ asset('assets/dashboard/img/icons/plus.svg') }}" alt="img" class="me-2">
                     Tutup Pendaftaran PPDB
@@ -65,8 +65,8 @@
                                     <div class="mb-3">
                                         <label for="tanggal-mulai-ppdb" class="form-label">Tanggal Mulai PPDB</label>
                                         <input type="date" class="form-control" id="tanggal-mulai-ppdb"
-                                            name="tanggal_mulai" required min="{{ $todayDate }}"
-                                            max="{{ $maxDate }}">
+                                            name="tanggal_mulai" required min="{{ $timeBox['todayDate'] }}"
+                                            max="{{ $timeBox['maxDate'] }}">
                                     </div>
                                     @error('tanggal_mulai')
                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -75,8 +75,8 @@
                                     <div class="mb-3">
                                         <label for="tanggal-akhir-ppdb" class="form-label">Tanggal Berakhir PPDB</label>
                                         <input type="date" class="form-control" id="tanggal-akhir-ppdb"
-                                            name="tanggal_akhir" required min="{{ $todayDate }}"
-                                            max="{{ $maxDate }}">
+                                            name="tanggal_akhir" required min="{{ $timeBox['todayDate'] }}"
+                                            max="{{ $timeBox['maxDate'] }}">
                                     </div>
                                     @error('tanggal_akhir')
                                         <div class="alert alert-danger">{{ $message }}</div>
@@ -94,7 +94,6 @@
                     </div>
                 </div>
             @endif
-
         </div>
 
         @include('ppdb::components.ppdb.sweetalert-success')

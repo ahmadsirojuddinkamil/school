@@ -4,14 +4,12 @@ namespace Modules\Ppdb\Http\Controllers;
 
 use App\Services\UserService;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
-use DateTime;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\{DB, File};
+use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
-use Modules\Ppdb\Entities\OpenPpdb;
-use Modules\Ppdb\Entities\Ppdb;
+use Modules\Ppdb\Entities\{Ppdb, OpenPpdb};
 use Modules\Ppdb\Exports\ExportPpdb;
-use Modules\Ppdb\Http\Requests\{OpenOrClosePpdbRequest, StorePpdbRequest, UpdatePpdbRequest};
+use Modules\Ppdb\Http\Requests\{StorePpdbRequest, UpdatePpdbRequest, OpenOrClosePpdbRequest};
 use Modules\Ppdb\Services\PpdbService;
 use Modules\Siswa\Entities\Siswa;
 
@@ -29,12 +27,9 @@ class PpdbController extends Controller
 
     public function register()
     {
-        $today = new DateTime();
-        $todayDate = $today->format('Y-m-d');
-        $minDate = date_modify(clone $today, '-21 years')->format('Y-m-d');
-        $dataUserAuth = $this->userService->getProfileUser();
+        $timeBox = $this->ppdbService->getEditTime();
 
-        return view('ppdb::pages.ppdb.register', compact('todayDate', 'minDate', 'dataUserAuth'));
+        return view('ppdb::pages.ppdb.register', compact('timeBox'));
     }
 
     public function store(StorePpdbRequest $request)
@@ -57,37 +52,12 @@ class PpdbController extends Controller
     public function year()
     {
         $dataUserAuth = $this->userService->getProfileUser();
-
         $allYears = Ppdb::orderBy('tahun_daftar', 'desc')->pluck('tahun_daftar');
+        $listYearPpdb = $this->ppdbService->getListYearPpdb($allYears);
+        $timeBox = $this->ppdbService->getOpenPpdbTime();
+        $openOrClosePpdb = OpenPpdb::first();
 
-        $yearTotals = [];
-        $previousYear = null;
-        $total = 0;
-
-        foreach ($allYears as $year) {
-            if ($previousYear === null) {
-                $previousYear = $year;
-                $total = 1;
-            } elseif ($previousYear == $year) {
-                $total++;
-            } else {
-                $yearTotals[$previousYear] = ['key' => $previousYear, 'value' => $total];
-                $previousYear = $year;
-                $total = 1;
-            }
-        }
-
-        if ($previousYear !== null) {
-            $yearTotals[$previousYear] = ['key' => $previousYear, 'value' => $total];
-        }
-
-        $today = new DateTime();
-        $todayDate = $today->format('Y-m-d');
-        $maxDate = date_modify(clone $today, '+7 days')->format('Y-m-d');
-
-        $findOpenOrClosePpdb = OpenPpdb::first();
-
-        return view('ppdb::pages.ppdb.year', compact('dataUserAuth', 'yearTotals', 'todayDate', 'maxDate', 'findOpenOrClosePpdb'));
+        return view('ppdb::pages.ppdb.year', compact('dataUserAuth', 'listYearPpdb', 'timeBox', 'openOrClosePpdb'));
     }
 
     public function openPpdb(OpenOrClosePpdbRequest $request)
@@ -108,12 +78,9 @@ class PpdbController extends Controller
 
     public function showYear($saveYearFromRoute)
     {
-        // helper
-        $validateData = isValidYear($saveYearFromRoute);
-        if (!$validateData) {
-            return abort(404);
-        }
+        $this->ppdbService->checkValidYear($saveYearFromRoute);
 
+        $dataUserAuth = $this->userService->getProfileUser();
         $getDataPpdb = Ppdb::where('tahun_daftar', $saveYearFromRoute)->latest()->get();
         $totalDataPpdb = $getDataPpdb->count();
 
@@ -121,18 +88,12 @@ class PpdbController extends Controller
             return abort(404);
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
-
-        return view('ppdb::pages.ppdb.show_year', compact('getDataPpdb', 'dataUserAuth', 'totalDataPpdb', 'saveYearFromRoute'));
+        return view('ppdb::pages.ppdb.show_year', compact('dataUserAuth', 'getDataPpdb', 'totalDataPpdb', 'saveYearFromRoute'));
     }
 
     public function downloadPdf($saveYearFromRoute)
     {
-        // helper
-        $validateData = isValidYear($saveYearFromRoute);
-        if (!$validateData) {
-            return abort(404);
-        }
+        $this->ppdbService->checkValidYear($saveYearFromRoute);
 
         $getDataPpdb = Ppdb::where('tahun_daftar', $saveYearFromRoute)->latest()->get();
         $totalDataPpdb = $getDataPpdb->count();
@@ -151,13 +112,10 @@ class PpdbController extends Controller
 
     public function downloadExcel($saveYearFromRoute)
     {
-        // helper
-        $validateData = isValidYear($saveYearFromRoute);
-        if (!$validateData) {
-            return abort(404);
-        }
+        $this->ppdbService->checkValidYear($saveYearFromRoute);
 
         $getDataPpdb = Ppdb::where('tahun_daftar', $saveYearFromRoute)->latest()->get();
+
         if ($getDataPpdb->isEmpty()) {
             return abort(404);
         }
@@ -167,65 +125,54 @@ class PpdbController extends Controller
 
     public function show($saveUuidFromRoute)
     {
-        $validateData = isValidUuid($saveUuidFromRoute);
-        if (!$validateData) {
-            return abort(404);
-        }
+        $this->ppdbService->checkUuidOrNot($saveUuidFromRoute);
 
+        $dataUserAuth = $this->userService->getProfileUser();
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
+
         if (!$getDataUserPpdb) {
             return abort(404);
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
-        $findSiswa = Siswa::where('nisn', $getDataUserPpdb->nisn)->first();
+        $checkSiswaOrNot = Siswa::where('nisn', $getDataUserPpdb->nisn)->exists();
 
-        return view('ppdb::pages.ppdb.show', compact('getDataUserPpdb', 'dataUserAuth', 'findSiswa'));
+        return view('ppdb::pages.ppdb.show', compact('dataUserAuth', 'getDataUserPpdb', 'checkSiswaOrNot'));
     }
 
     public function accept($saveUuidFromRoute)
     {
-        $validateData = isValidUuid($saveUuidFromRoute);
-        if (!$validateData) {
-            return abort(404);
-        }
+        $this->ppdbService->checkUuidOrNot($saveUuidFromRoute);
 
-        $findRoomYear = Ppdb::where('uuid', $saveUuidFromRoute)->first();
-        if (!$findRoomYear) {
+        $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
+
+        if (!$getDataUserPpdb) {
             return abort(404);
         }
 
         $this->ppdbService->acceptPpdb($saveUuidFromRoute);
 
-        return redirect()->route('ppdb.year.show', ['save_year_from_event' => $findRoomYear->tahun_daftar])->with(['success' => 'Peserta ppdb berhasil menjadi siswa!']);
+        return redirect()->route('ppdb.year.show', ['save_year_from_event' => $getDataUserPpdb->tahun_daftar])->with(['success' => 'Peserta ppdb berhasil menjadi siswa!']);
     }
 
     public function edit($saveUuidFromRoute)
     {
-        $validateData = isValidUuid($saveUuidFromRoute);
-        if (!$validateData) {
-            return abort(404);
-        }
-
-        $getPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
-        if (!$getPpdb) {
-            return abort(404);
-        }
+        $this->ppdbService->checkUuidOrNot($saveUuidFromRoute);
 
         $dataUserAuth = $this->userService->getProfileUser();
-        $today = new DateTime();
-        $todayDate = $today->format('Y-m-d');
-        $minDate = date_modify(clone $today, '-21 years')->format('Y-m-d');
+        $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
 
-        return view('ppdb::pages.ppdb.edit', compact('getPpdb', 'dataUserAuth', 'minDate', 'todayDate'));
+        if (!$getDataUserPpdb) {
+            return abort(404);
+        }
+
+        $timeBox = $this->ppdbService->getEditTime();
+
+        return view('ppdb::pages.ppdb.edit', compact('dataUserAuth', 'getDataUserPpdb', 'timeBox'));
     }
 
     public function update(UpdatePpdbRequest $request, $saveUuidFromRoute)
     {
-        $validateUuid = isValidUuid($saveUuidFromRoute);
-        if (!$validateUuid) {
-            return abort(404);
-        }
+        $this->ppdbService->checkUuidOrNot($saveUuidFromRoute);
 
         $validateData = $request->validated();
         $this->ppdbService->editPpdb($validateData, $saveUuidFromRoute);
@@ -235,16 +182,17 @@ class PpdbController extends Controller
 
     public function delete($saveUuidFromRoute)
     {
-        $validateData = isValidUuid($saveUuidFromRoute);
-        if (!$validateData) {
+        $this->ppdbService->checkUuidOrNot($saveUuidFromRoute);
+
+        $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
+
+        if (!$getDataUserPpdb) {
             return abort(404);
         }
 
-        $findRoomYear = Ppdb::where('uuid', $saveUuidFromRoute)->first();
-        $getPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
-        File::delete($getPpdb->bukti_pendaftaran);
-        $getPpdb->delete();
+        File::delete($getDataUserPpdb->bukti_pendaftaran);
+        $getDataUserPpdb->delete();
 
-        return redirect()->route('ppdb.year.show', ['save_year_from_event' => $findRoomYear->tahun_daftar])->with('success', 'Data ppdb sudah berhasil dihapus!');
+        return redirect()->route('ppdb.year.show', ['save_year_from_event' => $getDataUserPpdb->tahun_daftar])->with('success', 'Data ppdb sudah berhasil dihapus!');
     }
 }
