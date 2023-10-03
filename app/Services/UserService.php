@@ -51,4 +51,17 @@ class UserService
 
         return $user;
     }
+
+    public function createRoleAndUserSiswa()
+    {
+        Role::create(['name' => 'siswa']);
+        Role::create(['name' => 'guru']);
+        Role::create(['name' => 'admin']);
+        Role::create(['name' => 'kepala_sekolah']);
+
+        $user = User::factory()->create();
+        $user->assignRole('siswa');
+
+        return $user;
+    }
 }

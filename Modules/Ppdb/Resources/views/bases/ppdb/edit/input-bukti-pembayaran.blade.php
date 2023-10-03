@@ -2,10 +2,11 @@
     <div class="form-group">
         <label>Bukti Pendaftaran</label>
         <input type="file" id="fileInput" name="bukti_pendaftaran_new">
-        <input type="hidden" id="hiddenInput" value="{{ $getPpdb->bukti_pendaftaran }}" name="bukti_pendaftaran_old">
+        <input type="hidden" id="hiddenInput" value="{{ $getDataUserPpdb->bukti_pendaftaran }}"
+            name="bukti_pendaftaran_old">
         <br><br>
         <img id="previewImagePpdb"
-            src="{{ $getPpdb->bukti_pendaftaran ? asset($getPpdb->bukti_pendaftaran) : asset('assets/dashboard/img/warning.png') }}"
+            src="{{ $getDataUserPpdb->bukti_pendaftaran ? asset($getDataUserPpdb->bukti_pendaftaran) : asset('assets/dashboard/img/warning.png') }}"
             alt="img" height="100" width="100">
     </div>
 </div>
@@ -18,7 +19,7 @@
     const fileInput = document.getElementById('fileInput');
     const hiddenInput = document.getElementById('hiddenInput');
     const previewImagePpdb = document.getElementById('previewImagePpdb');
-    let originalImageSrc = '{{ asset($getPpdb->bukti_pendaftaran) }}';
+    let originalImageSrc = '{{ asset($getDataUserPpdb->bukti_pendaftaran) }}';
 
     fileInput.addEventListener('change', function() {
         if (fileInput.files.length > 0) {

@@ -15,6 +15,11 @@ class Siswa extends Model
         return \Modules\Siswa\Database\factories\SiswaFactory::new();
     }
 
+    protected static function siswaGraduatedFactory()
+    {
+        return \Modules\Siswa\Database\factories\SiswaGraduatedFactory::new();
+    }
+
     protected $fillable = [
         'uuid',
         'user_id',

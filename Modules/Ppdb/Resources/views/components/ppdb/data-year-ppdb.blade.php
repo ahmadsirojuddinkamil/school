@@ -1,6 +1,6 @@
 <div class="row">
-    @if ($yearTotals)
-        @foreach ($yearTotals as $year)
+    @if ($listYearPpdb)
+        @foreach ($listYearPpdb as $year)
             <div class="col-lg-3 col-sm-6 col-12">
                 <a href="{{ route('ppdb.year.show', ['save_year_from_event' => $year['key']]) }}">
                     <div class="dash-count das1">

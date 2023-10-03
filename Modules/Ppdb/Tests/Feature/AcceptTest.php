@@ -19,27 +19,45 @@ class AcceptTest extends TestCase
         $this->roleService = new UserService();
     }
 
-    public function test_ppdb_success_accept_new_user(): void
+    public function test_ppdb_accept_new_user_success(): void
     {
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/'.$ppdb->uuid);
+        $response = $this->post('/ppdb-data/' . $ppdb->uuid . '/accept');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Peserta ppdb berhasil menjadi siswa!', session('success'));
     }
 
-    public function test_ppdb_failed_accept_new_user(): void
+    public function test_ppdb_accept_new_user_failed_because_not_role_admin(): void
+    {
+        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->actingAs($user);
+
+        $ppdb = Ppdb::factory()->create();
+        $response = $this->post('/ppdb-data/' . $ppdb->uuid . '/accept');
+        $response->assertStatus(404);
+    }
+
+    public function test_ppdb_accept_new_user_failed_because_not_uuid(): void
     {
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $responseParameterNotUuid = $this->post('/ppdb-data/coding');
-        $responseParameterNotUuid->assertStatus(404);
+        Ppdb::factory()->create();
+        $response = $this->post('/ppdb-data/uuid/accept');
+        $response->assertStatus(404);
+    }
 
-        $responseNotFoundUuid = $this->post('/ppdb-data/3000');
-        $responseNotFoundUuid->assertStatus(404);
+    public function test_ppdb_accept_new_user_failed_because_data_not_found(): void
+    {
+        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->actingAs($user);
+
+        Ppdb::factory()->create();
+        $response = $this->post('/ppdb-data/482401ca-cec5-4fb8-8bc6-fc74070073be/accept');
+        $response->assertStatus(404);
     }
 }

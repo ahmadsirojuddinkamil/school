@@ -3,8 +3,8 @@
         <div id="sidebar-menu" class="sidebar-menu">
             <ul>
                 <li class="">
-                    <a href="/dashboard"><img src="{{ asset('assets/dashboard/img/icons/dashboard.svg') }}"
-                            alt="img"><span>
+                    <a class="{{ Request::is('dashboard') ? 'active' : '' }}" href="/dashboard"><img
+                            src="{{ asset('assets/dashboard/img/icons/dashboard.svg') }}" alt="img"><span>
                             Dashboard</span> </a>
                 </li>
 
@@ -30,11 +30,14 @@
                             </li>
 
                             <li>
-                                <a href="{{ route('siswa.class') }}"
+                                <a href="{{ route('siswa.status') }}"
                                     class="{{ Request::is('siswa-data/*') ? 'active' : '' }}">Siswa</a>
                             </li>
                         @endif
 
+                        @if ($dataUserAuth[1] == 'siswa')
+                            <li><a href="/">Absen</a></li>
+                        @endif
 
                         {{-- <li><a href="/addproduct">Add Product</a></li>
                         <li><a href="/categorylist">Category List</a></li>
