@@ -21,10 +21,13 @@ class OpenPpdbFactory extends Factory
      */
     public function definition()
     {
+        $tanggalMulai = date('Y-m-d');
+        $tanggalAkhir = date('Y-m-d', strtotime('+3 days'));
+
         return [
             'uuid' => Uuid::uuid4()->toString(),
-            'tanggal_mulai' => '10-05-2010',
-            'tanggal_akhir' => '15-05-2010',
+            'tanggal_mulai' => $tanggalMulai,
+            'tanggal_akhir' => $tanggalAkhir,
         ];
     }
 }

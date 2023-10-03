@@ -1,4 +1,4 @@
-<form action="{{ route('ppdb.update', ['save_uuid_from_event' => $getPpdb->uuid]) }}" method="POST"
+<form action="{{ route('ppdb.update', ['save_uuid_from_event' => $getDataUserPpdb->uuid]) }}" method="POST"
     enctype="multipart/form-data">
     @csrf
     @method('PUT')

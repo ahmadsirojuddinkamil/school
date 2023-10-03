@@ -18,7 +18,7 @@
 </head>
 
 <body>
-    @include('siswa::templates.siswa.index')
+    @include('siswa::templates.siswa.status')
 </body>
 
 </html>

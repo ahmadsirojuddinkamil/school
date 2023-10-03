@@ -22,13 +22,14 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('nisn')->unique();
             $table->string('asal_sekolah');
-            $table->integer('kelas');
+            $table->string('kelas')->nullable();
             $table->string('alamat');
             $table->string('telpon_siswa');
             $table->string('jenis_kelamin');
             $table->string('tempat_lahir');
             $table->string('tanggal_lahir');
             $table->string('tahun_daftar');
+            $table->string('tahun_lulus')->nullable();
             $table->string('jurusan');
             $table->string('nama_ayah');
             $table->string('nama_ibu');
