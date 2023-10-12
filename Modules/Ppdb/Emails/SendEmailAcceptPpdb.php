@@ -5,7 +5,6 @@ namespace Modules\Ppdb\Emails;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
 
 class SendEmailAcceptPpdb extends Mailable
 {
@@ -18,7 +17,6 @@ class SendEmailAcceptPpdb extends Mailable
      *
      * @return void
      */
-
     public function __construct($saveNamaSiswaFromObjectCaller)
     {
         $this->namaSiswa = $saveNamaSiswaFromObjectCaller;
@@ -34,7 +32,7 @@ class SendEmailAcceptPpdb extends Mailable
         return $this->view('ppdb::layouts.ppdb.message_email')
             ->subject('Selamat, Anda diterima dalam PPDB sekolah!')
             ->with([
-                'nama' => $this->namaSiswa
+                'nama' => $this->namaSiswa,
             ]);
     }
 }

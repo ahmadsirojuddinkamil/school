@@ -15,7 +15,7 @@
                     <div class="dash-count das1">
                         <div class="dash-counts">
                             <h4>Belum Lulus</h4>
-                            <h5>Jumlah Siswa : {{ $getStatusSiswa['belum_lulus'] }}</h5>
+                            <h5>total : {{ $getStatusSiswa['belum_lulus'] }} siswa</h5>
                         </div>
 
                         <div class="dash-imgs">
@@ -30,7 +30,7 @@
                     <div class="dash-count das1">
                         <div class="dash-counts">
                             <h4>Sudah Lulus</h4>
-                            <h5>Jumlah Siswa : {{ $getStatusSiswa['sudah_lulus'] }}</h5>
+                            <h5>total : {{ $getStatusSiswa['sudah_lulus'] }} alumni</h5>
                         </div>
 
                         <div class="dash-imgs">

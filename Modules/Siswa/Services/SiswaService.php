@@ -55,7 +55,7 @@ class SiswaService
     {
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromCaller)->first();
 
-        if (!$getDataSiswa) {
+        if (! $getDataSiswa) {
             return abort(404);
         }
 
@@ -91,14 +91,14 @@ class SiswaService
 
     public function checkGraduatedUuidOrNot($saveUuidFromCaller)
     {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
+        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
             return redirect()->route('siswa.graduated')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
     }
 
     public function checkEditUuidOrNot($saveUuidFromCaller)
     {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
+        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
     }
@@ -114,21 +114,21 @@ class SiswaService
 
     public function checkUpdateUuidOrNot($saveUuidFromCaller)
     {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
+        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
             return abort(404);
         }
     }
 
     public function checkValidYear($saveYearFromCaller)
     {
-        if (!preg_match('/^\d{4}$/', $saveYearFromCaller)) {
+        if (! preg_match('/^\d{4}$/', $saveYearFromCaller)) {
             return abort(404);
         }
     }
 
     public function checkDeleteUuidOrNot($saveUuidFromCaller)
     {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
+        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
             return abort(404);
         }
     }

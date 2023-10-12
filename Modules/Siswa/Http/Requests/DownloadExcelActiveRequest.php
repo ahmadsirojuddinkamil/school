@@ -14,7 +14,7 @@ class DownloadExcelActiveRequest extends FormRequest
     public function rules()
     {
         return [
-            'kelas' => 'required|string'
+            'kelas' => 'required|string',
         ];
     }
 

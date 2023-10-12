@@ -14,7 +14,7 @@ class DownloadExcelGraduatedRequest extends FormRequest
     public function rules()
     {
         return [
-            'tahun_lulus' => 'required|integer'
+            'tahun_lulus' => 'required|integer',
         ];
     }
 

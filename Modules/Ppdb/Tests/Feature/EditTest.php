@@ -26,7 +26,7 @@ class EditTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/' . $ppdb->uuid . '/edit');
+        $response = $this->get('/ppdb-data/'.$ppdb->uuid.'/edit');
         $response->assertStatus(200);
         $response->assertViewIs('ppdb::pages.ppdb.edit');
         $response->assertSeeText('Edit PPDB');
@@ -52,7 +52,7 @@ class EditTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/' . $ppdb->uuid . '/edit');
+        $response = $this->get('/ppdb-data/'.$ppdb->uuid.'/edit');
         $response->assertStatus(404);
     }
 
@@ -82,7 +82,7 @@ class EditTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->put('/ppdb-data/' . $ppdb->uuid, [
+        $response = $this->put('/ppdb-data/'.$ppdb->uuid, [
             'nama_lengkap' => 'name ppdb change',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
@@ -111,7 +111,7 @@ class EditTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->put('/ppdb-data/' . $ppdb->uuid, [
+        $response = $this->put('/ppdb-data/'.$ppdb->uuid, [
             'nama_lengkap' => 'name ppdb change',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
@@ -165,7 +165,7 @@ class EditTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->put('/ppdb-data/' . $ppdb->uuid, [
+        $response = $this->put('/ppdb-data/'.$ppdb->uuid, [
             'nama_lengkap' => '',
             'email' => '',
             'nisn' => '',

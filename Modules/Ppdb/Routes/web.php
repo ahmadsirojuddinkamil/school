@@ -1,10 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Route;
-use Modules\Ppdb\Emails\SendEmailAcceptPpdb;
 use Modules\Ppdb\Http\Controllers\PpdbController;
-use Modules\Ppdb\Jobs\SendEmailPpdbJob;
 
 Route::controller(PpdbController::class)->group(function () {
     Route::middleware('open_or_close_ppdb')->group(function () {
