@@ -46,72 +46,62 @@
 
                         <tbody>
                             @foreach ($getListSiswa as $siswa)
-                                <tr>
-                                    <td>{{ $loop->iteration }}</td>
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
 
-                                    <td class="productimgname">
-                                        <a href="javascript:void(0);" class="product-img">
-                                            <img src="{{ asset($siswa->foto) }}" alt="product">
-                                        </a>
-                                    </td>
+                                <td class="productimgname">
+                                    <a href="javascript:void(0);" class="product-img">
+                                        <img src="{{ asset($siswa->foto) }}" alt="product">
+                                    </a>
+                                </td>
 
-                                    <td>{{ $siswa->nama_lengkap }}</td>
-                                    <td>{{ $siswa->nisn }}</td>
-                                    <td>{{ $siswa->jurusan }}</td>
-                                    <td>{{ $siswa->telpon_siswa }}</td>
-                                    <td>{{ $siswa->email }}</td>
-                                    <td>{{ $siswa->jenis_kelamin }}</td>
-                                    <td class="actions">
-                                        <a class="action-link"
-                                            href="{{ route('show.siswa.active', [$saveClassFromRoute, $siswa->uuid]) }}">
-                                            <img src="{{ asset('assets/dashboard/img/icons/eye.svg') }}"
-                                                alt="img">
-                                        </a>
+                                <td>{{ $siswa->nama_lengkap }}</td>
+                                <td>{{ $siswa->nisn }}</td>
+                                <td>{{ $siswa->jurusan }}</td>
+                                <td>{{ $siswa->telpon_siswa }}</td>
+                                <td>{{ $siswa->email }}</td>
+                                <td>{{ $siswa->jenis_kelamin }}</td>
+                                <td class="actions">
+                                    <a class="action-link" href="{{ route('show.siswa.active', [$saveClassFromRoute, $siswa->uuid]) }}">
+                                        <img src="{{ asset('assets/dashboard/img/icons/eye.svg') }}" alt="img">
+                                    </a>
 
-                                        <a class="action-link" href="{{ route('siswa.edit', [$siswa->uuid]) }}">
-                                            <img src="{{ asset('assets/dashboard/img/icons/edit.svg') }}"
-                                                alt="img">
-                                        </a>
+                                    <a class="action-link" href="{{ route('siswa.edit', [$siswa->uuid]) }}">
+                                        <img src="{{ asset('assets/dashboard/img/icons/edit.svg') }}" alt="img">
+                                    </a>
 
-                                        <button class="action-button" data-bs-toggle="modal"
-                                            data-bs-target="#exampleModal{{ $siswa->uuid }}">
-                                            <img src="{{ asset('assets/dashboard/img/icons/delete.svg') }}"
-                                                alt="img">
-                                        </button>
+                                    <button class="action-button" data-bs-toggle="modal" data-bs-target="#exampleModal{{ $siswa->uuid }}">
+                                        <img src="{{ asset('assets/dashboard/img/icons/delete.svg') }}" alt="img">
+                                    </button>
 
-                                        <div class="modal fade" id="exampleModal{{ $siswa->uuid }}" tabindex="-1"
-                                            aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <h5 class="modal-title" id="exampleModalLabel">Apakah anda
-                                                            yakin?</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                    </div>
+                                    <div class="modal fade" id="exampleModal{{ $siswa->uuid }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Apakah anda
+                                                        yakin?</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
 
-                                                    <div class="modal-body">
-                                                        Data ppdb akan terupdate!
-                                                    </div>
+                                                <div class="modal-body">
+                                                    Data ppdb akan terupdate!
+                                                </div>
 
-                                                    <div class="modal-footer d-flex justify-content-end">
-                                                        <button type="button" class="btn btn-secondary"
-                                                            data-bs-dismiss="modal">Tidak</button>
+                                                <div class="modal-footer d-flex justify-content-end">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
 
-                                                        <form action="{{ route('siswa.delete', [$siswa->uuid]) }}"
-                                                            method="POST" class="action-form">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit"
-                                                                class="btn btn-submit me-2">Submit</button>
-                                                        </form>
-                                                    </div>
+                                                    <form action="{{ route('siswa.delete', [$siswa->uuid]) }}" method="POST" class="action-form">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-submit me-2">Submit</button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
-                                    </td>
+                                    </div>
+                                </td>
 
-                                </tr>
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -132,4 +122,5 @@
         event.preventDefault();
         document.getElementById('downloadExcelForm').submit();
     });
+
 </script>

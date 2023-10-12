@@ -3,20 +3,19 @@
 namespace Modules\Siswa\Http\Controllers;
 
 use App\Services\UserService;
+use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
-use Modules\Siswa\Entities\Siswa;
-use Modules\Siswa\Http\Requests\{
-    DownloadExcelActiveRequest,
-    UpdateSiswaRequest,
-    DownloadExcelGraduatedRequest,
-    DownloadPdfActiveRequest,
-    DownloadPdfGraduatedRequest
-};
-use Modules\Siswa\Services\SiswaService;
-use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
-use Modules\Siswa\Exports\{ExportSiswaActive, ExportSiswaGraduated};
+use Modules\Siswa\Entities\Siswa;
+use Modules\Siswa\Exports\ExportSiswaActive;
+use Modules\Siswa\Exports\ExportSiswaGraduated;
+use Modules\Siswa\Http\Requests\DownloadExcelActiveRequest;
+use Modules\Siswa\Http\Requests\DownloadExcelGraduatedRequest;
+use Modules\Siswa\Http\Requests\DownloadPdfActiveRequest;
+use Modules\Siswa\Http\Requests\DownloadPdfGraduatedRequest;
+use Modules\Siswa\Http\Requests\UpdateSiswaRequest;
+use Modules\Siswa\Services\SiswaService;
 
 class SiswaController extends Controller
 {
@@ -43,7 +42,7 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getListClassSiswa = $this->siswaService->getListSiswaClass();
 
-        if (!$getListClassSiswa) {
+        if (! $getListClassSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
@@ -52,7 +51,7 @@ class SiswaController extends Controller
 
     public function showSiswaClass($saveClassFromRoute)
     {
-        if (!is_numeric($saveClassFromRoute)) {
+        if (! is_numeric($saveClassFromRoute)) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -68,7 +67,7 @@ class SiswaController extends Controller
 
     public function showSiswaActive($saveClassFromRoute, $saveUuidFromRoute)
     {
-        if (!is_numeric($saveClassFromRoute) || !in_array($saveClassFromRoute, ['10', '11', '12'])) {
+        if (! is_numeric($saveClassFromRoute) || ! in_array($saveClassFromRoute, ['10', '11', '12'])) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -77,7 +76,7 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
 
-        if (!$getDataSiswa) {
+        if (! $getDataSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
@@ -88,7 +87,7 @@ class SiswaController extends Controller
     {
         $validateData = $request->validated();
 
-        if (!is_numeric($validateData['kelas']) || !in_array($validateData['kelas'], ['10', '11', '12'])) {
+        if (! is_numeric($validateData['kelas']) || ! in_array($validateData['kelas'], ['10', '11', '12'])) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -104,14 +103,14 @@ class SiswaController extends Controller
             'totalSiswaActive' => $totalSiswaActive,
         ]);
 
-        return $pdf->download('laporan pdf siswa kelas ' . $validateData['kelas'] . '.pdf');
+        return $pdf->download('laporan pdf siswa kelas '.$validateData['kelas'].'.pdf');
     }
 
     public function downloadExcelSiswaActive(DownloadExcelActiveRequest $request)
     {
         $validateData = $request->validated();
 
-        if (!is_numeric($validateData['kelas']) || !in_array($validateData['kelas'], ['10', '11', '12'])) {
+        if (! is_numeric($validateData['kelas']) || ! in_array($validateData['kelas'], ['10', '11', '12'])) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -121,7 +120,7 @@ class SiswaController extends Controller
             return abort(404);
         }
 
-        return ExportExcel::download(new ExportSiswaActive($validateData['kelas']), 'laporan siswa aktif kelas ' . $validateData['kelas'] . '.xlsx');
+        return ExportExcel::download(new ExportSiswaActive($validateData['kelas']), 'laporan siswa aktif kelas '.$validateData['kelas'].'.xlsx');
     }
 
     public function downloadPdfSiswaGraduated(DownloadPdfGraduatedRequest $request)
@@ -141,7 +140,7 @@ class SiswaController extends Controller
             'totalSiswaGraduated' => $totalSiswaGraduated,
         ]);
 
-        return $pdf->download('laporan pdf siswa lulus tahun ' . $validateData['tahun_lulus'] . '.pdf');
+        return $pdf->download('laporan pdf siswa lulus tahun '.$validateData['tahun_lulus'].'.pdf');
     }
 
     public function downloadExcelSiswaGraduated(DownloadExcelGraduatedRequest $request)
@@ -155,7 +154,7 @@ class SiswaController extends Controller
             return abort(404);
         }
 
-        return ExportExcel::download(new ExportSiswaGraduated($validateData['tahun_lulus']), 'laporan siswa lulus tahun ' . $validateData['tahun_lulus'] . '.xlsx');
+        return ExportExcel::download(new ExportSiswaGraduated($validateData['tahun_lulus']), 'laporan siswa lulus tahun '.$validateData['tahun_lulus'].'.xlsx');
     }
 
     public function getListSiswaGraduated()
@@ -181,7 +180,7 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
 
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
-        if (!$getDataSiswa) {
+        if (! $getDataSiswa) {
             return redirect()->route('siswa.graduated')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
@@ -194,7 +193,7 @@ class SiswaController extends Controller
         $this->siswaService->checkEditUuidOrNot($saveUuidFromRoute);
 
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
-        if (!$getDataSiswa) {
+        if (! $getDataSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
@@ -218,7 +217,7 @@ class SiswaController extends Controller
         $this->siswaService->checkDeleteUuidOrNot($saveUuidFromRoute);
 
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
-        if (!$getDataSiswa) {
+        if (! $getDataSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 

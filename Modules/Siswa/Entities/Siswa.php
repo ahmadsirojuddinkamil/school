@@ -10,14 +10,24 @@ class Siswa extends Model
 {
     use HasFactory;
 
-    protected static function newFactory()
+    protected static function SiswaActiveFactory()
     {
-        return \Modules\Siswa\Database\factories\SiswaFactory::new();
+        return \Modules\Siswa\Database\factories\SiswaActiveFactory::new();
     }
 
-    protected static function siswaGraduatedFactory()
+    protected static function SiswaGraduatedFactory()
     {
         return \Modules\Siswa\Database\factories\SiswaGraduatedFactory::new();
+    }
+
+    protected static function SiswaAbsenFactory()
+    {
+        return \Modules\Siswa\Database\factories\SiswaAbsenFactory::new();
+    }
+
+    protected static function AdminAbsenFactory()
+    {
+        return \Modules\Siswa\Database\factories\AdminAbsenFactory::new();
     }
 
     protected $fillable = [
