@@ -7,9 +7,12 @@ use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
-use Modules\Ppdb\Entities\{Ppdb, OpenPpdb};
+use Modules\Ppdb\Entities\OpenPpdb;
+use Modules\Ppdb\Entities\Ppdb;
 use Modules\Ppdb\Exports\ExportPpdb;
-use Modules\Ppdb\Http\Requests\{StorePpdbRequest, UpdatePpdbRequest, OpenOrClosePpdbRequest};
+use Modules\Ppdb\Http\Requests\OpenOrClosePpdbRequest;
+use Modules\Ppdb\Http\Requests\StorePpdbRequest;
+use Modules\Ppdb\Http\Requests\UpdatePpdbRequest;
 use Modules\Ppdb\Services\PpdbService;
 use Modules\Siswa\Entities\Siswa;
 
@@ -120,7 +123,7 @@ class PpdbController extends Controller
             return abort(404);
         }
 
-        return ExportExcel::download(new ExportPpdb($saveYearFromRoute), 'laporan ppdb tahun ' . $saveYearFromRoute . '.xlsx');
+        return ExportExcel::download(new ExportPpdb($saveYearFromRoute), 'laporan ppdb tahun '.$saveYearFromRoute.'.xlsx');
     }
 
     public function show($saveUuidFromRoute)
@@ -130,7 +133,7 @@ class PpdbController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
 
-        if (!$getDataUserPpdb) {
+        if (! $getDataUserPpdb) {
             return abort(404);
         }
 
@@ -145,7 +148,7 @@ class PpdbController extends Controller
 
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
 
-        if (!$getDataUserPpdb) {
+        if (! $getDataUserPpdb) {
             return abort(404);
         }
 
@@ -161,7 +164,7 @@ class PpdbController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
 
-        if (!$getDataUserPpdb) {
+        if (! $getDataUserPpdb) {
             return abort(404);
         }
 
@@ -186,7 +189,7 @@ class PpdbController extends Controller
 
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
 
-        if (!$getDataUserPpdb) {
+        if (! $getDataUserPpdb) {
             return abort(404);
         }
 

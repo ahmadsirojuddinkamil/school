@@ -62,7 +62,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/tahun-daftar/' . $ppdb->tahun_daftar);
+        $response = $this->get('/ppdb-data/tahun-daftar/'.$ppdb->tahun_daftar);
         $response->assertStatus(200);
         $response->assertViewIs('ppdb::pages.ppdb.show_year');
         $response->assertSeeText('PPDB tahun');
@@ -95,7 +95,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/tahun-daftar/' . $ppdb->tahun_daftar);
+        $response = $this->get('/ppdb-data/tahun-daftar/'.$ppdb->tahun_daftar);
         $response->assertStatus(404);
     }
 
@@ -125,7 +125,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/' . $ppdb->uuid);
+        $response = $this->get('/ppdb-data/'.$ppdb->uuid);
         $response->assertStatus(200);
         $response->assertViewIs('ppdb::pages.ppdb.show');
         $response->assertSeeText('Peserta PPDB Details');
@@ -151,7 +151,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/' . $ppdb->uuid);
+        $response = $this->get('/ppdb-data/'.$ppdb->uuid);
         $response->assertStatus(404);
     }
 

@@ -12,31 +12,23 @@ class UserService
     {
         $findUser = User::find(Auth::id());
 
-        if ($findUser) {
-            $roles = [
-                'siswa' => 'siswa',
-                'guru' => 'guru',
-                'admin' => 'admin',
-                'kepala_sekolah' => 'kepala_sekolah',
-            ];
+        $roles = [
+            'admin' => 'admin',
+            'guru' => 'guru',
+            'siswa' => 'siswa',
+            'kepala_sekolah' => 'kepala_sekolah',
+        ];
 
-            $roleToLoad = null;
+        $userRole = null;
 
-            foreach ($roles as $role => $value) {
-                if ($findUser->hasRole($role)) {
-                    $roleToLoad = $role;
-                    break;
-                }
+        foreach ($roles as $roleName) {
+            if ($findUser->hasRole($roleName)) {
+                $userRole = $roleName;
+                break;
             }
-
-            if ($roleToLoad) {
-                $findUser->load($roleToLoad);
-            }
-
-            return [$findUser, $roleToLoad];
         }
 
-        return null;
+        return [$findUser, $userRole];
     }
 
     public function createRoleAndUserAdmin()
@@ -61,6 +53,27 @@ class UserService
 
         $user = User::factory()->create();
         $user->assignRole('siswa');
+
+        return $user;
+    }
+
+    public function createUserSiswa()
+    {
+        $user = User::factory()->create();
+        $user->assignRole('siswa');
+
+        return $user;
+    }
+
+    public function createRoleAndUserGuru()
+    {
+        Role::create(['name' => 'siswa']);
+        Role::create(['name' => 'guru']);
+        Role::create(['name' => 'admin']);
+        Role::create(['name' => 'kepala_sekolah']);
+
+        $user = User::factory()->create();
+        $user->assignRole('guru');
 
         return $user;
     }

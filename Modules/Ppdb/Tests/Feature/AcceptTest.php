@@ -25,7 +25,7 @@ class AcceptTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/' . $ppdb->uuid . '/accept');
+        $response = $this->post('/ppdb-data/'.$ppdb->uuid.'/accept');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Peserta ppdb berhasil menjadi siswa!', session('success'));
@@ -37,7 +37,7 @@ class AcceptTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/' . $ppdb->uuid . '/accept');
+        $response = $this->post('/ppdb-data/'.$ppdb->uuid.'/accept');
         $response->assertStatus(404);
     }
 

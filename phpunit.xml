@@ -9,11 +9,13 @@
             <directory>tests/Unit</directory>
             <directory>Modules/Ppdb/Tests/Unit</directory>
             <directory>Modules/Siswa/Tests/Unit</directory>
+            <directory>Modules/Absen/Tests/Unit</directory>
         </testsuite>
         <testsuite name="Feature">
             <directory>tests/Feature</directory>
             <directory>Modules/Ppdb/Tests/Feature</directory>
             <directory>Modules/Siswa/Tests/Feature</directory>
+            <directory>Modules/Absen/Tests/Feature</directory>
         </testsuite>
     </testsuites>
     <source>

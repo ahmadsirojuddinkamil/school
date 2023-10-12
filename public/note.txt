@@ -1,0 +1,5 @@
+command:
+1. php artisan serve
+2. npm run dev 
+3. php artisan queue:work 
+4. php artisan schedule:work

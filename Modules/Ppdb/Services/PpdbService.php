@@ -6,6 +6,7 @@ use App\Models\{User};
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\File;
+use Modules\Absen\Entities\Absen;
 use Modules\Ppdb\Entities\OpenPpdb;
 use Modules\Ppdb\Entities\Ppdb;
 use Modules\Ppdb\Jobs\SendEmailPpdbJob;
@@ -86,14 +87,14 @@ class PpdbService
 
     public function checkUuidOrNot($saveUuidFromController)
     {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromController)) {
+        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromController)) {
             return abort(404);
         }
     }
 
     public function checkValidYear($saveYearFromController)
     {
-        if (!preg_match('/^\d{4}$/', $saveYearFromController)) {
+        if (! preg_match('/^\d{4}$/', $saveYearFromController)) {
             return abort(404);
         }
     }
@@ -121,7 +122,7 @@ class PpdbService
             'email' => $getPpdb->email,
             'nisn' => $getPpdb->nisn,
             'asal_sekolah' => $getPpdb->asal_sekolah,
-            'kelas' => 1,
+            'kelas' => 10,
             'alamat' => $getPpdb->alamat,
             'telpon_siswa' => $getPpdb->telpon_siswa,
             'jenis_kelamin' => $getPpdb->jenis_kelamin,
@@ -145,6 +146,15 @@ class PpdbService
 
         $siswa->update([
             'user_id' => $user->id,
+        ]);
+
+        Absen::create([
+            'uuid' => Uuid::uuid4()->toString(),
+            'name' => $siswa->nama_lengkap,
+            'nisn' => $siswa->nisn,
+            'status' => $siswa->kelas,
+            'persetujuan' => 'setuju',
+            'kehadiran' => 'hadir',
         ]);
 
         // send email

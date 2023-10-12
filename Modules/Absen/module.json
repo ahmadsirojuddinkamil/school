@@ -1,0 +1,11 @@
+{
+    "name": "Absen",
+    "alias": "absen",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Absen\\Providers\\AbsenServiceProvider"
+    ],
+    "files": []
+}

@@ -27,20 +27,28 @@ class DatabaseSeeder extends Seeder
         Role::create(['name' => 'kepala_sekolah']);
 
         $admin = \App\Models\User::factory()->create([
-            'name' => 'admin',
+            'name' => 'rizki admin',
             'uuid' => Uuid::uuid4()->toString(),
             'email' => 'admin@example.com',
             'password' => '12345678',
         ]);
 
         $siswa = \App\Models\User::factory()->create([
-            'name' => 'siswa',
+            'name' => 'siska siswa',
             'uuid' => Uuid::uuid4()->toString(),
             'email' => 'siswa@example.com',
             'password' => '12345678',
         ]);
 
+        $guru = \App\Models\User::factory()->create([
+            'name' => 'tono guru',
+            'uuid' => Uuid::uuid4()->toString(),
+            'email' => 'guru@example.com',
+            'password' => '12345678',
+        ]);
+
         $admin->assignRole('admin');
         $siswa->assignRole('siswa');
+        $guru->assignRole('guru');
     }
 }
