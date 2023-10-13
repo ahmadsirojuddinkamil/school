@@ -25,7 +25,7 @@ class DeleteTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->delete('/ppdb-data/'.$ppdb->uuid);
+        $response = $this->delete('/data-ppdb/' . $ppdb->uuid);
         $response->assertStatus(302);
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Data ppdb sudah berhasil dihapus!', session('success'));
@@ -37,7 +37,7 @@ class DeleteTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->delete('/ppdb-data/'.$ppdb->uuid);
+        $response = $this->delete('/data-ppdb/' . $ppdb->uuid);
         $response->assertStatus(404);
     }
 
@@ -47,7 +47,7 @@ class DeleteTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->delete('/ppdb-data/uuid');
+        $response = $this->delete('/data-ppdb/uuid');
         $response->assertStatus(404);
     }
 
@@ -57,7 +57,7 @@ class DeleteTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->delete('/ppdb-data/3c07bdfc-c6cd-44a7-85ef-ef4a69724b56');
+        $response = $this->delete('/data-ppdb/3c07bdfc-c6cd-44a7-85ef-ef4a69724b56');
         $response->assertStatus(404);
     }
 }

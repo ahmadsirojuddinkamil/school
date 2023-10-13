@@ -108,7 +108,7 @@ class AbsenService
     public function createPdfLaporanAbsenSiswa($saveDataAbsenFromObjectCall, $saveClassFromCaller)
     {
         foreach ($saveDataAbsenFromObjectCall as $laporan) {
-            $pdf = DomPDF::loadView('absen::layouts.absen.pdf_admin', [
+            $pdf = DomPDF::loadView('absen::layouts.admin.siswa.pdf', [
                 'name' => $laporan['dataAbsen'][0]->name,
                 'totalAbsen' => $laporan['totalAbsen'],
                 'dataAbsen' => $laporan['dataAbsen'],
@@ -119,7 +119,7 @@ class AbsenService
                 'totalTidakHadir' => $laporan['totalTidakHadir'],
             ]);
 
-            $pdf->save(public_path('storage/document_laporan_absen_kelas_'.$saveClassFromCaller.'/'.$laporan['dataAbsen'][0]->name.'.pdf'));
+            $pdf->save(public_path('storage/document_laporan_absen_kelas_' . $saveClassFromCaller . '/' . $laporan['dataAbsen'][0]->name . '.pdf'));
         }
 
         return 'success';
@@ -127,8 +127,8 @@ class AbsenService
 
     public function checkUuidOrNot($saveUuidFromCaller)
     {
-        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
-            return redirect('/absen-data')->with(['error' => 'Data siswa tidak ditemukan!']);
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
+            return redirect('/data-absen')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
     }
 }

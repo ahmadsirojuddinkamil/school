@@ -25,7 +25,7 @@ class AcceptTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/'.$ppdb->uuid.'/accept');
+        $response = $this->post('/data-ppdb/' . $ppdb->uuid . '/accept');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Peserta ppdb berhasil menjadi siswa!', session('success'));
@@ -37,7 +37,7 @@ class AcceptTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/'.$ppdb->uuid.'/accept');
+        $response = $this->post('/data-ppdb/' . $ppdb->uuid . '/accept');
         $response->assertStatus(404);
     }
 
@@ -47,7 +47,7 @@ class AcceptTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/uuid/accept');
+        $response = $this->post('/data-ppdb/uuid/accept');
         $response->assertStatus(404);
     }
 
@@ -57,7 +57,7 @@ class AcceptTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/482401ca-cec5-4fb8-8bc6-fc74070073be/accept');
+        $response = $this->post('/data-ppdb/482401ca-cec5-4fb8-8bc6-fc74070073be/accept');
         $response->assertStatus(404);
     }
 }

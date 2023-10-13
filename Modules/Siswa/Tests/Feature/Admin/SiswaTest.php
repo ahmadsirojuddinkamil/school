@@ -24,9 +24,9 @@ class SiswaTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->get('/siswa-data/status');
+        $response = $this->get('/data-siswa/status');
         $response->assertStatus(200);
-        $response->assertViewIs('siswa::pages.siswa.status');
+        $response->assertViewIs('siswa::layouts.admin.status');
         $response->assertSeeText('Status Siswa');
         $response->assertViewHas('dataUserAuth');
 
@@ -46,7 +46,7 @@ class SiswaTest extends TestCase
         $this->actingAs($user);
 
         Siswa::SiswaActiveFactory()->create();
-        $response = $this->get('/siswa-data/status');
+        $response = $this->get('/data-siswa/status');
         $response->assertStatus(404);
     }
 }

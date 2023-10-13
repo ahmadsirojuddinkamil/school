@@ -28,11 +28,11 @@ class DeleteReportAbsenSiswaTest extends TestCase
 
         Siswa::SiswaAbsenFactory()->create();
         Absen::AbsenSiswaFactory()->create();
-        $response = $this->delete('/absen-data/report', [
+        $response = $this->delete('/data-absen/report', [
             'nisn' => $user->siswa->nisn,
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Data laporan absen berhasil dihapus!', session('success'));
     }
@@ -44,7 +44,7 @@ class DeleteReportAbsenSiswaTest extends TestCase
 
         Siswa::SiswaAbsenFactory()->create();
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->delete('/absen-data/report', [
+        $response = $this->delete('/data-absen/report', [
             'nisn' => $user->siswa->nisn,
         ]);
         $response->assertStatus(404);
@@ -57,7 +57,7 @@ class DeleteReportAbsenSiswaTest extends TestCase
 
         Siswa::SiswaAbsenFactory()->create();
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->delete('/absen-data/report', [
+        $response = $this->delete('/data-absen/report', [
             'nisn' => '',
         ]);
         $response->assertStatus(302);
@@ -71,11 +71,11 @@ class DeleteReportAbsenSiswaTest extends TestCase
 
         Siswa::SiswaAbsenFactory()->create();
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->delete('/absen-data/report', [
+        $response = $this->delete('/data-absen/report', [
             'nisn' => '0382304230',
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data laporan tidak ditemukan!', session('error'));
     }

@@ -28,12 +28,12 @@ class DeleteDateAbsenSiswaTest extends TestCase
 
         Siswa::SiswaAbsenFactory()->create();
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->delete('/absen-data/tanggal', [
+        $response = $this->delete('/data-absen/tanggal', [
             'nisn' => $user->siswa->nisn,
             'tanggal' => $absen->created_at->format('Y-m-d H:i:s'),
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Data tanggal absen berhasil dihapus!', session('success'));
     }
@@ -45,7 +45,7 @@ class DeleteDateAbsenSiswaTest extends TestCase
 
         Siswa::SiswaAbsenFactory()->create();
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->delete('/absen-data/tanggal', [
+        $response = $this->delete('/data-absen/tanggal', [
             'nisn' => $user->siswa->nisn,
             'tanggal' => $absen->created_at->format('Y-m-d H:i:s'),
         ]);
@@ -59,7 +59,7 @@ class DeleteDateAbsenSiswaTest extends TestCase
 
         Siswa::SiswaAbsenFactory()->create();
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->delete('/absen-data/tanggal', [
+        $response = $this->delete('/data-absen/tanggal', [
             'nisn' => '',
             'tanggal' => '',
         ]);
@@ -74,12 +74,12 @@ class DeleteDateAbsenSiswaTest extends TestCase
 
         Siswa::SiswaAbsenFactory()->create();
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->delete('/absen-data/tanggal', [
+        $response = $this->delete('/data-absen/tanggal', [
             'nisn' => '0382304230',
             'tanggal' => $absen->created_at->format('Y-m-d H:i:s'),
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data tanggal absen tidak ditemukan!', session('error'));
     }

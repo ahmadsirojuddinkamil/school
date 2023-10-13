@@ -8,12 +8,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Modules\Absen\Entities\Absen;
-use Modules\Absen\Http\Requests\DeleteReportAbsenRequest;
-use Modules\Absen\Http\Requests\DeleteTanggalAbsenRequest;
-use Modules\Absen\Http\Requests\DownloadPdfAbsenClassRequest;
-use Modules\Absen\Http\Requests\DownloadPdfAbsenRequest;
-use Modules\Absen\Http\Requests\StoreAbsenRequest;
-use Modules\Absen\Http\Requests\UpdateDateAbsenSiswa;
+use Modules\Absen\Http\Requests\{DeleteReportAbsenRequest, DeleteTanggalAbsenRequest, DownloadPdfAbsenRequest, StoreAbsenRequest, DownloadPdfAbsenClassRequest, UpdateDateAbsenSiswa};
 use Modules\Absen\Services\AbsenService;
 use Modules\Siswa\Services\SiswaService;
 use ZipArchive;
@@ -45,12 +40,12 @@ class AbsenController extends Controller
         $today = now()->format('Y-m-d');
 
         if ($checkAbsenOrNot && $dataUserAuth[0]->siswa->nisn == $checkAbsenOrNot->nisn && $checkAbsenOrNot->created_at->format('Y-m-d') == $today) {
-            return view('absen::pages.absen.page', compact('dataUserAuth', 'checkAbsenOrNot'))->with('success', 'Anda sudah melakukan absen!');
+            return view('absen::layouts.create_absen', compact('dataUserAuth', 'checkAbsenOrNot'))->with('success', 'Anda sudah melakukan absen!');
         }
 
         $checkAbsenOrNot = null;
 
-        return view('absen::pages.absen.page', compact('dataUserAuth', 'checkAbsenOrNot'));
+        return view('absen::layouts.create_absen', compact('dataUserAuth', 'checkAbsenOrNot'));
     }
 
     public function store(StoreAbsenRequest $request)
@@ -83,7 +78,7 @@ class AbsenController extends Controller
             return redirect('/dashboard')->with('error', 'Data absen belum ada!');
         }
 
-        return view('absen::pages.absen.laporan', compact('dataUserAuth', 'getDataAbsen'));
+        return view('absen::layouts.laporan', compact('dataUserAuth', 'getDataAbsen'));
     }
 
     public function downloadPdfLaporanAbsen(DownloadPdfAbsenRequest $request)
@@ -97,7 +92,7 @@ class AbsenController extends Controller
             return abort(404);
         }
 
-        $pdf = DomPDF::loadView('absen::layouts.absen.pdf_user', [
+        $pdf = DomPDF::loadView('absen::layouts.pdf_user', [
             'dataAbsen' => $getDataAbsen,
             'totalAbsen' => $listKehadiran['totalAbsen'],
             'name' => Auth::user()->name,
@@ -115,7 +110,7 @@ class AbsenController extends Controller
     {
         $dataUserAuth = $this->userService->getProfileUser();
 
-        return view('absen::pages.absen.siswa.list_class', compact('dataUserAuth'));
+        return view('absen::layouts.admin.siswa.list_class', compact('dataUserAuth'));
     }
 
     public function showClass($saveClassFromObjectCall)
@@ -142,20 +137,20 @@ class AbsenController extends Controller
             $dataAbsen[] = $getDataAbsen;
         }
 
-        return view('absen::pages.absen.siswa.show_class', compact('dataUserAuth', 'saveClassFromObjectCall', 'dataAbsen', 'totalAbsen'));
+        return view('absen::layouts.admin.siswa.show_class', compact('dataUserAuth', 'saveClassFromObjectCall', 'dataAbsen', 'totalAbsen'));
     }
 
     public function showDataSiswa($saveNisnFromObjectCall)
     {
         if (!is_string($saveNisnFromObjectCall) || strlen($saveNisnFromObjectCall) > 10) {
-            return redirect('/absen-data')->with(['error' => 'Data absen tidak ditemukan!']);
+            return redirect('/data-absen')->with(['error' => 'Data absen tidak ditemukan!']);
         }
 
         $dataUserAuth = $this->userService->getProfileUser();
         $getDataAbsen = Absen::where('nisn', $saveNisnFromObjectCall)->latest()->get();
 
         if ($getDataAbsen->isEmpty()) {
-            return redirect('/absen-data')->with(['error' => 'Data absen tidak ditemukan!']);
+            return redirect('/data-absen')->with(['error' => 'Data absen tidak ditemukan!']);
         }
 
         $listKehadiran = $this->absenService->getTotalKehadiran($getDataAbsen);
@@ -163,7 +158,7 @@ class AbsenController extends Controller
             return $date->format('Y-m-d H:i:s');
         });
 
-        return view('absen::pages.absen.siswa.show_data', compact('dataUserAuth', 'getDataAbsen', 'listKehadiran', 'listTanggalAbsen'));
+        return view('absen::layouts.admin.siswa.show_report', compact('dataUserAuth', 'getDataAbsen', 'listKehadiran', 'listTanggalAbsen'));
     }
 
     public function deleteLaporanAbsenSiswa(DeleteReportAbsenRequest $request)
@@ -173,14 +168,14 @@ class AbsenController extends Controller
         $getDataAbsen = Absen::where('nisn', $validateData['nisn'])->latest()->get();
 
         if ($getDataAbsen->isEmpty()) {
-            return redirect('/absen-data')->with('error', 'Data laporan tidak ditemukan!');
+            return redirect('/data-absen')->with('error', 'Data laporan tidak ditemukan!');
         }
 
         foreach ($getDataAbsen as $absen) {
             $absen->delete();
         }
 
-        return redirect('/absen-data')->with('success', 'Data laporan absen berhasil dihapus!');
+        return redirect('/data-absen')->with('success', 'Data laporan absen berhasil dihapus!');
     }
 
     public function downloadZipLaporanAbsenClass(DownloadPdfAbsenClassRequest $request)
@@ -188,23 +183,23 @@ class AbsenController extends Controller
         $validateData = $request->validated();
 
         if (!in_array($validateData['kelas'], ['10', '11', '12'])) {
-            return redirect('/absen-data')->with('error', 'Kelas tidak di temukan!');
+            return redirect('/data-absen')->with('error', 'Kelas tidak di temukan!');
         }
 
         // Star PDF
         $getListNisn = Absen::where('status', $validateData['kelas'])->distinct()->pluck('nisn');
         if ($getListNisn->isEmpty()) {
-            return redirect('/absen-data')->with('error', 'Data absen tidak ada!');
+            return redirect('/data-absen')->with('error', 'Data absen tidak ada!');
         }
 
         $listLaporanAbsen = $this->absenService->getListLaporanAbsenSiswa($getListNisn);
         if (empty($listLaporanAbsen)) {
-            return redirect('/absen-data')->with('error', 'Data absen tidak ada!');
+            return redirect('/data-absen')->with('error', 'Data absen tidak ada!');
         }
 
         $createPdfLaporanAbsenSiswa = $this->absenService->createPdfLaporanAbsenSiswa($listLaporanAbsen, $validateData['kelas']);
         if ($createPdfLaporanAbsenSiswa != 'success') {
-            return redirect('/absen-data/' . $validateData['kelas'])->with('error', 'Gagal membuat arsip PDF!');
+            return redirect('/data-absen/' . $validateData['kelas'])->with('error', 'Gagal membuat arsip PDF!');
         }
         // End PDF
 
@@ -213,7 +208,7 @@ class AbsenController extends Controller
         $fileCount = count(array_diff(scandir($folderPath), ['.', '..']));
 
         if ($fileCount < 1) {
-            return redirect('/absen-data/' . $validateData['kelas'])->with('error', 'Laporan absen tidak ada!');
+            return redirect('/data-absen/' . $validateData['kelas'])->with('error', 'Laporan absen tidak ada!');
         }
 
         $zipFileName = 'laporan_absen_kelas_' . $validateData['kelas'] . '.zip';
@@ -240,29 +235,29 @@ class AbsenController extends Controller
     public function editTanggalAbsenSiswa($saveUuidFromCaller, $saveDateFromCaller)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
-            return redirect('/absen-data')->with(['error' => 'Data tanggal absen tidak ditemukan!']);
+            return redirect('/data-absen')->with(['error' => 'Data tanggal absen tidak ditemukan!']);
         }
 
         $timestamp = strtotime($saveDateFromCaller);
 
         if ($timestamp === false) {
-            return redirect('/absen-data')->with('error', 'Data tanggal absen tidak ditemukan!');
+            return redirect('/data-absen')->with('error', 'Data tanggal absen tidak ditemukan!');
         }
 
         $dataUserAuth = $this->userService->getProfileUser();
         $getDataAbsen = Absen::where('uuid', $saveUuidFromCaller)->where('created_at', $saveDateFromCaller)->first();
 
         if (!$getDataAbsen) {
-            return redirect('/absen-data')->with('error', 'Data tanggal absen tidak ditemukan!');
+            return redirect('/data-absen')->with('error', 'Data tanggal absen tidak ditemukan!');
         }
 
-        return view('absen::pages.absen.siswa.edit_date', compact('dataUserAuth', 'getDataAbsen', 'saveDateFromCaller'));
+        return view('absen::layouts.admin.siswa.edit_date', compact('dataUserAuth', 'getDataAbsen', 'saveDateFromCaller'));
     }
 
     public function updateTanggalAbsenSiswa($saveUuidFromCaller, UpdateDateAbsenSiswa $request)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
-            return redirect('/absen-data')->with(['error' => 'Data tanggal absen tidak ditemukan!']);
+            return redirect('/data-absen')->with(['error' => 'Data tanggal absen tidak ditemukan!']);
         }
 
         $validateData = $request->validated();
@@ -272,14 +267,14 @@ class AbsenController extends Controller
             ->first();
 
         if (!$getDataAbsen) {
-            return redirect('/absen-data')->with('error', 'Data tanggal absen tidak ditemukan!');
+            return redirect('/data-absen')->with('error', 'Data tanggal absen tidak ditemukan!');
         }
 
         $getDataAbsen->update([
             'kehadiran' => $validateData['kehadiran'],
         ]);
 
-        return redirect('/absen-data')->with('success', 'Berhasil update data absen!');
+        return redirect('/data-absen')->with('success', 'Berhasil update data absen!');
     }
 
     public function deleteTanggalAbsenSiswa(DeleteTanggalAbsenRequest $request)
@@ -292,11 +287,11 @@ class AbsenController extends Controller
             ->first();
 
         if (!$getDataAbsen) {
-            return redirect('/absen-data')->with('error', 'Data tanggal absen tidak ditemukan!');
+            return redirect('/data-absen')->with('error', 'Data tanggal absen tidak ditemukan!');
         }
 
         $getDataAbsen->delete();
 
-        return redirect('/absen-data')->with('success', 'Data tanggal absen berhasil dihapus!');
+        return redirect('/data-absen')->with('success', 'Data tanggal absen berhasil dihapus!');
     }
 }

@@ -26,11 +26,11 @@ class UpdateAbsenTest extends TestCase
         $this->actingAs($user);
 
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->put('/absen-data/date/'.$absen->uuid, [
+        $response = $this->put('/data-absen/date/' . $absen->uuid, [
             'kehadiran' => 'hadir',
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Berhasil update data absen!', session('success'));
     }
@@ -41,7 +41,7 @@ class UpdateAbsenTest extends TestCase
         $this->actingAs($user);
 
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->put('/absen-data/date/'.$absen->uuid, [
+        $response = $this->put('/data-absen/date/' . $absen->uuid, [
             'kehadiran' => 'hadir',
         ]);
         $response->assertStatus(404);
@@ -53,7 +53,7 @@ class UpdateAbsenTest extends TestCase
         $this->actingAs($user);
 
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->put('/absen-data/date/'.$absen->uuid, [
+        $response = $this->put('/data-absen/date/' . $absen->uuid, [
             'kehadiran' => '',
         ]);
         $response->assertStatus(302);
@@ -66,11 +66,11 @@ class UpdateAbsenTest extends TestCase
         $this->actingAs($user);
 
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->put('/absen-data/date/uuid', [
+        $response = $this->put('/data-absen/date/uuid', [
             'kehadiran' => 'hadir',
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data tanggal absen tidak ditemukan!', session('error'));
     }
@@ -80,11 +80,11 @@ class UpdateAbsenTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->put('/absen-data/date/c11a8da2-6aa6-47cf-94b6-13a2cbea4993', [
+        $response = $this->put('/data-absen/date/c11a8da2-6aa6-47cf-94b6-13a2cbea4993', [
             'kehadiran' => 'hadir',
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data tanggal absen tidak ditemukan!', session('error'));
     }

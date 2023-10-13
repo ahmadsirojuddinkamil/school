@@ -26,7 +26,7 @@ class RegistrationTest extends TestCase
 
         $response = $this->get('/ppdb');
         $response->assertStatus(200);
-        $response->assertViewIs('ppdb::pages.ppdb.register');
+        $response->assertViewIs('ppdb::layouts.register');
         $response->assertSeeText('Form Data PPDB');
 
         $response->assertViewHas('timeBox', function ($timeBox) {

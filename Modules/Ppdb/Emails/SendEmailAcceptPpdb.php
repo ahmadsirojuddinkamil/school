@@ -29,7 +29,7 @@ class SendEmailAcceptPpdb extends Mailable
      */
     public function build()
     {
-        return $this->view('ppdb::layouts.ppdb.message_email')
+        return $this->view('ppdb::layouts.admin.message_email')
             ->subject('Selamat, Anda diterima dalam PPDB sekolah!')
             ->with([
                 'nama' => $this->namaSiswa,

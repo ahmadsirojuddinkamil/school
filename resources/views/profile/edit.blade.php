@@ -2,30 +2,30 @@
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
             {{ __('Profile') }}
-        </h2>
-    </x-slot>
+</h2>
+</x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-profile-information-form')
-                </div>
+<div class="py-12">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+            <div class="max-w-xl">
+                @include('profile.partials.update-profile-information-form')
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.update-password-form')
-                </div>
+        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+            <div class="max-w-xl">
+                @include('profile.partials.update-password-form')
             </div>
+        </div>
 
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
-                    @include('profile.partials.delete-user-form')
-                </div>
+        <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
+            <div class="max-w-xl">
+                @include('profile.partials.delete-user-form')
             </div>
         </div>
     </div>
+</div>
 </x-app-layout> --}}
 
 <!DOCTYPE html>
@@ -39,26 +39,27 @@
 </head>
 
 <body>
-    @include('dashboard::bases.dashboard.css')
-    @include('dashboard::bases.dashboard.js')
+    @include('dashboard::bases.css')
+    @include('dashboard::bases.js')
 
     <div id="global-loader">
         <div class="whirly-loader"> </div>
     </div>
 
     <div class="main-wrapper">
-        @include('dashboard::layouts.dashboard.header')
-        @include('dashboard::layouts.dashboard.sidebar')
+        @include('dashboard::layouts.header')
+        @include('dashboard::layouts.sidebar')
 
         @if (session()->has('status'))
-            <script>
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Berhasil!',
-                    text: "{{ session('status') }}",
-                    confirmButtonText: 'OK'
-                });
-            </script>
+        <script>
+            Swal.fire({
+                icon: 'success'
+                , title: 'Berhasil!'
+                , text: "{{ session('status') }}"
+                , confirmButtonText: 'OK'
+            });
+
+        </script>
         @endif
 
         <div class="page-wrapper">
@@ -83,7 +84,7 @@
                                         <input type="text" value="{{ $user->name }}" name="name" required>
                                     </div>
                                     @error('name')
-                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
 
@@ -93,7 +94,7 @@
                                         <input type="text" value="{{ $user->email }}" name="email" required>
                                     </div>
                                     @error('email')
-                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    <div class="alert alert-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
 
@@ -128,7 +129,7 @@
                                             <span class="fas toggle-password fa-eye-slash"></span>
                                         </div>
                                         @error('current_password')
-                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
@@ -141,7 +142,7 @@
                                             <span class="fas toggle-password fa-eye-slash"></span>
                                         </div>
                                         @error('password')
-                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
@@ -150,12 +151,11 @@
                                     <div class="form-group">
                                         <label>Password Konfirmasi</label>
                                         <div class="pass-group">
-                                            <input type="password" class="pass-input" name="password_confirmation"
-                                                required>
+                                            <input type="password" class="pass-input" name="password_confirmation" required>
                                             <span class="fas toggle-password fa-eye-slash"></span>
                                         </div>
                                         @error('password_confirmation')
-                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
@@ -187,23 +187,19 @@
                                         <label>Foto Profile</label>
 
                                         <div class="d-flex justify-content-center mb-2 image-preview">
-                                            <img src="{{ $dataUserAuth[0]->foto_profile ? $dataUserAuth[0]->foto_profile : 'https://www.its.ac.id/aktuaria/wp-content/uploads/sites/100/2018/03/user.png' }}"
-                                                alt="preview foto profile" id="image_preview" height="200"
-                                                width="200" style="display: none;">
+                                            <img src="{{ $dataUserAuth[0]->foto_profile ? $dataUserAuth[0]->foto_profile : 'https://www.its.ac.id/aktuaria/wp-content/uploads/sites/100/2018/03/user.png' }}" alt="preview foto profile" id="image_preview" height="200" width="200" style="display: none;">
                                         </div>
 
                                         <div class="image-upload">
-                                            <input type="file" name="foto_profile" id="foto_profile_input"
-                                                accept="image/jpeg,image/png" max="3072" required>
+                                            <input type="file" name="foto_profile" id="foto_profile_input" accept="image/jpeg,image/png" max="3072" required>
 
                                             <div class="image-uploads">
-                                                <img src="{{ asset('assets/dashboard/img/icons/upload.svg') }}"
-                                                    alt="img">
+                                                <img src="{{ asset('assets/dashboard/img/icons/upload.svg') }}" alt="img">
                                                 <h4>Drag and drop a file to upload</h4>
                                             </div>
                                         </div>
                                         @error('foto_profile')
-                                            <div class="alert alert-danger">{{ $message }}</div>
+                                        <div class="alert alert-danger">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
@@ -274,4 +270,5 @@
             imagePreview.style.display = "none";
         });
     });
+
 </script>
