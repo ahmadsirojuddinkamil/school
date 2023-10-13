@@ -7,12 +7,9 @@ use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
-use Modules\Ppdb\Entities\OpenPpdb;
-use Modules\Ppdb\Entities\Ppdb;
+use Modules\Ppdb\Entities\{OpenPpdb, Ppdb};
 use Modules\Ppdb\Exports\ExportPpdb;
-use Modules\Ppdb\Http\Requests\OpenOrClosePpdbRequest;
-use Modules\Ppdb\Http\Requests\StorePpdbRequest;
-use Modules\Ppdb\Http\Requests\UpdatePpdbRequest;
+use Modules\Ppdb\Http\Requests\{OpenOrClosePpdbRequest, StorePpdbRequest, UpdatePpdbRequest};
 use Modules\Ppdb\Services\PpdbService;
 use Modules\Siswa\Entities\Siswa;
 
@@ -32,7 +29,7 @@ class PpdbController extends Controller
     {
         $timeBox = $this->ppdbService->getEditTime();
 
-        return view('ppdb::pages.ppdb.register', compact('timeBox'));
+        return view('ppdb::layouts.register', compact('timeBox'));
     }
 
     public function store(StorePpdbRequest $request)
@@ -60,7 +57,7 @@ class PpdbController extends Controller
         $timeBox = $this->ppdbService->getOpenPpdbTime();
         $openOrClosePpdb = OpenPpdb::first();
 
-        return view('ppdb::pages.ppdb.year', compact('dataUserAuth', 'listYearPpdb', 'timeBox', 'openOrClosePpdb'));
+        return view('ppdb::layouts.admin.year', compact('dataUserAuth', 'listYearPpdb', 'timeBox', 'openOrClosePpdb'));
     }
 
     public function openPpdb(OpenOrClosePpdbRequest $request)
@@ -91,7 +88,7 @@ class PpdbController extends Controller
             return abort(404);
         }
 
-        return view('ppdb::pages.ppdb.show_year', compact('dataUserAuth', 'getDataPpdb', 'totalDataPpdb', 'saveYearFromRoute'));
+        return view('ppdb::layouts.admin.show_year', compact('dataUserAuth', 'getDataPpdb', 'totalDataPpdb', 'saveYearFromRoute'));
     }
 
     public function downloadPdf($saveYearFromRoute)
@@ -105,7 +102,7 @@ class PpdbController extends Controller
             return abort(404);
         }
 
-        $pdf = DomPDF::loadView('ppdb::layouts.ppdb.pdf', [
+        $pdf = DomPDF::loadView('ppdb::layouts.admin.pdf', [
             'getDataPpdb' => $getDataPpdb,
             'totalDataPpdb' => $totalDataPpdb,
         ]);
@@ -123,7 +120,7 @@ class PpdbController extends Controller
             return abort(404);
         }
 
-        return ExportExcel::download(new ExportPpdb($saveYearFromRoute), 'laporan ppdb tahun '.$saveYearFromRoute.'.xlsx');
+        return ExportExcel::download(new ExportPpdb($saveYearFromRoute), 'laporan ppdb tahun ' . $saveYearFromRoute . '.xlsx');
     }
 
     public function show($saveUuidFromRoute)
@@ -133,13 +130,13 @@ class PpdbController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
 
-        if (! $getDataUserPpdb) {
+        if (!$getDataUserPpdb) {
             return abort(404);
         }
 
         $checkSiswaOrNot = Siswa::where('nisn', $getDataUserPpdb->nisn)->exists();
 
-        return view('ppdb::pages.ppdb.show', compact('dataUserAuth', 'getDataUserPpdb', 'checkSiswaOrNot'));
+        return view('ppdb::layouts.admin.show', compact('dataUserAuth', 'getDataUserPpdb', 'checkSiswaOrNot'));
     }
 
     public function accept($saveUuidFromRoute)
@@ -148,7 +145,7 @@ class PpdbController extends Controller
 
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
 
-        if (! $getDataUserPpdb) {
+        if (!$getDataUserPpdb) {
             return abort(404);
         }
 
@@ -164,13 +161,13 @@ class PpdbController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
 
-        if (! $getDataUserPpdb) {
+        if (!$getDataUserPpdb) {
             return abort(404);
         }
 
         $timeBox = $this->ppdbService->getEditTime();
 
-        return view('ppdb::pages.ppdb.edit', compact('dataUserAuth', 'getDataUserPpdb', 'timeBox'));
+        return view('ppdb::layouts.admin.edit', compact('dataUserAuth', 'getDataUserPpdb', 'timeBox'));
     }
 
     public function update(UpdatePpdbRequest $request, $saveUuidFromRoute)
@@ -189,7 +186,7 @@ class PpdbController extends Controller
 
         $getDataUserPpdb = Ppdb::where('uuid', $saveUuidFromRoute)->first();
 
-        if (! $getDataUserPpdb) {
+        if (!$getDataUserPpdb) {
             return abort(404);
         }
 

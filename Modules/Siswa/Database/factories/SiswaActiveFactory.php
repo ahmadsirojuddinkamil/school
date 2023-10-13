@@ -22,7 +22,6 @@ class SiswaActiveFactory extends Factory
     public function definition()
     {
         $faker = \Faker\Factory::create('id_ID');
-        $uniqueNisnValues = [];
 
         return [
             'uuid' => Uuid::uuid4()->toString(),
@@ -33,7 +32,7 @@ class SiswaActiveFactory extends Factory
             'asal_sekolah' => $faker->city,
             'kelas' => $faker->shuffle(['10', '11', '12'])[1],
             'alamat' => $faker->city,
-            'telpon_siswa' => '0'.$faker->unique()->numberBetween(821, 899).$faker->randomNumber(6),
+            'telpon_siswa' => '0' . $faker->unique()->numberBetween(821, 899) . $faker->randomNumber(6),
             'jenis_kelamin' => $faker->randomElement(['laki-laki', 'perempuan']),
             'tempat_lahir' => $faker->city,
             'tanggal_lahir' => $faker->dateTimeBetween('-21 years', 'now')->format('Y-m-d'),
@@ -42,7 +41,7 @@ class SiswaActiveFactory extends Factory
             'jurusan' => $faker->randomElement(['teknik komputer jaringan', 'rekayasa perangkat lunak', 'multimedia']),
             'nama_ayah' => $faker->name('male'),
             'nama_ibu' => $faker->name('female'),
-            'telpon_orang_tua' => '0'.$faker->unique()->numberBetween(821, 899).$faker->randomNumber(6),
+            'telpon_orang_tua' => '0' . $faker->unique()->numberBetween(821, 899) . $faker->randomNumber(6),
             'foto' => 'assets/dashboard/img/foto-siswa.png',
         ];
     }

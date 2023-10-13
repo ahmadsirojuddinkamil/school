@@ -8,13 +8,8 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
 use Modules\Siswa\Entities\Siswa;
-use Modules\Siswa\Exports\ExportSiswaActive;
-use Modules\Siswa\Exports\ExportSiswaGraduated;
-use Modules\Siswa\Http\Requests\DownloadExcelActiveRequest;
-use Modules\Siswa\Http\Requests\DownloadExcelGraduatedRequest;
-use Modules\Siswa\Http\Requests\DownloadPdfActiveRequest;
-use Modules\Siswa\Http\Requests\DownloadPdfGraduatedRequest;
-use Modules\Siswa\Http\Requests\UpdateSiswaRequest;
+use Modules\Siswa\Exports\{ExportSiswaActive, ExportSiswaGraduated};
+use Modules\Siswa\Http\Requests\{DownloadExcelActiveRequest, DownloadExcelGraduatedRequest, DownloadPdfActiveRequest, DownloadPdfGraduatedRequest, UpdateSiswaRequest};
 use Modules\Siswa\Services\SiswaService;
 
 class SiswaController extends Controller
@@ -34,7 +29,7 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getStatusSiswa = $this->siswaService->getStatusSiswaActiveOrNot();
 
-        return view('siswa::pages.siswa.status', compact('dataUserAuth', 'getStatusSiswa'));
+        return view('siswa::layouts.admin.status', compact('dataUserAuth', 'getStatusSiswa'));
     }
 
     public function getListClassSiswa()
@@ -42,16 +37,16 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getListClassSiswa = $this->siswaService->getListSiswaClass();
 
-        if (! $getListClassSiswa) {
+        if (!$getListClassSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
-        return view('siswa::pages.siswa.list_class', compact('dataUserAuth', 'getListClassSiswa'));
+        return view('siswa::layouts.admin.list_class', compact('dataUserAuth', 'getListClassSiswa'));
     }
 
     public function showSiswaClass($saveClassFromRoute)
     {
-        if (! is_numeric($saveClassFromRoute)) {
+        if (!is_numeric($saveClassFromRoute)) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -62,12 +57,12 @@ class SiswaController extends Controller
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
-        return view('siswa::pages.siswa.show_class', compact('dataUserAuth', 'saveClassFromRoute', 'getListSiswa'));
+        return view('siswa::layouts.admin.show_class', compact('dataUserAuth', 'saveClassFromRoute', 'getListSiswa'));
     }
 
     public function showSiswaActive($saveClassFromRoute, $saveUuidFromRoute)
     {
-        if (! is_numeric($saveClassFromRoute) || ! in_array($saveClassFromRoute, ['10', '11', '12'])) {
+        if (!is_numeric($saveClassFromRoute) || !in_array($saveClassFromRoute, ['10', '11', '12'])) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -76,18 +71,18 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
 
-        if (! $getDataSiswa) {
+        if (!$getDataSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
-        return view('siswa::pages.siswa.show_active', compact('dataUserAuth', 'getDataSiswa'));
+        return view('siswa::layouts.admin.show_active', compact('dataUserAuth', 'getDataSiswa'));
     }
 
     public function downloadPdfSiswaActive(DownloadPdfActiveRequest $request)
     {
         $validateData = $request->validated();
 
-        if (! is_numeric($validateData['kelas']) || ! in_array($validateData['kelas'], ['10', '11', '12'])) {
+        if (!is_numeric($validateData['kelas']) || !in_array($validateData['kelas'], ['10', '11', '12'])) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -98,19 +93,19 @@ class SiswaController extends Controller
             return abort(404);
         }
 
-        $pdf = DomPDF::loadView('siswa::layouts.siswa.pdf_active', [
+        $pdf = DomPDF::loadView('siswa::layouts.admin.pdf_active', [
             'dataSiswaActive' => $getDataSiswaActive,
             'totalSiswaActive' => $totalSiswaActive,
         ]);
 
-        return $pdf->download('laporan pdf siswa kelas '.$validateData['kelas'].'.pdf');
+        return $pdf->download('laporan pdf siswa kelas ' . $validateData['kelas'] . '.pdf');
     }
 
     public function downloadExcelSiswaActive(DownloadExcelActiveRequest $request)
     {
         $validateData = $request->validated();
 
-        if (! is_numeric($validateData['kelas']) || ! in_array($validateData['kelas'], ['10', '11', '12'])) {
+        if (!is_numeric($validateData['kelas']) || !in_array($validateData['kelas'], ['10', '11', '12'])) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -120,7 +115,7 @@ class SiswaController extends Controller
             return abort(404);
         }
 
-        return ExportExcel::download(new ExportSiswaActive($validateData['kelas']), 'laporan siswa aktif kelas '.$validateData['kelas'].'.xlsx');
+        return ExportExcel::download(new ExportSiswaActive($validateData['kelas']), 'laporan siswa aktif kelas ' . $validateData['kelas'] . '.xlsx');
     }
 
     public function downloadPdfSiswaGraduated(DownloadPdfGraduatedRequest $request)
@@ -135,12 +130,12 @@ class SiswaController extends Controller
             return abort(404);
         }
 
-        $pdf = DomPDF::loadView('siswa::layouts.siswa.pdf_graduated', [
+        $pdf = DomPDF::loadView('siswa::layouts.admin.pdf_graduated', [
             'dataSiswaGraduated' => $getDataSiswaGraduated,
             'totalSiswaGraduated' => $totalSiswaGraduated,
         ]);
 
-        return $pdf->download('laporan pdf siswa lulus tahun '.$validateData['tahun_lulus'].'.pdf');
+        return $pdf->download('laporan pdf siswa lulus tahun ' . $validateData['tahun_lulus'] . '.pdf');
     }
 
     public function downloadExcelSiswaGraduated(DownloadExcelGraduatedRequest $request)
@@ -154,7 +149,7 @@ class SiswaController extends Controller
             return abort(404);
         }
 
-        return ExportExcel::download(new ExportSiswaGraduated($validateData['tahun_lulus']), 'laporan siswa lulus tahun '.$validateData['tahun_lulus'].'.xlsx');
+        return ExportExcel::download(new ExportSiswaGraduated($validateData['tahun_lulus']), 'laporan siswa lulus tahun ' . $validateData['tahun_lulus'] . '.xlsx');
     }
 
     public function getListSiswaGraduated()
@@ -171,7 +166,7 @@ class SiswaController extends Controller
         $ListYearGraduated = array_values(array_unique($getDataSiswaGraduated));
         rsort($ListYearGraduated);
 
-        return view('siswa::pages.siswa.graduated', compact('dataUserAuth', 'getSiswaGraduated', 'ListYearGraduated'));
+        return view('siswa::layouts.admin.graduated', compact('dataUserAuth', 'getSiswaGraduated', 'ListYearGraduated'));
     }
 
     public function showSiswaGraduated($saveUuidFromRoute)
@@ -180,11 +175,11 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
 
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
-        if (! $getDataSiswa) {
+        if (!$getDataSiswa) {
             return redirect()->route('siswa.graduated')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
-        return view('siswa::pages.siswa.show_graduated', compact('dataUserAuth', 'getDataSiswa'));
+        return view('siswa::layouts.admin.show_graduated', compact('dataUserAuth', 'getDataSiswa'));
     }
 
     public function edit($saveUuidFromRoute)
@@ -193,13 +188,13 @@ class SiswaController extends Controller
         $this->siswaService->checkEditUuidOrNot($saveUuidFromRoute);
 
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
-        if (! $getDataSiswa) {
+        if (!$getDataSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
         $timeBox = $this->siswaService->getEditTime();
 
-        return view('siswa::pages.siswa.edit', compact('dataUserAuth', 'getDataSiswa', 'timeBox'));
+        return view('siswa::layouts.admin.edit', compact('dataUserAuth', 'getDataSiswa', 'timeBox'));
     }
 
     public function update(UpdateSiswaRequest $request, $saveUuidFromRoute)
@@ -217,7 +212,7 @@ class SiswaController extends Controller
         $this->siswaService->checkDeleteUuidOrNot($saveUuidFromRoute);
 
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
-        if (! $getDataSiswa) {
+        if (!$getDataSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 

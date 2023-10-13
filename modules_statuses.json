@@ -3,5 +3,6 @@
     "Siswa": true,
     "Dashboard": true,
     "News": true,
-    "Absen": true
+    "Absen": true,
+    "Guru": true
 }

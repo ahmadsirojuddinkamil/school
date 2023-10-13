@@ -30,7 +30,7 @@ class LaporanAbsenSiswaTest extends TestCase
         Absen::AbsenSiswaFactory()->create();
         $response = $this->get('/laporan-absen');
         $response->assertStatus(200);
-        $response->assertViewIs('absen::pages.absen.laporan');
+        $response->assertViewIs('absen::layouts.laporan');
         $response->assertSeeText('Laporan Absen');
 
         $response->assertViewHas('dataUserAuth');

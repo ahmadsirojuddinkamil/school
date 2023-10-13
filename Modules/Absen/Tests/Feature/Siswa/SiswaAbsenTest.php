@@ -29,7 +29,7 @@ class SiswaAbsenTest extends TestCase
         Siswa::SiswaAbsenFactory()->create();
         $response = $this->get('/absen');
         $response->assertStatus(200);
-        $response->assertViewIs('absen::pages.absen.page');
+        $response->assertViewIs('absen::layouts.create_absen');
         $response->assertSeeText('mendapatkan skor dan peringatan!');
 
         $response->assertViewHas('dataUserAuth');
@@ -59,7 +59,7 @@ class SiswaAbsenTest extends TestCase
         Siswa::SiswaAbsenFactory()->create();
         Absen::AbsenSiswaFactory()->create();
         $response = $this->get('/absen');
-        $response->assertViewIs('absen::pages.absen.page');
+        $response->assertViewIs('absen::layouts.create_absen');
         $response->assertSeeText('Anda sudah melakukan absen!');
 
         $response->assertViewHas('dataUserAuth');
