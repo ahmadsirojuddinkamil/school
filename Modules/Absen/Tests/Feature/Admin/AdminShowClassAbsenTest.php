@@ -30,9 +30,9 @@ class AdminShowClassAbsenTest extends TestCase
         $siswa = Siswa::AdminAbsenFactory()->create();
         Absen::AbsenSiswaFactory()->count(20)->create();
 
-        $response = $this->get('/absen-data/'.$siswa->kelas);
+        $response = $this->get('/data-absen/' . $siswa->kelas);
         $response->assertStatus(200);
-        $response->assertViewIs('absen::pages.absen.siswa.show_class');
+        $response->assertViewIs('absen::layouts.admin.siswa.show_class');
         $response->assertSeeText('Data Absen Siswa Kelas');
 
         $response->assertViewHas('dataUserAuth');
@@ -63,7 +63,7 @@ class AdminShowClassAbsenTest extends TestCase
 
         $this->roleService->createUserSiswa();
         $siswa = Siswa::SiswaGraduatedFactory()->create();
-        $response = $this->get('/absen-data/'.$siswa->kelas);
+        $response = $this->get('/data-absen/' . $siswa->kelas);
         $response->assertStatus(302);
         $response->assertRedirect('/dashboard');
         $this->assertTrue(session()->has('error'));
@@ -75,9 +75,9 @@ class AdminShowClassAbsenTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->get('/absen-data/10');
+        $response = $this->get('/data-absen/10');
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data absen tidak ditemukan!', session('error'));
     }
@@ -89,7 +89,7 @@ class AdminShowClassAbsenTest extends TestCase
 
         $this->roleService->createUserSiswa();
         $siswa = Siswa::AdminAbsenFactory()->create();
-        $response = $this->get('/absen-data/'.$siswa->kelas);
+        $response = $this->get('/data-absen/' . $siswa->kelas);
         $response->assertStatus(404);
     }
 }

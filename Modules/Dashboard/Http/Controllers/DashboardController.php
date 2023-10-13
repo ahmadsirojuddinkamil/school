@@ -18,6 +18,6 @@ class DashboardController extends Controller
     {
         $dataUserAuth = $this->userService->getProfileUser();
 
-        return view('dashboard::pages.dashboard.index', compact('dataUserAuth'));
+        return view('dashboard::layouts.index', compact('dataUserAuth'));
     }
 }

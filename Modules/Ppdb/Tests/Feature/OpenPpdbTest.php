@@ -24,7 +24,7 @@ class OpenPpdbTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->post('/ppdb-data/open', [
+        $response = $this->post('/data-ppdb/open', [
             'uuid' => '95d4c1b1-b856-41b5-90f7-62aa38673bd1',
             'tanggal_mulai' => '2023-09-18',
             'tanggal_akhir' => '2023-09-19',
@@ -39,7 +39,7 @@ class OpenPpdbTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->post('/ppdb-data/open', [
+        $response = $this->post('/data-ppdb/open', [
             'uuid' => '',
             'tanggal_mulai' => '',
             'tanggal_akhir' => '',
@@ -53,7 +53,7 @@ class OpenPpdbTest extends TestCase
         $user = $this->roleService->createRoleAndUserSiswa();
         $this->actingAs($user);
 
-        $response = $this->post('/ppdb-data/open', [
+        $response = $this->post('/data-ppdb/open', [
             'uuid' => '95d4c1b1-b856-41b5-90f7-62aa38673bd1',
             'tanggal_mulai' => '2023-09-18',
             'tanggal_akhir' => '2023-09-19',
@@ -67,7 +67,7 @@ class OpenPpdbTest extends TestCase
         $this->actingAs($user);
         OpenPpdb::factory()->create();
 
-        $response = $this->delete('/ppdb-data/status');
+        $response = $this->delete('/data-ppdb/status');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Berhasil menutup pendaftaran ppdb!', session('success'));
@@ -79,7 +79,7 @@ class OpenPpdbTest extends TestCase
         $this->actingAs($user);
         OpenPpdb::factory()->create();
 
-        $response = $this->delete('/ppdb-data/status');
+        $response = $this->delete('/data-ppdb/status');
         $response->assertStatus(404);
     }
 }

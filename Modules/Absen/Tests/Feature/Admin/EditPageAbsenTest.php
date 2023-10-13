@@ -26,9 +26,9 @@ class EditPageAbsenTest extends TestCase
         $this->actingAs($user);
 
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->get('/absen-data/'.$absen->uuid.'/'.$absen->created_at.'/edit');
+        $response = $this->get('/data-absen/' . $absen->uuid . '/' . $absen->created_at . '/edit');
         $response->assertStatus(200);
-        $response->assertViewIs('absen::pages.absen.siswa.edit_date');
+        $response->assertViewIs('absen::layouts.admin.siswa.edit_date');
         $response->assertViewHas('dataUserAuth');
         $response->assertSeeText('Edit data absen');
 
@@ -52,7 +52,7 @@ class EditPageAbsenTest extends TestCase
         $this->actingAs($user);
 
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->get('/absen-data/'.$absen->uuid.'/'.$absen->created_at.'/edit');
+        $response = $this->get('/data-absen/' . $absen->uuid . '/' . $absen->created_at . '/edit');
         $response->assertStatus(404);
     }
 
@@ -62,9 +62,9 @@ class EditPageAbsenTest extends TestCase
         $this->actingAs($user);
 
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->get('/absen-data/uuid/'.$absen->created_at.'/edit');
+        $response = $this->get('/data-absen/uuid/' . $absen->created_at . '/edit');
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data tanggal absen tidak ditemukan!', session('error'));
     }
@@ -75,9 +75,9 @@ class EditPageAbsenTest extends TestCase
         $this->actingAs($user);
 
         $absen = Absen::AbsenSiswaFactory()->create();
-        $response = $this->get('/absen-data/'.$absen->uuid.'/date/edit');
+        $response = $this->get('/data-absen/' . $absen->uuid . '/date/edit');
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data tanggal absen tidak ditemukan!', session('error'));
     }
@@ -87,9 +87,9 @@ class EditPageAbsenTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->get('/absen-data/uuid/date/edit');
+        $response = $this->get('/data-absen/uuid/date/edit');
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data tanggal absen tidak ditemukan!', session('error'));
     }

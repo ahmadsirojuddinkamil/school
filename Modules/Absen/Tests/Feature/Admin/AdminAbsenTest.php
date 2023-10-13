@@ -27,9 +27,9 @@ class AdminAbsenTest extends TestCase
 
         $this->roleService->createUserSiswa();
         Siswa::AdminAbsenFactory()->create();
-        $response = $this->get('/absen-data');
+        $response = $this->get('/data-absen');
         $response->assertStatus(200);
-        $response->assertViewIs('absen::pages.absen.siswa.list_class');
+        $response->assertViewIs('absen::layouts.admin.siswa.list_class');
         $response->assertSeeText('Daftar Absen Siswa');
 
         $response->assertViewHas('dataUserAuth');
@@ -45,7 +45,7 @@ class AdminAbsenTest extends TestCase
 
         $this->roleService->createUserSiswa();
         Siswa::AdminAbsenFactory()->create();
-        $response = $this->get('/absen-data');
+        $response = $this->get('/data-absen');
         $response->assertStatus(404);
     }
 }

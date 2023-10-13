@@ -29,9 +29,9 @@ class AdminShowReportAbsenTest extends TestCase
         $this->roleService->createUserSiswa();
         $siswa = Siswa::AdminAbsenFactory()->create();
         Absen::AbsenSiswaFactory()->create();
-        $response = $this->get('/absen-data/'.$siswa->nisn.'/show');
+        $response = $this->get('/data-absen/' . $siswa->nisn . '/show');
         $response->assertStatus(200);
-        $response->assertViewIs('absen::pages.absen.siswa.show_data');
+        $response->assertViewIs('absen::layouts.admin.siswa.show_report');
         $response->assertSeeText('Laporan Absen');
 
         $response->assertViewHas('dataUserAuth');
@@ -62,9 +62,9 @@ class AdminShowReportAbsenTest extends TestCase
 
         $this->roleService->createUserSiswa();
         Siswa::SiswaGraduatedFactory()->create();
-        $response = $this->get('/absen-data/nisn/show');
+        $response = $this->get('/data-absen/nisn/show');
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data absen tidak ditemukan!', session('error'));
     }
@@ -76,9 +76,9 @@ class AdminShowReportAbsenTest extends TestCase
 
         $this->roleService->createUserSiswa();
         $siswa = Siswa::AdminAbsenFactory()->create();
-        $response = $this->get('/absen-data/'.$siswa->uuid.'/show');
+        $response = $this->get('/data-absen/' . $siswa->uuid . '/show');
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data absen tidak ditemukan!', session('error'));
     }
@@ -91,7 +91,7 @@ class AdminShowReportAbsenTest extends TestCase
         $this->roleService->createUserSiswa();
         $siswa = Siswa::AdminAbsenFactory()->create();
         Absen::AbsenSiswaFactory()->create();
-        $response = $this->get('/absen-data/'.$siswa->uuid.'/show');
+        $response = $this->get('/data-absen/' . $siswa->uuid . '/show');
         $response->assertStatus(404);
     }
 }

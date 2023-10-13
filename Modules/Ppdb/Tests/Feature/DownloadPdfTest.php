@@ -25,7 +25,7 @@ class DownloadPdfTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/download/pdf/'.$ppdb->tahun_daftar);
+        $response = $this->post('/data-ppdb/download/pdf/' . $ppdb->tahun_daftar);
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/pdf');
     }
@@ -36,7 +36,7 @@ class DownloadPdfTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/download/pdf/tahun');
+        $response = $this->post('/data-ppdb/download/pdf/tahun');
         $response->assertStatus(404);
     }
 
@@ -46,7 +46,7 @@ class DownloadPdfTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/download/pdf/5000000');
+        $response = $this->post('/data-ppdb/download/pdf/5000000');
         $response->assertStatus(404);
     }
 
@@ -56,7 +56,7 @@ class DownloadPdfTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/download/pdf/'.$ppdb);
+        $response = $this->post('/data-ppdb/download/pdf/' . $ppdb);
         $response->assertStatus(404);
     }
 }

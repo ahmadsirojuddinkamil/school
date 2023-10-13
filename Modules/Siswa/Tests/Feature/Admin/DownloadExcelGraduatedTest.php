@@ -25,7 +25,7 @@ class DownloadExcelGraduatedTest extends TestCase
         $this->actingAs($user);
 
         $siswa = Siswa::siswaGraduatedFactory()->create();
-        $response = $this->post('/siswa-data/graduated/download/excel', [
+        $response = $this->post('/data-siswa/graduated/download/excel', [
             'tahun_lulus' => $siswa->tahun_lulus,
         ]);
         $response->assertStatus(200);
@@ -38,7 +38,7 @@ class DownloadExcelGraduatedTest extends TestCase
         $this->actingAs($user);
 
         Siswa::siswaGraduatedFactory()->create();
-        $response = $this->post('/siswa-data/graduated/download/excel', [
+        $response = $this->post('/data-siswa/graduated/download/excel', [
             'tahun_lulus' => 'tahun',
         ]);
         $response->assertStatus(302);
@@ -53,7 +53,7 @@ class DownloadExcelGraduatedTest extends TestCase
         $this->actingAs($user);
 
         Siswa::siswaGraduatedFactory()->create();
-        $response = $this->post('/siswa-data/graduated/download/excel', [
+        $response = $this->post('/data-siswa/graduated/download/excel', [
             'tahun_lulus' => 5000000,
         ]);
         $response->assertStatus(404);
@@ -65,7 +65,7 @@ class DownloadExcelGraduatedTest extends TestCase
         $this->actingAs($user);
 
         $siswa = Siswa::siswaGraduatedFactory()->create();
-        $response = $this->post('/siswa-data/graduated/download/excel', [
+        $response = $this->post('/data-siswa/graduated/download/excel', [
             'tahun_lulus' => $siswa->tahun_lulus,
         ]);
         $response->assertStatus(404);
