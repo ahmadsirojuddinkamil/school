@@ -32,13 +32,16 @@ class AbsenSiswaFactory extends Factory
         } while ($randomDate->isWeekend());
 
         return [
+            // 'name' => $faker->name,
+            'siswa_id' => null,
+            'guru_id' => null,
             'uuid' => Uuid::uuid4()->toString(),
-            'name' => $faker->name,
-            'nisn' => 1234524534,
+            // 'nisn' => 1234524534,
             // 'nisn' => $faker->numberBetween(1234524534, 4332498964),
-            'status' => $faker->shuffle(['10', '11', '12'])[1],
+            // 'status' => $faker->shuffle(['10', '11', '12'])[1],
+            'status' => 12,
+            'keterangan' => $faker->randomElement(['hadir', 'sakit', 'acara', 'musibah', 'tidak_hadir']),
             'persetujuan' => 'setuju',
-            'kehadiran' => $faker->randomElement(['hadir', 'sakit', 'acara', 'musibah', 'tidak_hadir']),
             // 'created_at' => $randomDate->toDateTimeString(),
             // 'updated_at' => $randomDate->toDateTimeString(),
         ];

@@ -8,6 +8,14 @@
     <title>Dashboard | data absen {{ $dataUserAuth[0]->name }}</title>
     @include('absen::bases.css')
     @include('absen::bases.js')
+
+    <style>
+        .link-with-margin {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -32,8 +40,8 @@
                         ];
                         @endphp
 
-                        @if(in_array($getDataAbsen[0]->status, $kelas))
-                        <h6>{{ $getDataAbsen[0]->name }} | Kelas {{ $getDataAbsen[0]->status }}</h6>
+                        @if(in_array($dataSiswa->kelas, $kelas))
+                        <h6>{{ $dataSiswa->name }} | Kelas {{ $dataSiswa->kelas }} | Total {{ $listKehadiran['totalAbsen'] }} Laporan *tidak termasuk tidak hadir!</h6>
                         @endif
                     </div>
                 </div>
@@ -51,24 +59,13 @@
 
                             <div class="wordset">
                                 <ul>
-                                    <li>
-                                        <form action="{{ route('laporan.absen.pdf') }}" method="POST">
-                                            @csrf
-                                            <style>
-                                                .no-background-button {
-                                                    background: none;
-                                                    border: none;
-                                                    padding: 0;
-                                                }
+                                    <a href="{{ route('laporan.absen.pdf.admin', ['save_uuid_from_event' => $dataSiswa->uuid]) }}" class="link-with-margin">
+                                        <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
+                                    </a>
 
-                                            </style>
-                                            <input type="hidden" name="nisn" value="{{ $getDataAbsen[0]->nisn }}">
-
-                                            <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="pdf" class="no-background-button">
-                                                <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
-                                            </button>
-                                        </form>
-                                    </li>
+                                    <a href="{{ route('laporan.absen.excel.admin', ['save_uuid_from_event' => $dataSiswa->uuid]) }}" class="link-with-margin">
+                                        <img src="{{ asset('assets/dashboard/img/icons/excel.svg') }}" alt="img">
+                                    </a>
                                 </ul>
                             </div>
                         </div>
@@ -106,19 +103,19 @@
                                     ];
                                     @endphp
 
-                                    @foreach ($getDataAbsen as $absen)
+                                    @foreach ($listAbsen as $absen)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $absen->updated_at }}</td>
                                         <td>{{ $namaHari[$absen->updated_at->format('N')] }}</td>
 
-                                        @if ($absen->kehadiran == 'hadir')
+                                        @if ($absen->keterangan == 'hadir')
                                         <td>
-                                            <span class="badges bg-lightgreen">{{ $absen->kehadiran }}</span>
+                                            <span class="badges bg-lightgreen">{{ $absen->keterangan }}</span>
                                         </td>
-                                        @elseif ($absen->kehadiran == 'sakit' || $absen->kehadiran == 'acara' || $absen->kehadiran == 'musibah')
+                                        @elseif ($absen->keterangan == 'sakit' || $absen->keterangan == 'acara' || $absen->keterangan == 'musibah')
                                         <td>
-                                            <span class="badges bg-lightyellow">{{ $absen->kehadiran }}</span>
+                                            <span class="badges bg-lightyellow">{{ $absen->keterangan }}</span>
                                         </td>
                                         @else
                                         <td>
@@ -127,15 +124,16 @@
                                         @endif
 
                                         <td class="actions">
-                                            <a class="action-link" href="{{ route('data.tanggal.absen.edit', ['save_uuid_from_event' => $absen->uuid ,'save_date_from_event' => $absen->created_at]) }}">
+                                            <a class="action-link" href="{{ route('data.tanggal.absen.edit', ['save_uuid_from_event' => $absen->uuid, 'save_date_from_event' => $absen->updated_at]) }}">
                                                 <img src="{{ asset('assets/dashboard/img/icons/edit.svg') }}" alt="img">
                                             </a>
 
-                                            <button class="action-button" data-bs-toggle="modal" data-bs-target="#modalDelete{{ $absen->uuid }}">
+                                            @if($dataUserAuth[1] == 'super_admin')
+                                            <button class="action-button" data-bs-toggle="modal" data-bs-target="#modalDelete{{ $absen->id }}">
                                                 <img src="{{ asset('assets/dashboard/img/icons/delete.svg') }}" alt="img">
                                             </button>
 
-                                            <div class="modal fade" id="modalDelete{{ $absen->uuid }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                            <div class="modal fade" id="modalDelete{{ $absen->id }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                                 <div class="modal-dialog">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
@@ -153,14 +151,17 @@
                                                             <form action="{{ route('data.tanggal.absen.delete') }}" method="POST" class="action-form">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <input type="hidden" name="tanggal" value="{{ $absen->created_at->format('Y-m-d H:i:s') }}">
-                                                                <input type="hidden" name="nisn" value="{{ $absen->nisn }}">
+
+                                                                <input type="hidden" name="tanggal" value="{{ $absen->updated_at->format('Y-m-d H:i:s') }}" required>
+                                                                <input type="hidden" name="uuid" value="{{ $absen->uuid }}" required>
+                                                                <input type="hidden" name="kelas" value="{{ $dataSiswa->kelas }}" required>
                                                                 <button type="submit" class="btn btn-submit me-2">Submit</button>
                                                             </form>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
                                         </td>
                                     </tr>
                                     @endforeach

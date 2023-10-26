@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard | ppdb show</title>
-    @include('ppdb::bases.ppdb.css')
-    @include('ppdb::bases.ppdb.js')
+    <title>Dashboard | ppdb {{ $getDataUserPpdb->name }}</title>
+    @include('ppdb::bases.css')
+    @include('ppdb::bases.js')
 </head>
 
 <body>
@@ -22,15 +22,15 @@
             <div class="content">
                 <div class="page-header">
                     <div class="page-title">
-                        <h4>Peserta PPDB Details</h4>
+                        <h4>Biodata Peserta Didik Baru</h4>
                     </div>
 
-                    @include('ppdb::components.ppdb.accept-ppdb')
+                    @include('ppdb::components.accept-ppdb')
                 </div>
 
                 <div class="row">
-                    @include('ppdb::components.ppdb.data-user-ppdb')
-                    @include('ppdb::components.ppdb.bukti-pembayaran')
+                    @include('ppdb::components.data-user-ppdb')
+                    @include('ppdb::components.bukti-pembayaran')
                 </div>
 
             </div>

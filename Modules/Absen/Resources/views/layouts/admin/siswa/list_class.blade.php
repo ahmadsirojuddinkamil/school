@@ -36,6 +36,7 @@
                             <div class="dash-count das1">
                                 <div class="dash-counts">
                                     <h4>Kelas 12</h4>
+                                    <h5>Jumlah Absen : {{ $listSiswaInClass['12'] }}</h5>
                                 </div>
 
                                 <div class="dash-imgs">
@@ -50,6 +51,7 @@
                             <div class="dash-count das1">
                                 <div class="dash-counts">
                                     <h4>Kelas 11</h4>
+                                    <h5>Jumlah Absen : {{ $listSiswaInClass['11'] }}</h5>
                                 </div>
 
                                 <div class="dash-imgs">
@@ -64,6 +66,7 @@
                             <div class="dash-count das1">
                                 <div class="dash-counts">
                                     <h4>Kelas 10</h4>
+                                    <h5>Jumlah Absen : {{ $listSiswaInClass['10'] }}</h5>
                                 </div>
 
                                 <div class="dash-imgs">

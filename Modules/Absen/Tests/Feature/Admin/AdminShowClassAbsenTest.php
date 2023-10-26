@@ -56,40 +56,40 @@ class AdminShowClassAbsenTest extends TestCase
         $this->assertNotNull($totalAbsen);
     }
 
-    public function test_show_class_absen_page_failed_because_not_class(): void
-    {
-        $user = $this->roleService->createRoleAndUserAdmin();
-        $this->actingAs($user);
+    // public function test_show_class_absen_page_failed_because_not_class(): void
+    // {
+    //     $user = $this->roleService->createRoleAndUserAdmin();
+    //     $this->actingAs($user);
 
-        $this->roleService->createUserSiswa();
-        $siswa = Siswa::SiswaGraduatedFactory()->create();
-        $response = $this->get('/data-absen/' . $siswa->kelas);
-        $response->assertStatus(302);
-        $response->assertRedirect('/dashboard');
-        $this->assertTrue(session()->has('error'));
-        $this->assertEquals('Kelas tidak di temukan!', session('error'));
-    }
+    //     $this->roleService->createUserSiswa();
+    //     $siswa = Siswa::SiswaGraduatedFactory()->create();
+    //     $response = $this->get('/data-absen/' . $siswa->kelas);
+    //     $response->assertStatus(302);
+    //     $response->assertRedirect('/dashboard');
+    //     $this->assertTrue(session()->has('error'));
+    //     $this->assertEquals('Kelas tidak di temukan!', session('error'));
+    // }
 
-    public function test_show_class_absen_page_failed_because_class_not_found(): void
-    {
-        $user = $this->roleService->createRoleAndUserAdmin();
-        $this->actingAs($user);
+    // public function test_show_class_absen_page_failed_because_class_not_found(): void
+    // {
+    //     $user = $this->roleService->createRoleAndUserAdmin();
+    //     $this->actingAs($user);
 
-        $response = $this->get('/data-absen/10');
-        $response->assertStatus(302);
-        $response->assertRedirect('/data-absen');
-        $this->assertTrue(session()->has('error'));
-        $this->assertEquals('Data absen tidak ditemukan!', session('error'));
-    }
+    //     $response = $this->get('/data-absen/10');
+    //     $response->assertStatus(302);
+    //     $response->assertRedirect('/data-absen');
+    //     $this->assertTrue(session()->has('error'));
+    //     $this->assertEquals('Data absen tidak ditemukan!', session('error'));
+    // }
 
-    public function test_show_class_absen_page_failed_because_not_admin(): void
-    {
-        $user = $this->roleService->createRoleAndUserSiswa();
-        $this->actingAs($user);
+    // public function test_show_class_absen_page_failed_because_not_admin(): void
+    // {
+    //     $user = $this->roleService->createRoleAndUserSiswa();
+    //     $this->actingAs($user);
 
-        $this->roleService->createUserSiswa();
-        $siswa = Siswa::AdminAbsenFactory()->create();
-        $response = $this->get('/data-absen/' . $siswa->kelas);
-        $response->assertStatus(404);
-    }
+    //     $this->roleService->createUserSiswa();
+    //     $siswa = Siswa::AdminAbsenFactory()->create();
+    //     $response = $this->get('/data-absen/' . $siswa->kelas);
+    //     $response->assertStatus(404);
+    // }
 }

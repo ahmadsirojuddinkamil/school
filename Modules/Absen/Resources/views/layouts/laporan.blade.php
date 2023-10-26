@@ -26,7 +26,9 @@
                         <h4>Laporan Absen</h4>
 
                         @if ($dataUserAuth[1] == 'siswa')
-                        <h6>{{ $dataUserAuth[0]->name }} | Kelas : {{ $dataUserAuth[0]->siswa->kelas }}</h6>
+                        <h6>{{ $dataUserAuth[0]->name }} | Kelas : {{ $dataUserAuth[0]->siswa->kelas }} | Total {{ $listKehadiran['totalAbsen'] }} Laporan *tidak termasuk tidak hadir!</h6>
+                        @elseif($dataUserAuth[1] == 'guru')
+                        <h6>{{ $dataUserAuth[0]->name }} | Mata Pelajaran : {{ $dataUserAuth[0]->guru->mata_pelajaran }} | Total {{ $listKehadiran['totalAbsen'] }} Laporan *tidak termasuk tidak hadir!</h6>
                         @endif
                     </div>
                 </div>
@@ -54,7 +56,7 @@
 
                                         </style>
 
-                                        <form action="{{ route('laporan.absen.pdf', ['nisn' => $dataUserAuth[0]->siswa->nisn]) }}" method="POST">
+                                        <form action="{{ route('laporan.absen.pdf', ['id' => $idRole, 'role' => $dataUserAuth[1]]) }}" method="POST">
                                             @csrf
 
                                             <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="pdf" class="no-background-button">
@@ -73,7 +75,7 @@
                                         <th>#</th>
                                         <th>Tanggal & Jam</th>
                                         <th>Hari</th>
-                                        <th>Kehadiran</th>
+                                        <th>keterangan</th>
                                     </tr>
                                 </thead>
 
@@ -90,19 +92,19 @@
                                     ];
                                     @endphp
 
-                                    @foreach ($getDataAbsen as $absen)
+                                    @foreach ($listAbsen as $absen)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $absen->created_at }}</td>
                                         <td>{{ $namaHari[$absen->created_at->format('N')] }}</td>
 
-                                        @if ($absen->kehadiran == 'hadir')
+                                        @if ($absen->keterangan == 'hadir')
                                         <td>
-                                            <span class="badges bg-lightgreen">{{ $absen->kehadiran }}</span>
+                                            <span class="badges bg-lightgreen">{{ $absen->keterangan }}</span>
                                         </td>
-                                        @elseif ($absen->kehadiran == 'sakit' || $absen->kehadiran == 'acara' || $absen->kehadiran == 'musibah')
+                                        @elseif ($absen->keterangan == 'sakit' || $absen->keterangan == 'acara' || $absen->keterangan == 'musibah')
                                         <td>
-                                            <span class="badges bg-lightyellow">{{ $absen->kehadiran }}</span>
+                                            <span class="badges bg-lightyellow">{{ $absen->keterangan }}</span>
                                         </td>
                                         @else
                                         <td>

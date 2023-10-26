@@ -7,12 +7,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard | siswa show</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-    </script>
+    @include('siswa::bases.css')
+    @include('siswa::bases.js')
 
-    @include('siswa::bases.siswa.css')
-    @include('siswa::bases.siswa.js')
+    <style>
+        .link-with-margin {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -30,6 +34,22 @@
                     <div class="page-title">
                         <h4>Biodata Siswa</h4>
                     </div>
+
+                    <div class="wordset">
+                        <ul>
+                            <a href="{{ route('siswa.graduated.download.pdf', $getDataSiswa->uuid) }}" class="link-with-margin">
+                                <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
+                            </a>
+
+                            <a href="{{ route('siswa.graduated.download.excel', $getDataSiswa->uuid) }}" class="link-with-margin">
+                                <img src="{{ asset('assets/dashboard/img/icons/excel.svg') }}" alt="img">
+                            </a>
+
+                            <a href="{{ route('siswa.edit', $getDataSiswa->uuid) }}" class="link-with-margin">
+                                <img src="{{ asset('assets/dashboard/img/icons/edit.svg') }}" alt="img">
+                            </a>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -39,43 +59,13 @@
                                 <div class="productdetails">
                                     <ul class="product-bar">
                                         <li>
-                                            <h4>Nama Lengkap</h4>
-                                            <h6>{{ $getDataSiswa->nama_lengkap }}</h6>
-                                        </li>
-
-                                        <li>
-                                            <h4>Email</h4>
-                                            <h6>{{ $getDataSiswa->email }}</h6>
+                                            <h4>Nama</h4>
+                                            <h6>{{ $getDataSiswa->name }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>NISN</h4>
                                             <h6>{{ $getDataSiswa->nisn }}</h6>
-                                        </li>
-
-                                        <li>
-                                            <h4>Asal Sekolah</h4>
-                                            <h6>{{ $getDataSiswa->asal_sekolah }}</h6>
-                                        </li>
-
-                                        <li>
-                                            <h4>Kelas</h4>
-                                            <h6>{{ $getDataSiswa->kelas }}</h6>
-                                        </li>
-
-                                        <li>
-                                            <h4>Alamat</h4>
-                                            <h6>{{ $getDataSiswa->alamat }}</h6>
-                                        </li>
-
-                                        <li>
-                                            <h4>Telpon Siswa</h4>
-                                            <h6>{{ $getDataSiswa->telpon_siswa }}</h6>
-                                        </li>
-
-                                        <li>
-                                            <h4>Jenis Kelamin</h4>
-                                            <h6>{{ $getDataSiswa->jenis_kelamin }}</h6>
                                         </li>
 
                                         <li>
@@ -89,18 +79,88 @@
                                         </li>
 
                                         <li>
+                                            <h4>Agama</h4>
+                                            <h6>{{ $getDataSiswa->agama }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Jenis Kelamin</h4>
+                                            <h6>{{ $getDataSiswa->jenis_kelamin }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Asal Sekolah</h4>
+                                            <h6>{{ $getDataSiswa->asal_sekolah }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Nem</h4>
+                                            <h6>{{ $getDataSiswa->nem }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Tahun Lulus</h4>
+                                            <h6>{{ $getDataSiswa->tahun_lulus }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Alamat</h4>
+                                            <h6>{{ $getDataSiswa->alamat_rumah }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Provinsi</h4>
+                                            <h6>{{ $getDataSiswa->provinsi }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Kecamatan</h4>
+                                            <h6>{{ $getDataSiswa->kecamatan }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Kelurahan</h4>
+                                            <h6>{{ $getDataSiswa->kelurahan }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Kode Pos</h4>
+                                            <h6>{{ $getDataSiswa->kode_pos }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Email</h4>
+                                            <h6>{{ $getDataSiswa->email }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>No Telpon</h4>
+                                            <h6>{{ $getDataSiswa->no_telpon }}</h6>
+                                        </li>
+
+                                        <li>
                                             <h4>Tahun Daftar</h4>
                                             <h6>{{ $getDataSiswa->tahun_daftar }}</h6>
                                         </li>
 
                                         <li>
-                                            <h4>Tanggal Lulus</h4>
-                                            <h6>{{ $getDataSiswa->tahun_lulus }}</h6>
+                                            <h4>Tahun Keluar</h4>
+                                            <h6>{{ $getDataSiswa->tahun_keluar }}</h6>
                                         </li>
 
                                         <li>
-                                            <h4>Jurusan</h4>
-                                            <h6>{{ $getDataSiswa->jurusan }}</h6>
+                                            <h4>Nama Bank</h4>
+                                            <h6>{{ $getDataSiswa->nama_bank }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Nama Pemilik Buku Rekening</h4>
+                                            <h6>{{ $getDataSiswa->nama_buku_rekening }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>No Rekening</h4>
+                                            <h6>{{ $getDataSiswa->no_rekening }}</h6>
                                         </li>
 
                                         <li>
@@ -111,6 +171,11 @@
                                         <li>
                                             <h4>Nama Ibu</h4>
                                             <h6>{{ $getDataSiswa->nama_ibu }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Nama Wali</h4>
+                                            <h6>{{ $getDataSiswa->nama_wali }}</h6>
                                         </li>
 
                                         <li>

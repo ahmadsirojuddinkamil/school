@@ -150,7 +150,7 @@ class SiswaActiveTest extends TestCase
 
     public function test_show_data_siswa_active_page_failed_displayed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $user = $this->roleService->createRoleAndUserGuru();
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();

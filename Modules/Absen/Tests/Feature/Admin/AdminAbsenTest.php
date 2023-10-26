@@ -10,7 +10,8 @@ use Tests\TestCase;
 
 class AdminAbsenTest extends TestCase
 {
-    use RefreshDatabase, DatabaseMigrations;
+    use RefreshDatabase;
+    use DatabaseMigrations;
 
     protected $roleService;
 

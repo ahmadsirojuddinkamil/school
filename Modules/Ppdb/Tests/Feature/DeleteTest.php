@@ -21,7 +21,7 @@ class DeleteTest extends TestCase
 
     public function test_ppdb_delete_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $user = $this->roleService->createRoleAndUserSuperAdmin();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
@@ -31,7 +31,7 @@ class DeleteTest extends TestCase
         $this->assertEquals('Data ppdb sudah berhasil dihapus!', session('success'));
     }
 
-    public function test_ppdb_delete_failed_because_not_role_admin(): void
+    public function test_ppdb_delete_failed_because_not_role_super_admin(): void
     {
         $user = $this->roleService->createRoleAndUserSiswa();
         $this->actingAs($user);
@@ -43,7 +43,7 @@ class DeleteTest extends TestCase
 
     public function test_ppdb_delete_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $user = $this->roleService->createRoleAndUserSuperAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
@@ -53,7 +53,7 @@ class DeleteTest extends TestCase
 
     public function test_ppdb_delete_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $user = $this->roleService->createRoleAndUserSuperAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();

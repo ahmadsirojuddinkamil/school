@@ -8,11 +8,11 @@ use Modules\Ppdb\Entities\Ppdb;
 
 class ExportPpdb implements FromCollection, WithHeadings
 {
-    protected $saveParameterDateFromController;
+    protected $uuidPpdb;
 
-    public function __construct($saveParameterDateFromController)
+    public function __construct($saveUuidFromCall)
     {
-        $this->saveParameterDateFromController = $saveParameterDateFromController;
+        $this->uuidPpdb = $saveUuidFromCall;
     }
 
     /**
@@ -21,8 +21,7 @@ class ExportPpdb implements FromCollection, WithHeadings
     public function collection()
     {
         return Ppdb::select(
-            'uuid',
-            'nama_lengkap',
+            'name',
             'email',
             'nisn',
             'asal_sekolah',
@@ -37,15 +36,14 @@ class ExportPpdb implements FromCollection, WithHeadings
             'telpon_orang_tua',
             'tahun_daftar'
         )
-            ->where('tahun_daftar', $this->saveParameterDateFromController)
+            ->where('uuid', $this->uuidPpdb)
             ->get();
     }
 
     public function headings(): array
     {
         return [
-            'UUID',
-            'Nama Lengkap',
+            'Nama',
             'Email',
             'NISN',
             'Asal Sekolah',

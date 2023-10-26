@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->uuid('uuid')->unique();
 
-            $table->string('nama_lengkap');
+            $table->string('name');
             $table->string('email')->unique();
             $table->string('nisn')->unique();
             $table->string('asal_sekolah');
@@ -27,9 +27,9 @@ return new class extends Migration
             $table->string('tempat_lahir');
             $table->string('tanggal_lahir');
             $table->string('jurusan');
-            $table->string('nama_ayah');
-            $table->string('nama_ibu');
-            $table->string('telpon_orang_tua');
+            $table->string('nama_ayah')->nullable();
+            $table->string('nama_ibu')->nullable();
+            $table->string('telpon_orang_tua')->nullable();
             $table->string('tahun_daftar');
             $table->string('bukti_pendaftaran');
             $table->timestamps();

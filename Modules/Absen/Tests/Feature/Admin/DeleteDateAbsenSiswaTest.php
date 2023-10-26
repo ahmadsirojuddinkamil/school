@@ -23,7 +23,7 @@ class DeleteDateAbsenSiswaTest extends TestCase
 
     public function test_delete_tanggal_absen_siswa_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $user = $this->roleService->createRoleAndUserSuperAdmin();
         $this->actingAs($user);
 
         Siswa::SiswaAbsenFactory()->create();
@@ -38,7 +38,7 @@ class DeleteDateAbsenSiswaTest extends TestCase
         $this->assertEquals('Data tanggal absen berhasil dihapus!', session('success'));
     }
 
-    public function test_delete_tanggal_absen_siswa_failed_because_not_admin(): void
+    public function test_delete_tanggal_absen_siswa_failed_because_not_super_admin(): void
     {
         $user = $this->roleService->createRoleAndUserSiswa();
         $this->actingAs($user);
@@ -54,7 +54,7 @@ class DeleteDateAbsenSiswaTest extends TestCase
 
     public function test_delete_tanggal_absen_siswa_failed_because_form_has_not_been(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $user = $this->roleService->createRoleAndUserSuperAdmin();
         $this->actingAs($user);
 
         Siswa::SiswaAbsenFactory()->create();
@@ -69,7 +69,7 @@ class DeleteDateAbsenSiswaTest extends TestCase
 
     public function test_delete_tanggal_absen_siswa_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $user = $this->roleService->createRoleAndUserSuperAdmin();
         $this->actingAs($user);
 
         Siswa::SiswaAbsenFactory()->create();

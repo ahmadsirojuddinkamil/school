@@ -32,6 +32,8 @@ class DownloadZipAbsenSiswaTest extends TestCase
         ]);
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/zip');
+
+        unlink('laporan_absen_kelas_10.zip');
     }
 
     public function test_download_zip_laporan_absen_class_failed_because_not_admin(): void

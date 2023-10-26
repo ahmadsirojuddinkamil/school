@@ -15,6 +15,9 @@
         <div class="whirly-loader"> </div>
     </div>
 
+    @include('absen::components.sweetalert-success')
+    @include('absen::components.sweetalert-error')
+
     <div class="main-wrapper">
         @include('dashboard::layouts.header')
         @include('dashboard::layouts.sidebar')
@@ -39,17 +42,12 @@
                                 @csrf
 
                                 <div class="form-group">
-                                    <input type="hidden" value="{{ $dataUserAuth[0]->name }}" name="name" readonly required>
-
-                                    <input type="hidden" value="{{ $dataUserAuth[0]->siswa->nisn }}" name="nisn" readonly required>
-
-                                    @if ($dataUserAuth[1] == 'siswa')
-                                    <input type="hidden" value="{{ $dataUserAuth[0]->siswa->kelas }}" name="status" readonly required>
-                                    @else
-                                    <input type="hidden" value="{{ $dataUserAuth[1] }}" name="status" readonly required>
-                                    @endif
-
                                     <input type="hidden" value="setuju" name="persetujuan" readonly required>
+                                    @if($dataUserAuth[1] == 'siswa')
+                                    <input type="hidden" value="{{ $dataUserAuth[0]->siswa->kelas }}" name="status" readonly required>
+                                    @elseif($dataUserAuth[1] == 'guru')
+                                    <input type="hidden" value="guru" name="status" readonly required>
+                                    @endif
                                 </div>
 
                                 <div class="col-lg-6 col-sm-6 col-12 mb-4">
@@ -72,14 +70,14 @@
                                                 <div class="modal-body">
                                                     <div class="mb-4">
                                                         <label class="form-label">Pilihan Izin :</label>
-                                                        <select class="form-select" name="kehadiran">
+                                                        <select class="form-select" name="keterangan">
                                                             <option value="hadir">Tidak ada</option>
                                                             <option value="sakit">Sakit</option>
                                                             <option value="acara">Acara Keluarga</option>
                                                             <option value="musibah">Musibah / Banjir, Kebakaran Dll</option>
                                                         </select>
                                                     </div>
-                                                    @error('kehadiran')
+                                                    @error('keterangan')
                                                     <div class="alert alert-danger">{{ $message }}</div>
                                                     @enderror
                                                 </div>
@@ -108,7 +106,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const selectElement = document.querySelector('select[name="kehadiran"]');
+            const selectElement = document.querySelector('select[name="keterangan"]');
             const submitButton = document.querySelector('.not-izin');
             const izinButton = document.querySelector('.yes-izin');
 

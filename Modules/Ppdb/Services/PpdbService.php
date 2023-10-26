@@ -7,10 +7,9 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\File;
 use Modules\Absen\Entities\Absen;
-use Modules\Ppdb\Entities\OpenPpdb;
-use Modules\Ppdb\Entities\Ppdb;
+use Modules\Ppdb\Entities\{OpenPpdb, Ppdb};
 use Modules\Ppdb\Jobs\SendEmailPpdbJob;
-use Modules\Siswa\Entities\{Siswa};
+use Modules\Siswa\Entities\Siswa;
 use Ramsey\Uuid\Uuid;
 
 class PpdbService
@@ -41,7 +40,7 @@ class PpdbService
 
         Ppdb::create([
             'uuid' => Uuid::uuid4()->toString(),
-            'nama_lengkap' => $validateData['nama_lengkap'],
+            'name' => $validateData['name'],
             'email' => $validateData['email'],
             'nisn' => $validateData['nisn'],
             'asal_sekolah' => $validateData['asal_sekolah'],
@@ -87,14 +86,14 @@ class PpdbService
 
     public function checkUuidOrNot($saveUuidFromController)
     {
-        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromController)) {
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromController)) {
             return abort(404);
         }
     }
 
     public function checkValidYear($saveYearFromController)
     {
-        if (! preg_match('/^\d{4}$/', $saveYearFromController)) {
+        if (!preg_match('/^\d{4}$/', $saveYearFromController)) {
             return abort(404);
         }
     }
@@ -112,35 +111,46 @@ class PpdbService
 
     public function acceptPpdb($saveUuidFromController)
     {
-        $getPpdb = Ppdb::where('uuid', $saveUuidFromController)->lockForUpdate()->first();
+        $dataPpdb = Ppdb::where('uuid', $saveUuidFromController)->lockForUpdate()->first();
 
         $siswa = Siswa::create([
-            'uuid' => Uuid::uuid4()->toString(),
             'user_id' => null,
-
-            'nama_lengkap' => $getPpdb->nama_lengkap,
-            'email' => $getPpdb->email,
-            'nisn' => $getPpdb->nisn,
-            'asal_sekolah' => $getPpdb->asal_sekolah,
-            'kelas' => 10,
-            'alamat' => $getPpdb->alamat,
-            'telpon_siswa' => $getPpdb->telpon_siswa,
-            'jenis_kelamin' => $getPpdb->jenis_kelamin,
-            'tempat_lahir' => $getPpdb->tempat_lahir,
-            'tanggal_lahir' => $getPpdb->tanggal_lahir,
-            'tahun_daftar' => $getPpdb->tahun_daftar,
-            'jurusan' => $getPpdb->jurusan,
-            'nama_ayah' => $getPpdb->nama_ayah,
-            'nama_ibu' => $getPpdb->nama_ibu,
-            'telpon_orang_tua' => $getPpdb->telpon_orang_tua,
+            'mata_pelajaran_id' => null,
+            'uuid' => Uuid::uuid4()->toString(),
+            'name' => $dataPpdb->name,
+            'nisn' => $dataPpdb->nisn,
+            'kelas'  => 10,
+            'tempat_lahir' => $dataPpdb->tempat_lahir,
+            'tanggal_lahir' => $dataPpdb->tanggal_lahir,
+            'agama' => null,
+            'jenis_kelamin' => $dataPpdb->jenis_kelamin,
+            'asal_sekolah' => $dataPpdb->asal_sekolah,
+            'nem' => null,
+            'tahun_lulus' => null,
+            'alamat_rumah' => null,
+            'provinsi' => null,
+            'kecamatan' => null,
+            'kelurahan' => null,
+            'kode_pos' => null,
+            'email' => $dataPpdb->email,
+            'no_telpon' => $dataPpdb->telpon_siswa,
+            'tahun_daftar' => $dataPpdb->tahun_daftar,
+            'tahun_keluar' => null,
             'foto' => 'assets/dashboard/img/foto-siswa.png',
+            'nama_bank' => null,
+            'nama_buku_rekening' => null,
+            'no_rekening' => null,
+            'nama_ayah' => $dataPpdb->nama_ayah,
+            'nama_ibu' => $dataPpdb->nama_ayah,
+            'nama_wali' => null,
+            'telpon_orang_tua' => $dataPpdb->telpon_orang_tua,
         ]);
 
         $user = User::create([
             'uuid' => Uuid::uuid4()->toString(),
-            'name' => $getPpdb->nama_lengkap,
-            'email' => $getPpdb->email,
-            'password' => $getPpdb->nisn,
+            'name' => $dataPpdb->name,
+            'email' => $dataPpdb->email,
+            'password' => $dataPpdb->nisn,
         ]);
         $user->assignRole('siswa');
 
@@ -149,18 +159,18 @@ class PpdbService
         ]);
 
         Absen::create([
+            'siswa_id' => $siswa->id,
+            'guru_id' => null,
             'uuid' => Uuid::uuid4()->toString(),
-            'name' => $siswa->nama_lengkap,
-            'nisn' => $siswa->nisn,
             'status' => $siswa->kelas,
+            'keterangan' => 'hadir',
             'persetujuan' => 'setuju',
-            'kehadiran' => 'hadir',
         ]);
 
         // send email
         $dataEmail = [
-            'email' => $siswa->email,
-            'nama' => $siswa->nama_lengkap,
+            'email' => $dataPpdb->email,
+            'nama' => $dataPpdb->name,
         ];
         dispatch(new SendEmailPpdbJob($dataEmail));
     }
@@ -176,7 +186,7 @@ class PpdbService
         }
 
         $getPpdb->update([
-            'nama_lengkap' => $validateData['nama_lengkap'],
+            'name' => $validateData['name'],
             'email' => $validateData['email'],
             'nisn' => $validateData['nisn'],
             'asal_sekolah' => $validateData['asal_sekolah'],

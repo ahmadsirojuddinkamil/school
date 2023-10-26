@@ -8,11 +8,11 @@ use Modules\Siswa\Entities\Siswa;
 
 class ExportSiswaGraduated implements FromCollection, WithHeadings
 {
-    protected $yearGraduated;
+    protected $uuidSiswa;
 
-    public function __construct($saveYearGraduatedFromObjectCaller)
+    public function __construct($saveUuidFromCall)
     {
-        $this->yearGraduated = $saveYearGraduatedFromObjectCaller;
+        $this->uuidSiswa = $saveUuidFromCall;
     }
 
     /**
@@ -21,43 +21,63 @@ class ExportSiswaGraduated implements FromCollection, WithHeadings
     public function collection()
     {
         return Siswa::select(
-            'nama_lengkap',
-            'email',
+            'name',
             'nisn',
-            'asal_sekolah',
-            'alamat',
-            'telpon_siswa',
-            'jenis_kelamin',
             'tempat_lahir',
             'tanggal_lahir',
-            'tahun_daftar',
+            'agama',
+            'jenis_kelamin',
+            'asal_sekolah',
+            'nem',
             'tahun_lulus',
-            'jurusan',
+            'alamat_rumah',
+            'provinsi',
+            'kecamatan',
+            'kelurahan',
+            'kode_pos',
+            'email',
+            'no_telpon',
+            'tahun_daftar',
+            'tahun_keluar',
+            'nama_bank',
+            'nama_buku_rekening',
+            'no_rekening',
             'nama_ayah',
             'nama_ibu',
+            'nama_wali',
             'telpon_orang_tua',
         )
-            ->where('tahun_lulus', $this->yearGraduated)
+            ->where('uuid', $this->uuidSiswa)
             ->get();
     }
 
     public function headings(): array
     {
         return [
-            'nama_lengkap',
-            'email',
+            'name',
             'nisn',
-            'asal_sekolah',
-            'alamat',
-            'telpon_siswa',
-            'jenis_kelamin',
             'tempat_lahir',
             'tanggal_lahir',
-            'tahun_daftar',
+            'agama',
+            'jenis_kelamin',
+            'asal_sekolah',
+            'nem',
             'tahun_lulus',
-            'jurusan',
+            'alamat_rumah',
+            'provinsi',
+            'kecamatan',
+            'kelurahan',
+            'kode_pos',
+            'email',
+            'no_telpon',
+            'tahun_daftar',
+            'tahun_keluar',
+            'nama_bank',
+            'nama_buku_rekening',
+            'no_rekening',
             'nama_ayah',
             'nama_ibu',
+            'nama_wali',
             'telpon_orang_tua',
         ];
     }

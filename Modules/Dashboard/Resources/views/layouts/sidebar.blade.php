@@ -7,10 +7,11 @@
                             Dashboard</span> </a>
                 </li>
 
+                {{-- data siswa --}}
                 <li class="submenu">
                     <a href="javascript:void(0);" class="menu-link">
                         <img src="{{ asset('assets/dashboard/img/icons/product.svg') }}" alt="img">
-                        @if ($dataUserAuth[1] == 'admin')
+                        @if ($dataUserAuth[1] == 'admin' || $dataUserAuth[1] == 'super_admin')
                         <span>Data Siswa</span>
                         @endif
 
@@ -26,7 +27,7 @@
                     </a>
 
                     <ul>
-                        @if ($dataUserAuth[1] == 'admin')
+                        @if ($dataUserAuth[1] == 'admin' || $dataUserAuth[1] == 'super_admin')
                         <li>
                             <a href="{{ route('ppdb.year') }}" class="{{ Request::is('data-ppdb*') ? 'active' : '' }}">Ppdb</a>
                         </li>
@@ -41,18 +42,35 @@
                         @endif
 
                         @if ($dataUserAuth[1] == 'siswa' || $dataUserAuth[1] == 'guru')
-                        <li><a href="/absen" class="{{ Request::is('absen*') ? 'active' : '' }}">Absen</a></li>
-                        <li><a href="/laporan-absen" class="{{ Request::is('laporan-absen*') ? 'active' : '' }}">Laporan Absen</a>
+                        <li>
+                            <a href="/absen" class="{{ Request::is('absen*') ? 'active' : '' }}">Absen</a>
+                        </li>
+
+                        <li>
+                            <a href="/laporan-absen" class="{{ Request::is('laporan-absen*') ? 'active' : '' }}">Laporan Absen</a>
+                        </li>
+                        @endif
+
+                        @if ($dataUserAuth[1] == 'siswa')
+                        <li>
+                            <a href="/data-siswa/status/aktif/kelas/{{ $dataUserAuth[0]->siswa->kelas }}/{{ $dataUserAuth[0]->siswa->uuid }}" class="{{ Request::is('data-siswa*') ? 'active' : '' }}">Biodata</a>
+                        </li>
+                        @endif
+
+                        @if ($dataUserAuth[1] == 'guru')
+                        <li>
+                            <a href="/data-guru/{{ $dataUserAuth[0]->guru->uuid }}" class="{{ Request::is('data-guru*') ? 'active' : '' }}">Biodata</a>
                         </li>
                         @endif
                     </ul>
                 </li>
 
-                @if ($dataUserAuth[1] == 'admin')
+                {{-- data guru --}}
+                @if ($dataUserAuth[1] == 'admin' || $dataUserAuth[1] == 'super_admin')
                 <li class="submenu">
                     <a href="javascript:void(0);" class="menu-link">
                         <img src="{{ asset('assets/dashboard/img/icons/product.svg') }}" alt="img">
-                        @if ($dataUserAuth[1] == 'admin')
+                        @if ($dataUserAuth[1] == 'admin' || $dataUserAuth[1] == 'super_admin')
                         <span>Data Guru</span>
                         @endif
 
@@ -60,9 +78,13 @@
                     </a>
 
                     <ul>
-                        @if ($dataUserAuth[1] == 'admin')
+                        @if ($dataUserAuth[1] == 'admin' || $dataUserAuth[1] == 'super_admin')
                         <li>
-                            <a href="{{ route('data.guru') }}" class="{{ Request::is('data-guru*') ? 'active' : '' }}">Guru</a>
+                            <a href="{{ route('data.guru') }}" class="{{ Request::is('data-guru*') ? 'active' : '' }}">Daftar Guru</a>
+                        </li>
+
+                        <li>
+                            <a href="{{ route('data.absen.guru') }}" class="{{ Request::is('data-absen/guru*') ? 'active' : '' }}">Absen</a>
                         </li>
                         @endif
                     </ul>

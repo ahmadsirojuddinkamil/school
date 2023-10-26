@@ -10,7 +10,7 @@ class SiswaService
 {
     public function getStatusSiswaActiveOrNot()
     {
-        $getAllSiswa = Siswa::latest()->pluck('tahun_lulus');
+        $getAllSiswa = Siswa::latest()->pluck('tahun_keluar');
 
         $statusSiswa = [
             'belum_lulus' => 0,
@@ -55,8 +55,8 @@ class SiswaService
     {
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromCaller)->first();
 
-        if (! $getDataSiswa) {
-            return abort(404);
+        if (!$getDataSiswa) {
+            return redirect('/data-siswa/' . $saveUuidFromCaller . '/edit')->with('error', 'Data siswa tidak ditemukan!');
         }
 
         if (isset($validateData['foto_new'])) {
@@ -69,36 +69,46 @@ class SiswaService
         }
 
         $getDataSiswa->update([
-            'nama_lengkap' => $validateData['nama_lengkap'],
-            'email' => $validateData['email'],
+            'name' => $validateData['name'],
             'nisn' => $validateData['nisn'],
             'kelas' => $validateData['kelas'] ?? null,
-            'asal_sekolah' => $validateData['asal_sekolah'],
-            'alamat' => $validateData['alamat'],
-            'telpon_siswa' => $validateData['telpon_siswa'],
-            'jenis_kelamin' => $validateData['jenis_kelamin'],
             'tempat_lahir' => $validateData['tempat_lahir'],
             'tanggal_lahir' => $validateData['tanggal_lahir'],
-            'tahun_daftar' => $validateData['tahun_daftar'],
+            'agama' => $validateData['agama'],
+            'jenis_kelamin' => $validateData['jenis_kelamin'],
+            'asal_sekolah' => $validateData['asal_sekolah'],
+            'nem' => $validateData['nem'],
             'tahun_lulus' => $validateData['tahun_lulus'],
-            'jurusan' => $validateData['jurusan'],
+            'alamat_rumah' => $validateData['alamat_rumah'],
+            'provinsi' => $validateData['provinsi'],
+            'kecamatan' => $validateData['kecamatan'],
+            'kelurahan' => $validateData['kelurahan'],
+            'kode_pos' => $validateData['kode_pos'],
+            'email' => $validateData['email'],
+            'no_telpon' => $validateData['no_telpon'],
+            'tahun_daftar' => $validateData['tahun_daftar'],
+            'tahun_keluar' => $validateData['tahun_keluar'],
+            'foto' => $changePublicToStoragePath ?? $validateData['foto_old'],
+            'nama_bank' => $validateData['nama_bank'],
+            'nama_buku_rekening' => $validateData['nama_buku_rekening'],
+            'no_rekening' => $validateData['no_rekening'],
             'nama_ayah' => $validateData['nama_ayah'],
             'nama_ibu' => $validateData['nama_ibu'],
+            'nama_wali' => $validateData['nama_wali'],
             'telpon_orang_tua' => $validateData['telpon_orang_tua'],
-            'foto' => $changePublicToStoragePath ?? $validateData['foto_old'],
         ]);
     }
 
     public function checkGraduatedUuidOrNot($saveUuidFromCaller)
     {
-        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
             return redirect()->route('siswa.graduated')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
     }
 
     public function checkEditUuidOrNot($saveUuidFromCaller)
     {
-        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
     }
@@ -114,21 +124,21 @@ class SiswaService
 
     public function checkUpdateUuidOrNot($saveUuidFromCaller)
     {
-        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
             return abort(404);
         }
     }
 
     public function checkValidYear($saveYearFromCaller)
     {
-        if (! preg_match('/^\d{4}$/', $saveYearFromCaller)) {
+        if (!preg_match('/^\d{4}$/', $saveYearFromCaller)) {
             return abort(404);
         }
     }
 
     public function checkDeleteUuidOrNot($saveUuidFromCaller)
     {
-        if (! preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
             return abort(404);
         }
     }

@@ -7,12 +7,16 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard | siswa kelas {{ $saveClassFromRoute }}</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-    </script>
+    @include('siswa::bases.css')
+    @include('siswa::bases.js')
 
-    @include('siswa::bases.siswa.css')
-    @include('siswa::bases.siswa.js')
+    <style>
+        .link-with-margin {
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -43,15 +47,21 @@
                                 </div>
                             </div>
 
-                            @include('siswa::components.siswa.sweetalert-success')
-                            @include('siswa::components.siswa.sweetalert-error')
+                            @include('siswa::components.sweetalert-success')
+                            @include('siswa::components.sweetalert-error')
 
                             <div class="wordset">
                                 <ul>
-                                    @include('siswa::components.siswa.download-pdf-active')
-                                    @include('siswa::components.siswa.download-excel-active')
+                                    <a href="{{ route('siswa.active.download.zip.pdf', ['save_class_from_event' => $saveClassFromRoute ]) }}" class="link-with-margin">
+                                        <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
+                                    </a>
+
+                                    <a href="{{ route('siswa.active.download.excel.zip', ['save_class_from_event' => $saveClassFromRoute ]) }}" class="link-with-margin">
+                                        <img src="{{ asset('assets/dashboard/img/icons/excel.svg') }}" alt="img">
+                                    </a>
                                 </ul>
                             </div>
+
                         </div>
 
                         <div class="table-responsive">
@@ -60,9 +70,8 @@
                                     <tr>
                                         <td>#</td>
                                         <th>Foto</th>
-                                        <th>Nama Lengkap</th>
+                                        <th>Nama</th>
                                         <th>NISN</th>
-                                        <th>Jurusan</th>
                                         <th>Telpon</th>
                                         <th>Email</th>
                                         <th>Jenis Kelamin</th>
@@ -81,10 +90,9 @@
                                             </a>
                                         </td>
 
-                                        <td>{{ $siswa->nama_lengkap }}</td>
+                                        <td>{{ $siswa->name }}</td>
                                         <td>{{ $siswa->nisn }}</td>
-                                        <td>{{ $siswa->jurusan }}</td>
-                                        <td>{{ $siswa->telpon_siswa }}</td>
+                                        <td>{{ $siswa->no_telpon }}</td>
                                         <td>{{ $siswa->email }}</td>
                                         <td>{{ $siswa->jenis_kelamin }}</td>
                                         <td class="actions">
@@ -96,6 +104,7 @@
                                                 <img src="{{ asset('assets/dashboard/img/icons/edit.svg') }}" alt="img">
                                             </a>
 
+                                            @if($dataUserAuth[1] == 'super_admin')
                                             <button class="action-button" data-bs-toggle="modal" data-bs-target="#exampleModal{{ $siswa->uuid }}">
                                                 <img src="{{ asset('assets/dashboard/img/icons/delete.svg') }}" alt="img">
                                             </button>
@@ -125,6 +134,7 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            @endif
                                         </td>
 
                                     </tr>
