@@ -19,6 +19,6 @@ class PpdbDatabaseSeeder extends Seeder
 
         // $this->call("OthersTableSeeder");
 
-        Ppdb::factory(500)->create();
+        Ppdb::factory(100)->create();
     }
 }

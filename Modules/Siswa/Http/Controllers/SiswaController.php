@@ -8,19 +8,14 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
 use Modules\Siswa\Entities\Siswa;
-use Modules\Siswa\Exports\ExportSiswaActive;
-use Modules\Siswa\Exports\ExportSiswaGraduated;
-use Modules\Siswa\Http\Requests\DownloadExcelActiveRequest;
-use Modules\Siswa\Http\Requests\DownloadExcelGraduatedRequest;
-use Modules\Siswa\Http\Requests\DownloadPdfActiveRequest;
-use Modules\Siswa\Http\Requests\DownloadPdfGraduatedRequest;
-use Modules\Siswa\Http\Requests\UpdateSiswaRequest;
+use Modules\Siswa\Exports\{ExportSiswaActive, ExportSiswaGraduated};
+use Modules\Siswa\Http\Requests\{UpdateSiswaRequest};
 use Modules\Siswa\Services\SiswaService;
+use ZipArchive;
 
 class SiswaController extends Controller
 {
     protected $userService;
-
     protected $siswaService;
 
     public function __construct(UserService $userService, SiswaService $siswaService)
@@ -34,7 +29,7 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getStatusSiswa = $this->siswaService->getStatusSiswaActiveOrNot();
 
-        return view('siswa::pages.siswa.status', compact('dataUserAuth', 'getStatusSiswa'));
+        return view('siswa::layouts.admin.status', compact('dataUserAuth', 'getStatusSiswa'));
     }
 
     public function getListClassSiswa()
@@ -42,16 +37,16 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getListClassSiswa = $this->siswaService->getListSiswaClass();
 
-        if (! $getListClassSiswa) {
-            return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
+        if (!$getListClassSiswa) {
+            return redirect('/data-siswa/status/aktif/kelas')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
-        return view('siswa::pages.siswa.list_class', compact('dataUserAuth', 'getListClassSiswa'));
+        return view('siswa::layouts.admin.list_class', compact('dataUserAuth', 'getListClassSiswa'));
     }
 
     public function showSiswaClass($saveClassFromRoute)
     {
-        if (! is_numeric($saveClassFromRoute)) {
+        if (!is_numeric($saveClassFromRoute)) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -62,12 +57,12 @@ class SiswaController extends Controller
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
-        return view('siswa::pages.siswa.show_class', compact('dataUserAuth', 'saveClassFromRoute', 'getListSiswa'));
+        return view('siswa::layouts.admin.show_class', compact('dataUserAuth', 'saveClassFromRoute', 'getListSiswa'));
     }
 
     public function showSiswaActive($saveClassFromRoute, $saveUuidFromRoute)
     {
-        if (! is_numeric($saveClassFromRoute) || ! in_array($saveClassFromRoute, ['10', '11', '12'])) {
+        if (!is_numeric($saveClassFromRoute) || !in_array($saveClassFromRoute, ['10', '11', '12'])) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
@@ -76,102 +71,316 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
 
-        if (! $getDataSiswa) {
+        if (!$getDataSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
-        return view('siswa::pages.siswa.show_active', compact('dataUserAuth', 'getDataSiswa'));
+        return view('siswa::layouts.admin.show_active', compact('dataUserAuth', 'getDataSiswa'));
     }
 
-    public function downloadPdfSiswaActive(DownloadPdfActiveRequest $request)
+    public function downloadPdfSiswaActive($saveUuidFromCall)
     {
-        $validateData = $request->validated();
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
+            return redirect('data-siswa/status/aktif/kelas')->with(['error' => 'Data siswa tidak valid!']);
+        }
 
-        if (! is_numeric($validateData['kelas']) || ! in_array($validateData['kelas'], ['10', '11', '12'])) {
+        $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
+
+        if (!$dataSiswa) {
+            return redirect('data-siswa/status/aktif/kelas')->with(['error' => 'Data siswa tidak ditemukan!']);
+        }
+
+        $pdf = DomPDF::loadView('siswa::layouts.admin.pdf_active', [
+            'siswa' => $dataSiswa,
+        ]);
+
+        return $pdf->download('laporan pdf siswa ' . $dataSiswa['name'] . '.pdf');
+    }
+
+    public function downloadZipSiswaActivePdf($saveClassFromCall)
+    {
+        if (!is_numeric($saveClassFromCall) || !in_array($saveClassFromCall, ['10', '11', '12'])) {
             return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
         }
 
-        $getDataSiswaActive = Siswa::where('kelas', $validateData['kelas'])->latest()->get();
-        $totalSiswaActive = $getDataSiswaActive->count();
+        $dataSiswa = Siswa::where('kelas', $saveClassFromCall)->latest()->get();
 
-        if ($getDataSiswaActive->isEmpty()) {
-            return abort(404);
+        if ($dataSiswa->isEmpty()) {
+            return redirect('/data-siswa/status/aktif/kelas/' . $saveClassFromCall)->with('error', 'Data siswa di kelas ini tidak ada!');
         }
 
-        $pdf = DomPDF::loadView('siswa::layouts.siswa.pdf_active', [
-            'dataSiswaActive' => $getDataSiswaActive,
-            'totalSiswaActive' => $totalSiswaActive,
+        foreach ($dataSiswa as $siswa) {
+            $pdf = DomPDF::loadView('siswa::layouts.admin.pdf_active', [
+                'siswa' => $siswa,
+            ]);
+
+            $pdf->save(public_path('storage/document_laporan_pdf_siswa/' . $siswa->name . '.pdf'));
+        }
+
+        // Star ZIP
+        $folderPath = public_path('storage/document_laporan_pdf_siswa');
+        $fileCount = count(array_diff(scandir($folderPath), ['.', '..']));
+
+        if ($fileCount < 1) {
+            return redirect('/data-siswa/status/aktif/kelas/' . $saveClassFromCall)->with('error', 'Laporan pdf siswa tidak ada!');
+        }
+
+        $zipFileName = 'laporan_pdf_siswa_kelas_' . $saveClassFromCall . '.zip';
+        $zip = new ZipArchive;
+
+        if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
+            return redirect('/data-siswa/status/sudah-lulus')->with(['error' => 'Gagal membuat arsip ZIP']);
+        }
+
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            $fileName = basename($file);
+            $zip->addFile($file, $fileName);
+        }
+
+        $zip->close();
+        File::deleteDirectory($folderPath);
+        File::makeDirectory($folderPath, 0755, true, true);
+
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+        // End ZIP
+    }
+
+    public function downloadZipSiswaActiveExcel($saveClassFromCall)
+    {
+        if (!is_numeric($saveClassFromCall) || !in_array($saveClassFromCall, ['10', '11', '12'])) {
+            return redirect('data-siswa/status/aktif/kelas')->with(['error' => 'Kelas tidak di temukan!']);
+        }
+
+        // Star EXCEL
+        $listSiswa =  Siswa::where('kelas', $saveClassFromCall)->latest()->get();
+
+        if ($listSiswa->isEmpty()) {
+            return redirect('/data-siswa/status/aktif/kelas/' . $saveClassFromCall)->with('error', 'Data siswa kelas ini tidak ditemukan!');
+        }
+
+        foreach ($listSiswa as $siswa) {
+            $fileName = 'biodata ' . $siswa['name'] . 'kelas ' . $saveClassFromCall . '.xlsx';
+
+            ExportExcel::store(new ExportSiswaActive($siswa->uuid), $fileName, 'public');
+
+            $sourceDirectory = public_path('storage/');
+            $files = scandir($sourceDirectory);
+
+            foreach ($files as $file) {
+                if (pathinfo($file, PATHINFO_EXTENSION) == 'xlsx' && strpos($file, 'biodata') !== false) {
+                    $sourcePath = public_path('storage/' . $file);
+                    $destinationPath = public_path('storage/document_laporan_excel_siswa/' . $file);
+                    File::move($sourcePath, $destinationPath);
+                }
+            }
+        }
+        // End EXCEL
+
+        // Star ZIP
+        $folderPath = public_path('storage/document_laporan_excel_siswa');
+        $fileCount = count(array_diff(scandir($folderPath), ['.', '..']));
+
+        if ($fileCount < 1) {
+            return redirect('/data-siswa/status/aktif/kelas/' . $saveClassFromCall)->with('error', 'Laporan excel tidak ditemukan!');
+        }
+
+        $zipFileName = 'laporan_excel_siswa_kelas_' . $saveClassFromCall . '.zip';
+        $zip = new ZipArchive;
+
+        if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
+            return redirect('/data-siswa/status/aktif/kelas/' . $saveClassFromCall)->with(['error' => 'Gagal membuat arsip ZIP']);
+        }
+
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            $fileName = basename($file);
+            $zip->addFile($file, $fileName);
+        }
+
+        $zip->close();
+        File::deleteDirectory($folderPath);
+        File::makeDirectory($folderPath, 0755, true, true);
+
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+        // End ZIP
+    }
+
+    public function downloadExcelSiswaActive($saveUuidFromCall)
+    {
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
+            return redirect('data-siswa/status/aktif/kelas')->with(['error' => 'Data siswa tidak valid!']);
+        }
+
+        $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
+
+        if (!$dataSiswa) {
+            return redirect('data-siswa/status/aktif/kelas')->with(['error' => 'Data siswa tidak ditemukan!']);
+        }
+
+        return ExportExcel::download(new ExportSiswaActive($saveUuidFromCall), 'laporan siswa ' . $dataSiswa['name'] . '.xlsx');
+    }
+
+    public function downloadPdfSiswaGraduated($saveUuidFromCall)
+    {
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
+            return redirect('data-siswa/status/sudah-lulus')->with(['error' => 'Data siswa tidak valid!']);
+        }
+
+        $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
+
+        if (!$dataSiswa) {
+            return redirect('data-siswa/' . $saveUuidFromCall . '/status/sudah-lulus')->with(['error' => 'Data siswa tidak ditemukan!']);
+        }
+
+        $pdf = DomPDF::loadView('siswa::layouts.admin.pdf_graduated', [
+            'siswa' => $dataSiswa,
         ]);
 
-        return $pdf->download('laporan pdf siswa kelas '.$validateData['kelas'].'.pdf');
+        return $pdf->download('laporan pdf siswa ' . $dataSiswa['name'] . '.pdf');
     }
 
-    public function downloadExcelSiswaActive(DownloadExcelActiveRequest $request)
+    public function downloadZipSiswaGraduatedPdf($saveYearFromCall)
     {
-        $validateData = $request->validated();
-
-        if (! is_numeric($validateData['kelas']) || ! in_array($validateData['kelas'], ['10', '11', '12'])) {
-            return redirect()->route('siswa.status')->with(['error' => 'Kelas tidak di temukan!']);
+        if (!preg_match('/^\d{4}$/', $saveYearFromCall)) {
+            return redirect('/data-siswa/status/sudah-lulus')->with('error', 'Data siswa tidak valid!');
         }
 
-        $getDataSiswaActive = Siswa::where('kelas', $validateData['kelas'])->latest()->get();
+        $dataSiswa = Siswa::where('tahun_keluar', $saveYearFromCall)->latest()->get();
 
-        if ($getDataSiswaActive->isEmpty()) {
-            return abort(404);
+        if ($dataSiswa->isEmpty()) {
+            return redirect('/data-siswa/status/sudah-lulus')->with('error', 'Data siswa lulus tidak ditemukan!');
         }
 
-        return ExportExcel::download(new ExportSiswaActive($validateData['kelas']), 'laporan siswa aktif kelas '.$validateData['kelas'].'.xlsx');
+        foreach ($dataSiswa as $siswa) {
+            $pdf = DomPDF::loadView('siswa::layouts.admin.pdf_graduated', [
+                'siswa' => $siswa,
+            ]);
+
+            $pdf->save(public_path('storage/document_laporan_pdf_siswa_graduated/' . $siswa->name . '.pdf'));
+        }
+
+        // Star ZIP
+        $folderPath = public_path('storage/document_laporan_pdf_siswa_graduated');
+        $fileCount = count(array_diff(scandir($folderPath), ['.', '..']));
+
+        if ($fileCount < 1) {
+            return redirect('/data-siswa/status/sudah-lulus')->with('error', 'Laporan pdf siswa tidak ada!');
+        }
+
+        $zipFileName = 'laporan_pdf_siswa_lulus_tahun_' . $saveYearFromCall . '.zip';
+        $zip = new ZipArchive;
+
+        if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
+            return redirect('/data-siswa/status/sudah-lulus')->with(['error' => 'Gagal membuat arsip ZIP']);
+        }
+
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            $fileName = basename($file);
+            $zip->addFile($file, $fileName);
+        }
+
+        $zip->close();
+        File::deleteDirectory($folderPath);
+        File::makeDirectory($folderPath, 0755, true, true);
+
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+        // End ZIP
     }
 
-    public function downloadPdfSiswaGraduated(DownloadPdfGraduatedRequest $request)
+    public function downloadZipSiswaGraduatedExcel($saveYearFromCall)
     {
-        $validateData = $request->validated();
-        $this->siswaService->checkValidYear($validateData['tahun_lulus']);
-
-        $getDataSiswaGraduated = Siswa::where('tahun_lulus', $validateData['tahun_lulus'])->latest()->get();
-        $totalSiswaGraduated = $getDataSiswaGraduated->count();
-
-        if ($getDataSiswaGraduated->isEmpty()) {
-            return abort(404);
+        if (!preg_match('/^\d{4}$/', $saveYearFromCall)) {
+            return redirect('/data-siswa/status/sudah-lulus')->with('error', 'Data siswa tidak valid!');
         }
 
-        $pdf = DomPDF::loadView('siswa::layouts.siswa.pdf_graduated', [
-            'dataSiswaGraduated' => $getDataSiswaGraduated,
-            'totalSiswaGraduated' => $totalSiswaGraduated,
-        ]);
+        // Star EXCEL
+        $dataSiswa = Siswa::where('tahun_keluar', $saveYearFromCall)->latest()->get();
 
-        return $pdf->download('laporan pdf siswa lulus tahun '.$validateData['tahun_lulus'].'.pdf');
+        if ($dataSiswa->isEmpty()) {
+            return redirect('/data-siswa/status/sudah-lulus')->with('error', 'Data siswa lulus tidak ditemukan!');
+        }
+
+        foreach ($dataSiswa as $siswa) {
+            $fileName = 'biodata ' . $siswa['name'] . ' tahun ' . $saveYearFromCall . '.xlsx';
+
+            ExportExcel::store(new ExportSiswaGraduated($siswa->uuid), $fileName, 'public');
+
+            $sourceDirectory = public_path('storage/');
+            $files = scandir($sourceDirectory);
+
+            foreach ($files as $file) {
+                if (pathinfo($file, PATHINFO_EXTENSION) == 'xlsx' && strpos($file, 'biodata') !== false) {
+                    $sourcePath = public_path('storage/' . $file);
+                    $destinationPath = public_path('storage/document_laporan_excel_siswa_graduated/' . $file);
+                    File::move($sourcePath, $destinationPath);
+                }
+            }
+        }
+        // End EXCEL
+
+        // Star ZIP
+        $folderPath = public_path('storage/document_laporan_excel_siswa_graduated');
+        $fileCount = count(array_diff(scandir($folderPath), ['.', '..']));
+
+        if ($fileCount < 1) {
+            return redirect('/data-siswa/status/sudah-lulus')->with('error', 'Laporan excel tidak ditemukan!');
+        }
+
+        $zipFileName = 'laporan_excel_siswa_tahun_' . $saveYearFromCall . '.zip';
+        $zip = new ZipArchive;
+
+        if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
+            return redirect('/data-siswa/status/sudah-lulus')->with('error', 'Gagal membuat arsip ZIP!');
+        }
+
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            $fileName = basename($file);
+            $zip->addFile($file, $fileName);
+        }
+
+        $zip->close();
+        File::deleteDirectory($folderPath);
+        File::makeDirectory($folderPath, 0755, true, true);
+
+        return response()->download($zipFileName)->deleteFileAfterSend(true);
+        // End ZIP
     }
 
-    public function downloadExcelSiswaGraduated(DownloadExcelGraduatedRequest $request)
+    public function downloadExcelSiswaGraduated($saveUuidFromCall)
     {
-        $validateData = $request->validated();
-        $this->siswaService->checkValidYear($validateData['tahun_lulus']);
-
-        $getDataSiswaGraduated = Siswa::where('tahun_lulus', $validateData['tahun_lulus'])->latest()->get();
-
-        if ($getDataSiswaGraduated->isEmpty()) {
-            return abort(404);
+        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
+            return redirect('data-siswa/status/sudah-lulus')->with(['error' => 'Data siswa tidak valid!']);
         }
 
-        return ExportExcel::download(new ExportSiswaGraduated($validateData['tahun_lulus']), 'laporan siswa lulus tahun '.$validateData['tahun_lulus'].'.xlsx');
+        $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
+
+        if (!$dataSiswa) {
+            return redirect('data-siswa/' . $saveUuidFromCall . '/status/sudah-lulus')->with(['error' => 'Data siswa tidak ditemukan!']);
+        }
+
+        return ExportExcel::download(new ExportSiswaGraduated($dataSiswa->uuid), 'laporan excel siswa ' . $dataSiswa['name'] . '.xlsx');
     }
 
     public function getListSiswaGraduated()
     {
         $dataUserAuth = $this->userService->getProfileUser();
 
-        $getSiswaGraduated = Siswa::whereNotNull('tahun_lulus')->latest()->get();
+        $getSiswaGraduated = Siswa::whereNotNull('tahun_keluar')->latest()->get();
 
         if ($getSiswaGraduated->isEmpty()) {
-            return redirect()->route('siswa.status')->with(['error' => 'Data siswa lulus tidak ditemukan!']);
+            return redirect('/data-siswa/status')->with(['error' => 'Data siswa lulus tidak ditemukan!']);
         }
 
-        $getDataSiswaGraduated = Siswa::whereNotNull('tahun_lulus')->pluck('tahun_lulus')->toArray();
-        $ListYearGraduated = array_values(array_unique($getDataSiswaGraduated));
-        rsort($ListYearGraduated);
+        $ListYearGraduated = Siswa::whereNotNull('tahun_keluar')
+            ->distinct()
+            ->orderBy('tahun_keluar', 'desc')
+            ->pluck('tahun_keluar')
+            ->toArray();
 
-        return view('siswa::pages.siswa.graduated', compact('dataUserAuth', 'getSiswaGraduated', 'ListYearGraduated'));
+        return view('siswa::layouts.admin.graduated', compact('dataUserAuth', 'getSiswaGraduated', 'ListYearGraduated'));
     }
 
     public function showSiswaGraduated($saveUuidFromRoute)
@@ -180,11 +389,11 @@ class SiswaController extends Controller
         $dataUserAuth = $this->userService->getProfileUser();
 
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
-        if (! $getDataSiswa) {
+        if (!$getDataSiswa) {
             return redirect()->route('siswa.graduated')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
-        return view('siswa::pages.siswa.show_graduated', compact('dataUserAuth', 'getDataSiswa'));
+        return view('siswa::layouts.admin.show_graduated', compact('dataUserAuth', 'getDataSiswa'));
     }
 
     public function edit($saveUuidFromRoute)
@@ -193,23 +402,28 @@ class SiswaController extends Controller
         $this->siswaService->checkEditUuidOrNot($saveUuidFromRoute);
 
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
-        if (! $getDataSiswa) {
+
+        if (!$getDataSiswa) {
             return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
         $timeBox = $this->siswaService->getEditTime();
 
-        return view('siswa::pages.siswa.edit', compact('dataUserAuth', 'getDataSiswa', 'timeBox'));
+        return view('siswa::layouts.admin.edit', compact('dataUserAuth', 'getDataSiswa', 'timeBox'));
     }
 
     public function update(UpdateSiswaRequest $request, $saveUuidFromRoute)
     {
-        $this->siswaService->checkUpdateUuidOrNot($saveUuidFromRoute);
-
         $validateData = $request->validated();
+        $this->siswaService->checkUpdateUuidOrNot($saveUuidFromRoute);
         $this->siswaService->updateDataSiswa($validateData, $saveUuidFromRoute);
 
-        return redirect()->route('siswa.status')->with(['success' => 'Data siswa berhasil di edit!']);
+        $dataUserAuth = $this->userService->getProfileUser();
+        if ($dataUserAuth[1] == 'siswa') {
+            return redirect('/data-siswa/status/aktif/kelas/' . $dataUserAuth[0]->siswa->kelas . '/' . $dataUserAuth[0]->siswa->uuid)->with(['success' => 'Data siswa berhasil di edit!']);
+        }
+
+        return redirect('/data-siswa/status')->with(['success' => 'Data siswa berhasil di edit!']);
     }
 
     public function delete($saveUuidFromRoute)
@@ -217,8 +431,9 @@ class SiswaController extends Controller
         $this->siswaService->checkDeleteUuidOrNot($saveUuidFromRoute);
 
         $getDataSiswa = Siswa::where('uuid', $saveUuidFromRoute)->first();
-        if (! $getDataSiswa) {
-            return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
+
+        if (!$getDataSiswa) {
+            return redirect('/data-siswa/status')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
         if ($getDataSiswa->foto !== 'assets/dashboard/img/foto-siswa.png') {

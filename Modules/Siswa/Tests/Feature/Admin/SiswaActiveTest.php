@@ -25,9 +25,9 @@ class SiswaActiveTest extends TestCase
         $this->actingAs($user);
         Siswa::SiswaActiveFactory()->create();
 
-        $response = $this->get('/siswa-data/status/aktif/kelas');
+        $response = $this->get('/data-siswa/status/aktif/kelas');
         $response->assertStatus(200);
-        $response->assertViewIs('siswa::pages.siswa.list_class');
+        $response->assertViewIs('siswa::layouts.admin.list_class');
         $response->assertSeeText('Daftar Kelas');
 
         $response->assertViewHas('dataUserAuth');
@@ -47,7 +47,7 @@ class SiswaActiveTest extends TestCase
         $this->actingAs($user);
 
         Siswa::SiswaActiveFactory()->create();
-        $response = $this->get('/siswa-data/status/aktif/kelas');
+        $response = $this->get('/data-siswa/status/aktif/kelas');
         $response->assertStatus(404);
     }
 
@@ -56,7 +56,7 @@ class SiswaActiveTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->get('/siswa-data/status/aktif/kelas');
+        $response = $this->get('/data-siswa/status/aktif/kelas');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data siswa tidak ditemukan!', session('error'));
@@ -69,9 +69,9 @@ class SiswaActiveTest extends TestCase
 
         $siswa = Siswa::SiswaActiveFactory()->create();
 
-        $response = $this->get('/siswa-data/status/aktif/kelas/'.$siswa->kelas);
+        $response = $this->get('/data-siswa/status/aktif/kelas/' . $siswa->kelas);
         $response->assertStatus(200);
-        $response->assertViewIs('siswa::pages.siswa.show_class');
+        $response->assertViewIs('siswa::layouts.admin.show_class');
         $response->assertSeeText('Daftar Siswa Kelas :');
 
         $response->assertViewHas('dataUserAuth');
@@ -96,7 +96,7 @@ class SiswaActiveTest extends TestCase
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
-        $response = $this->get('/siswa-data/status/aktif/kelas/'.$siswa->kelas);
+        $response = $this->get('/data-siswa/status/aktif/kelas/' . $siswa->kelas);
         $response->assertStatus(404);
     }
 
@@ -106,9 +106,9 @@ class SiswaActiveTest extends TestCase
         $this->actingAs($user);
 
         Siswa::SiswaActiveFactory()->create();
-        $response = $this->get('/siswa-data/status/aktif/kelas/target');
+        $response = $this->get('/data-siswa/status/aktif/kelas/target');
         $response->assertStatus(302);
-        $response->assertRedirect('/siswa-data/status');
+        $response->assertRedirect('/data-siswa/status');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Kelas tidak di temukan!', session('error'));
@@ -119,9 +119,9 @@ class SiswaActiveTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->get('/siswa-data/status/aktif/kelas/10');
+        $response = $this->get('/data-siswa/status/aktif/kelas/10');
         $response->assertStatus(302);
-        $response->assertRedirect('/siswa-data/status');
+        $response->assertRedirect('/data-siswa/status');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data siswa tidak ditemukan!', session('error'));
@@ -133,9 +133,9 @@ class SiswaActiveTest extends TestCase
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
-        $response = $this->get('/siswa-data/status/aktif/kelas/'.$siswa->kelas.'/'.$siswa->uuid);
+        $response = $this->get('/data-siswa/status/aktif/kelas/' . $siswa->kelas . '/' . $siswa->uuid);
         $response->assertStatus(200);
-        $response->assertViewIs('siswa::pages.siswa.show_active');
+        $response->assertViewIs('siswa::layouts.admin.show_active');
         $response->assertSeeText('Biodata Siswa');
 
         $response->assertViewHas('dataUserAuth');
@@ -150,11 +150,11 @@ class SiswaActiveTest extends TestCase
 
     public function test_show_data_siswa_active_page_failed_displayed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $user = $this->roleService->createRoleAndUserGuru();
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
-        $response = $this->get('/siswa-data/status/aktif/kelas/'.$siswa->kelas.'/'.$siswa->uuid);
+        $response = $this->get('/data-siswa/status/aktif/kelas/' . $siswa->kelas . '/' . $siswa->uuid);
         $response->assertStatus(404);
     }
 
@@ -164,9 +164,9 @@ class SiswaActiveTest extends TestCase
         $this->actingAs($user);
 
         Siswa::SiswaActiveFactory()->create();
-        $response = $this->get('/siswa-data/status/aktif/kelas/target/uuid');
+        $response = $this->get('/data-siswa/status/aktif/kelas/target/uuid');
         $response->assertStatus(302);
-        $response->assertRedirect('/siswa-data/status');
+        $response->assertRedirect('/data-siswa/status');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Kelas tidak di temukan!', session('error'));
@@ -177,9 +177,9 @@ class SiswaActiveTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->get('/siswa-data/status/aktif/kelas/10/b615e88d-3568-496e-b5b9-3c1452fff255');
+        $response = $this->get('/data-siswa/status/aktif/kelas/10/b615e88d-3568-496e-b5b9-3c1452fff255');
         $response->assertStatus(302);
-        $response->assertRedirect('/siswa-data/status');
+        $response->assertRedirect('/data-siswa/status');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data siswa tidak ditemukan!', session('error'));

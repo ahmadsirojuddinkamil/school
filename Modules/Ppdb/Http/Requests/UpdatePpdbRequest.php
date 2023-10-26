@@ -16,7 +16,7 @@ class UpdatePpdbRequest extends FormRequest
         return [
             'email' => 'email|required',
             'nisn' => 'numeric|required',
-            'nama_lengkap' => 'string|required',
+            'name' => 'string|required',
             'asal_sekolah' => 'string|required',
             'alamat' => 'string|required',
             'telpon_siswa' => 'numeric|required',

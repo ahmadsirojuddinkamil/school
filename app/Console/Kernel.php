@@ -5,6 +5,7 @@ namespace App\Console;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 use Modules\Absen\Entities\Absen;
+use Modules\Guru\Entities\Guru;
 use Modules\Siswa\Entities\Siswa;
 use Ramsey\Uuid\Uuid;
 
@@ -15,35 +16,59 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
-
+        // Penjadwalan untuk Siswa
         $schedule->call(function () {
-            $allNisn = Siswa::pluck('nisn')->toArray();
-            $today = now();
+            $dataSiswa = Siswa::latest()->get();
+            $today = now()->format('Y-m-d');
 
-            foreach ($allNisn as $nisn) {
-                $latestAbsen = Absen::where('nisn', $nisn)
-                    ->latest('created_at')
-                    ->first();
+            foreach ($dataSiswa as $siswa) {
+                $latestAbsen = $siswa->absens()->latest()->first()->updated_at->format('Y-m-d');
 
-                if ($latestAbsen) {
-                    $latestAbsenDate = $latestAbsen->created_at->format('Y-m-d');
-
-                    if ($latestAbsenDate !== $today->format('Y-m-d')) {
-                        $findSiswa = Siswa::where('nisn', $nisn)->first();
-                        Absen::create([
-                            'uuid' => Uuid::uuid4()->toString(),
-                            'name' => $findSiswa->nama_lengkap,
-                            'nisn' => $nisn,
-                            'status' => $findSiswa->kelas,
-                            'persetujuan' => 'setuju',
-                            'kehadiran' => 'tidak_hadir',
-                        ]);
-                    }
+                if ($latestAbsen !== $today) {
+                    Absen::create([
+                        'siswa_id' => $siswa->id,
+                        'guru_id' => null,
+                        'uuid' => Uuid::uuid4()->toString(),
+                        'status' => $siswa->kelas,
+                        'keterangan' => 'tidak_hadir',
+                        'persetujuan' => 'setuju',
+                    ]);
                 }
             }
         })->timezone('Asia/Jakarta')
-            ->dailyAt('14:01');
+            ->cron('01 14 * * *') // Menjadwalkan pada jam 14:13
+            ->everyMinute() // Menjalankan setiap menit dalam jangka waktu 10 menit (hingga 14:23)
+            ->skip(function () {
+                return now()->format('i') >= 10; // Menghentikan penjadwalan setelah 14:23
+            });
+        // ->dailyAt('14:26');
+
+        // Penjadwalan untuk Guru
+        $schedule->call(function () {
+            $dataGuru = Guru::latest()->get();
+            $today = now()->format('Y-m-d');
+
+            foreach ($dataGuru as $guru) {
+                $latestAbsen = $guru->absens()->latest()->first()->updated_at->format('Y-m-d');
+
+                if ($latestAbsen !== $today) {
+                    Absen::create([
+                        'siswa_id' => null,
+                        'guru_id' => $guru->id,
+                        'uuid' => Uuid::uuid4()->toString(),
+                        'status' => 'guru',
+                        'keterangan' => 'tidak_hadir',
+                        'persetujuan' => 'setuju',
+                    ]);
+                }
+            }
+        })->timezone('Asia/Jakarta')
+            ->cron('01 14 * * *')
+            ->everyMinute()
+            ->skip(function () {
+                return now()->format('i') >= 10;
+            });
+        // ->dailyAt('14:26');
     }
 
     /**
@@ -51,7 +76,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

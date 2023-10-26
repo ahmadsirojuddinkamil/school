@@ -18,8 +18,8 @@ class SiswaDatabaseSeeder extends Seeder
         Model::unguard();
 
         // Siswa::factory(50)->create();
-        Siswa::SiswaActiveFactory()->count(3)->create();
-        // Siswa::siswaGraduatedFactory()->count(10)->create();
+        Siswa::SiswaActiveFactory()->count(50)->create();
+        Siswa::siswaGraduatedFactory()->count(15)->create();
 
         // $this->call("OthersTableSeeder");
     }

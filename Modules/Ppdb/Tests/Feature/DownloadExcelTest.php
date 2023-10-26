@@ -25,7 +25,7 @@ class DownloadExcelTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/download/excel/'.$ppdb->tahun_daftar);
+        $response = $this->post('/data-ppdb/download/excel/' . $ppdb->tahun_daftar);
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
@@ -36,7 +36,7 @@ class DownloadExcelTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/download/excel/tahun');
+        $response = $this->post('/data-ppdb/download/excel/tahun');
         $response->assertStatus(404);
     }
 
@@ -46,7 +46,7 @@ class DownloadExcelTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/download/excel/5000000');
+        $response = $this->post('/data-ppdb/download/excel/5000000');
         $response->assertStatus(404);
     }
 
@@ -56,7 +56,7 @@ class DownloadExcelTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->post('/ppdb-data/download/excel/'.$ppdb);
+        $response = $this->post('/data-ppdb/download/excel/' . $ppdb);
         $response->assertStatus(404);
     }
 }

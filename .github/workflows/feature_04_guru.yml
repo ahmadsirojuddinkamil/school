@@ -1,0 +1,21 @@
+on:
+  push:
+    branches:
+      - feature_04_guru
+
+name: feature_04_guru
+
+jobs:
+  ContinuousIntegration:
+    name: Run Build and Linter
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v3
+
+      - name: Build Apps
+        run: |
+          composer install --no-scripts --no-interaction
+
+      - name: Standart Pint
+        run: ./vendor/bin/pint

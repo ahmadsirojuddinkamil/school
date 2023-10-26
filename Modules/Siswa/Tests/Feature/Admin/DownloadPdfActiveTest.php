@@ -25,7 +25,7 @@ class DownloadPdfActiveTest extends TestCase
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
-        $response = $this->post('/siswa-data/aktif/download/pdf', [
+        $response = $this->post('/data-siswa/aktif/download/pdf', [
             'kelas' => $siswa->kelas,
         ]);
         $response->assertStatus(200);
@@ -38,7 +38,7 @@ class DownloadPdfActiveTest extends TestCase
         $this->actingAs($user);
 
         Siswa::SiswaActiveFactory()->create();
-        $response = $this->post('/siswa-data/aktif/download/pdf', [
+        $response = $this->post('/data-siswa/aktif/download/pdf', [
             'kelas' => 'kelas',
         ]);
         $response->assertStatus(302);
@@ -51,7 +51,7 @@ class DownloadPdfActiveTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->post('/siswa-data/aktif/download/pdf', [
+        $response = $this->post('/data-siswa/aktif/download/pdf', [
             'kelas' => '10',
         ]);
         $response->assertStatus(404);
@@ -63,7 +63,7 @@ class DownloadPdfActiveTest extends TestCase
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
-        $response = $this->post('/siswa-data/aktif/download/pdf', [
+        $response = $this->post('/data-siswa/aktif/download/pdf', [
             'kelas' => $siswa->kelas,
         ]);
         $response->assertStatus(404);

@@ -16,8 +16,5 @@ jobs:
       - name: Build Apps
         run: composer install
 
-      # - name: Run Unit Tests
-      #   run: vendor/bin/phpunit
-
       - name: Standart Pint
         run: ./vendor/bin/pint

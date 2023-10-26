@@ -27,11 +27,13 @@ class DownloadZipAbsenSiswaTest extends TestCase
         $this->actingAs($user);
 
         Absen::LaporanZipAbsenSiswaFactory()->count(50)->create();
-        $response = $this->post('/absen-data/download/zip/class', [
+        $response = $this->post('/data-absen/download/zip/class', [
             'kelas' => '10',
         ]);
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/zip');
+
+        unlink('laporan_absen_kelas_10.zip');
     }
 
     public function test_download_zip_laporan_absen_class_failed_because_not_admin(): void
@@ -40,7 +42,7 @@ class DownloadZipAbsenSiswaTest extends TestCase
         $this->actingAs($user);
 
         Absen::LaporanZipAbsenSiswaFactory()->count(50)->create();
-        $response = $this->post('/absen-data/download/zip/class', [
+        $response = $this->post('/data-absen/download/zip/class', [
             'kelas' => '10',
         ]);
         $response->assertStatus(404);
@@ -52,7 +54,7 @@ class DownloadZipAbsenSiswaTest extends TestCase
         $this->actingAs($user);
 
         Absen::LaporanZipAbsenSiswaFactory()->count(50)->create();
-        $response = $this->post('/absen-data/download/zip/class', [
+        $response = $this->post('/data-absen/download/zip/class', [
             'kelas' => '',
         ]);
         $response->assertStatus(302);
@@ -65,11 +67,11 @@ class DownloadZipAbsenSiswaTest extends TestCase
         $this->actingAs($user);
 
         Absen::LaporanZipAbsenSiswaFactory()->count(50)->create();
-        $response = $this->post('/absen-data/download/zip/class', [
+        $response = $this->post('/data-absen/download/zip/class', [
             'kelas' => '20',
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Kelas tidak di temukan!', session('error'));
     }
@@ -79,11 +81,11 @@ class DownloadZipAbsenSiswaTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->post('/absen-data/download/zip/class', [
+        $response = $this->post('/data-absen/download/zip/class', [
             'kelas' => '11',
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/absen-data');
+        $response->assertRedirect('/data-absen');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data absen tidak ada!', session('error'));
     }

@@ -25,9 +25,9 @@ class EditSiswaTest extends TestCase
         $this->actingAs($user);
         $siswa = Siswa::SiswaActiveFactory()->create();
 
-        $response = $this->get('/siswa-data/'.$siswa->uuid.'/edit');
+        $response = $this->get('/data-siswa/' . $siswa->uuid . '/edit');
         $response->assertStatus(200);
-        $response->assertViewIs('siswa::pages.siswa.edit');
+        $response->assertViewIs('siswa::layouts.admin.edit');
         $response->assertSeeText('Edit data siswa');
 
         $response->assertViewHas('dataUserAuth');
@@ -46,11 +46,11 @@ class EditSiswaTest extends TestCase
 
     public function test_edit_siswa_page_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $user = $this->roleService->createRoleAndUserGuru();
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
-        $response = $this->get('/siswa-data/'.$siswa->uuid.'/edit');
+        $response = $this->get('/data-siswa/' . $siswa->uuid . '/edit');
         $response->assertStatus(404);
     }
 
@@ -59,9 +59,9 @@ class EditSiswaTest extends TestCase
         $user = $this->roleService->createRoleAndUserAdmin();
         $this->actingAs($user);
 
-        $responseParameterNotUuid = $this->get('/siswa-data/uuid/edit');
+        $responseParameterNotUuid = $this->get('/data-siswa/uuid/edit');
         $responseParameterNotUuid->assertStatus(302);
-        $responseParameterNotUuid->assertRedirect('/siswa-data/status');
+        $responseParameterNotUuid->assertRedirect('/data-siswa/status');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data siswa tidak ditemukan!', session('error'));
     }
@@ -72,9 +72,9 @@ class EditSiswaTest extends TestCase
         $this->actingAs($user);
 
         Siswa::SiswaActiveFactory()->create();
-        $responseParameterUuidNotFound = $this->get('/siswa-data/538e652b-81bf-4d2c-94ac-194ffdf515c1/edit');
+        $responseParameterUuidNotFound = $this->get('/data-siswa/538e652b-81bf-4d2c-94ac-194ffdf515c1/edit');
         $responseParameterUuidNotFound->assertStatus(302);
-        $responseParameterUuidNotFound->assertRedirect('/siswa-data/status');
+        $responseParameterUuidNotFound->assertRedirect('/data-siswa/status');
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data siswa tidak ditemukan!', session('error'));
     }
@@ -85,7 +85,7 @@ class EditSiswaTest extends TestCase
         $this->actingAs($user);
 
         $siswa = Siswa::siswaGraduatedFactory()->create();
-        $response = $this->put('/siswa-data/'.$siswa->uuid, [
+        $response = $this->put('/data-siswa/' . $siswa->uuid, [
             'nama_lengkap' => 'name ppdb change',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
@@ -105,7 +105,7 @@ class EditSiswaTest extends TestCase
             'foto_old' => 'assets/dashboard/img/foto-siswa.png',
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/siswa-data/status');
+        $response->assertRedirect('/data-siswa/status');
         $this->assertTrue(session()->has('success'));
         $this->assertEquals('Data siswa berhasil di edit!', session('success'));
     }
@@ -116,7 +116,7 @@ class EditSiswaTest extends TestCase
         $this->actingAs($user);
 
         $siswa = Siswa::siswaGraduatedFactory()->create();
-        $response = $this->put('/siswa-data/'.$siswa->uuid, [
+        $response = $this->put('/data-siswa/' . $siswa->uuid, [
             'nama_lengkap' => '',
             'email' => '',
             'nisn' => '',
@@ -141,11 +141,11 @@ class EditSiswaTest extends TestCase
 
     public function test_update_siswa_graduated_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $user = $this->roleService->createRoleAndUserGuru();
         $this->actingAs($user);
 
         $siswa = Siswa::siswaGraduatedFactory()->create();
-        $response = $this->put('/siswa-data/'.$siswa->uuid, [
+        $response = $this->put('/data-siswa/' . $siswa->uuid, [
             'nama_lengkap' => 'name ppdb change',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
@@ -173,7 +173,7 @@ class EditSiswaTest extends TestCase
         $this->actingAs($user);
 
         Siswa::siswaGraduatedFactory()->create();
-        $response = $this->put('/siswa-data/uuid', [
+        $response = $this->put('/data-siswa/uuid', [
             'nama_lengkap' => 'name ppdb change',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
@@ -201,7 +201,7 @@ class EditSiswaTest extends TestCase
         $this->actingAs($user);
 
         Siswa::siswaGraduatedFactory()->create();
-        $response = $this->put('/siswa-data/03fd305a-7bb4-4118-bab9-656a942a2edf', [
+        $response = $this->put('/data-siswa/03fd305a-7bb4-4118-bab9-656a942a2edf', [
             'nama_lengkap' => 'name ppdb change',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',

@@ -21,34 +21,89 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        Role::create(['name' => 'siswa']);
-        Role::create(['name' => 'guru']);
+        $faker = \Faker\Factory::create('id_ID');
+
+        Role::create(['name' => 'super_admin']);
         Role::create(['name' => 'admin']);
+        Role::create(['name' => 'tata_usaha']);
+        Role::create(['name' => 'satpam']);
+        Role::create(['name' => 'pramukantor']);
         Role::create(['name' => 'kepala_sekolah']);
+        Role::create(['name' => 'guru']);
+        Role::create(['name' => 'orang_tua_siswa']);
+        Role::create(['name' => 'siswa']);
+
+        $superAdmin = \App\Models\User::factory()->create([
+            'name' => $faker->name,
+            'uuid' => Uuid::uuid4()->toString(),
+            'email' => 'super_admin@example.com',
+            'password' => '12345678',
+        ]);
 
         $admin = \App\Models\User::factory()->create([
-            'name' => 'rizki admin',
+            'name' => $faker->name,
             'uuid' => Uuid::uuid4()->toString(),
             'email' => 'admin@example.com',
             'password' => '12345678',
         ]);
 
-        $siswa = \App\Models\User::factory()->create([
-            'name' => 'siska siswa',
+        $tataUsaha = \App\Models\User::factory()->create([
+            'name' => $faker->name,
             'uuid' => Uuid::uuid4()->toString(),
-            'email' => 'siswa@example.com',
+            'email' => 'tata_usaha@example.com',
+            'password' => '12345678',
+        ]);
+
+        $satpam = \App\Models\User::factory()->create([
+            'name' => $faker->name,
+            'uuid' => Uuid::uuid4()->toString(),
+            'email' => 'satpam@example.com',
+            'password' => '12345678',
+        ]);
+
+        $pramukantor = \App\Models\User::factory()->create([
+            'name' => $faker->name,
+            'uuid' => Uuid::uuid4()->toString(),
+            'email' => 'pramukantor@example.com',
+            'password' => '12345678',
+        ]);
+
+        $kepalaSekolah = \App\Models\User::factory()->create([
+            'name' => $faker->name,
+            'uuid' => Uuid::uuid4()->toString(),
+            'email' => 'kepala_sekolah@example.com',
             'password' => '12345678',
         ]);
 
         $guru = \App\Models\User::factory()->create([
-            'name' => 'tono guru',
+            'name' => 'tono sudarno',
             'uuid' => Uuid::uuid4()->toString(),
             'email' => 'guru@example.com',
             'password' => '12345678',
         ]);
 
+        $orangTuaSiswa = \App\Models\User::factory()->create([
+            'name' => $faker->name,
+            'uuid' => Uuid::uuid4()->toString(),
+            'email' => 'orang_tua_siswa@example.com',
+            'password' => '12345678',
+        ]);
+
+        $siswa = \App\Models\User::factory()->create([
+            'name' => $faker->name,
+            'uuid' => Uuid::uuid4()->toString(),
+            'email' => 'siswa@example.com',
+            'password' => '12345678',
+        ]);
+
+        $superAdmin->assignRole('super_admin');
         $admin->assignRole('admin');
-        $siswa->assignRole('siswa');
+        $tataUsaha->assignRole('tata_usaha');
+        $satpam->assignRole('satpam');
+        $pramukantor->assignRole('pramukantor');
+        $kepalaSekolah->assignRole('kepala_sekolah');
         $guru->assignRole('guru');
+        $orangTuaSiswa->assignRole('orang_tua_siswa');
+        $siswa->assignRole('siswa');
     }
 }

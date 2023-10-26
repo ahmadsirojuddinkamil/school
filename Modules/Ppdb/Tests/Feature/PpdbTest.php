@@ -25,9 +25,9 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
         Ppdb::factory()->create();
 
-        $response = $this->get('/ppdb-data/tahun-daftar');
+        $response = $this->get('/data-ppdb/tahun-daftar');
         $response->assertStatus(200);
-        $response->assertViewIs('ppdb::pages.ppdb.year');
+        $response->assertViewIs('ppdb::layouts.admin.year');
         $response->assertSeeText('Data PPDB');
 
         $response->assertViewHas('dataUserAuth');
@@ -52,7 +52,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/tahun-daftar');
+        $response = $this->get('/data-ppdb/tahun-daftar');
         $response->assertStatus(404);
     }
 
@@ -62,9 +62,9 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/tahun-daftar/'.$ppdb->tahun_daftar);
+        $response = $this->get('/data-ppdb/tahun-daftar/' . $ppdb->tahun_daftar);
         $response->assertStatus(200);
-        $response->assertViewIs('ppdb::pages.ppdb.show_year');
+        $response->assertViewIs('ppdb::layouts.admin.show_year');
         $response->assertSeeText('PPDB tahun');
 
         $response->assertViewHas('dataUserAuth');
@@ -95,7 +95,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/tahun-daftar/'.$ppdb->tahun_daftar);
+        $response = $this->get('/data-ppdb/tahun-daftar/' . $ppdb->tahun_daftar);
         $response->assertStatus(404);
     }
 
@@ -105,7 +105,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/tahun-daftar/tahun');
+        $response = $this->get('/data-ppdb/tahun-daftar/tahun');
         $response->assertStatus(404);
     }
 
@@ -115,7 +115,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/year/500000');
+        $response = $this->get('/data-ppdb/year/500000');
         $response->assertStatus(404);
     }
 
@@ -125,9 +125,9 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/'.$ppdb->uuid);
+        $response = $this->get('/data-ppdb/' . $ppdb->uuid);
         $response->assertStatus(200);
-        $response->assertViewIs('ppdb::pages.ppdb.show');
+        $response->assertViewIs('ppdb::layouts.admin.show');
         $response->assertSeeText('Peserta PPDB Details');
 
         $response->assertViewHas('dataUserAuth');
@@ -151,7 +151,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/'.$ppdb->uuid);
+        $response = $this->get('/data-ppdb/' . $ppdb->uuid);
         $response->assertStatus(404);
     }
 
@@ -161,7 +161,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/uuid');
+        $response = $this->get('/data-ppdb/uuid');
         $response->assertStatus(404);
     }
 
@@ -171,7 +171,7 @@ class PpdbTest extends TestCase
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->get('/ppdb-data/3343ecac-b140-4e31-889f-a2ecd31e9168');
+        $response = $this->get('/data-ppdb/3343ecac-b140-4e31-889f-a2ecd31e9168');
         $response->assertStatus(404);
     }
 }
