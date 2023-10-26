@@ -5,15 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard | ppdb {{ $saveYearFromRoute }}</title>
-    @include('ppdb::bases.ppdb.css')
-    @include('ppdb::bases.ppdb.js')
+    <title>Dashboard | ppdb {{ $saveYearFromCall }}</title>
+    @include('ppdb::bases.css')
+    @include('ppdb::bases.js')
+
+    <style>
+        .icon-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            gap: 2px;
+        }
+
+        .icon-list li {
+            display: inline;
+        }
+
+    </style>
 </head>
 
 <body>
     <div id="global-loader">
         <div class="whirly-loader"> </div>
     </div>
+
+    @include('ppdb::components.sweetalert-success')
+    @include('ppdb::components.sweetalert-error')
 
     <div class="main-wrapper">
         @include('dashboard::layouts.header')
@@ -35,17 +53,24 @@
                                 </div>
                             </div>
 
-                            @include('ppdb::components.ppdb.sweetalert-success')
-
                             <div class="wordset">
-                                <ul>
-                                    @include('ppdb::components.ppdb.download-pdf')
-                                    @include('ppdb::components.ppdb.download-excel')
+                                <ul class="icon-list">
+                                    <li>
+                                        <a href="{{ route('ppdb.download.pdf.zip', ['save_year_from_event' => $getDataPpdb[0]->tahun_daftar]) }}" title="pdf">
+                                            <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a href="{{ route('ppdb.download.excel.zip', ['save_year_from_event' => $getDataPpdb[0]->tahun_daftar]) }}" title="excel">
+                                            <img src="{{ asset('assets/dashboard/img/icons/excel.svg') }}" alt="img">
+                                        </a>
+                                    </li>
                                 </ul>
                             </div>
                         </div>
 
-                        @include('ppdb::components.ppdb.data-ppdb-table')
+                        @include('ppdb::components.data-ppdb-table')
                     </div>
                 </div>
 

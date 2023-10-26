@@ -21,7 +21,7 @@ class DeleteSiswaTest extends TestCase
 
     public function test_delete_siswa_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $user = $this->roleService->createRoleAndUserSuperAdmin();
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
@@ -32,7 +32,7 @@ class DeleteSiswaTest extends TestCase
         $this->assertEquals('Data siswa berhasil di hapus!', session('success'));
     }
 
-    public function test_delete_siswa_failed_because_not_role_admin(): void
+    public function test_delete_siswa_failed_because_not_role_super_admin(): void
     {
         $user = $this->roleService->createRoleAndUserSiswa();
         $this->actingAs($user);
@@ -44,7 +44,7 @@ class DeleteSiswaTest extends TestCase
 
     public function test_delete_siswa_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $user = $this->roleService->createRoleAndUserSuperAdmin();
         $this->actingAs($user);
 
         Siswa::SiswaActiveFactory()->create();
@@ -54,7 +54,7 @@ class DeleteSiswaTest extends TestCase
 
     public function test_delete_siswa_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $user = $this->roleService->createRoleAndUserSuperAdmin();
         $this->actingAs($user);
 
         Siswa::SiswaActiveFactory()->create();

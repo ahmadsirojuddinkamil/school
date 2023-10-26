@@ -23,57 +23,40 @@
             <div class="content">
                 <div class="page-header">
                     <div class="page-title">
-                        <h4>Edit data absen {{ $getDataAbsen->updated_at }}</h4>
+                        <h4>Edit data absen</h4>
                     </div>
                 </div>
 
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <form action="{{ route('data.tanggal.absen.update', ['save_uuid_from_event' => $getDataAbsen->uuid]) }}" method="POST">
+                            <form action="{{ route('data.tanggal.absen.update', ['save_uuid_from_event' => $dataAbsen->uuid]) }}" method="POST">
                                 @method('PUT')
                                 @csrf
 
-                                <div class="mb-3">
-                                    <label class="form-label">Nama Lengkap</label>
-                                    <h6>{{ $getDataAbsen->name }}</h6>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">NISN</label>
-                                    <h6>{{ $getDataAbsen->nisn }}</h6>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Status / Kelas</label>
-                                    <h6>{{ $getDataAbsen->status }}</h6>
-                                </div>
-
                                 <div class="mb-4">
-                                    <label class="form-label">Kehadiran</label>
-                                    <select class="form-select" name="kehadiran" required>
+                                    <label class="form-label">Keterangan</label>
+                                    <select class="form-select" name="keterangan" required>
                                         @foreach (['hadir', 'sakit', 'acara', 'musibah', 'tidak_hadir'] as $option)
-                                        <option value="{{ $option }}" {{ $getDataAbsen->kehadiran == $option ? 'selected' : '' }}>
+                                        <option value="{{ $option }}" {{ $dataAbsen->keterangan == $option ? 'selected' : '' }}>
                                             {{ ucfirst($option) }}
                                         </option>
                                         @endforeach
                                     </select>
                                 </div>
-                                @error('kehadiran')
+                                @error('keterangan')
                                 <div class="alert alert-danger">{{ $message }}</div>
                                 @enderror
 
                                 <div class="mb-3">
                                     <label class="form-label">Tanggal Absen</label>
-                                    <h6>{{ $getDataAbsen->updated_at}}</h6>
+                                    <h6>{{ $dataAbsen->updated_at}}</h6>
                                 </div>
 
                                 <div class="col-lg-12">
                                     <button type="button" class="btn btn-submit me-2" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                         Submit
                                     </button>
-
-                                    <a href="/data-absen" class="btn btn-cancel">Cancel</a>
 
                                     <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">

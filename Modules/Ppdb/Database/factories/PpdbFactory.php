@@ -25,8 +25,7 @@ class PpdbFactory extends Factory
 
         return [
             'uuid' => Uuid::uuid4()->toString(),
-            'nama_lengkap' => $faker->name,
-            // 'email' => 'ahmadsirojudink@gmail.com',
+            'name' => $faker->name,
             'email' => $faker->unique()->safeEmail,
             'nisn' => $faker->numberBetween(1234524534, 4332498964),
             'asal_sekolah' => $faker->city,
@@ -40,7 +39,7 @@ class PpdbFactory extends Factory
             'nama_ayah' => $faker->name('male'),
             'nama_ibu' => $faker->name('female'),
             'telpon_orang_tua' => '0' . $faker->unique()->numberBetween(821, 899) . $faker->randomNumber(6),
-            'bukti_pendaftaran' => 'assets/dashboard/img/surat-ppdb.jpg',
+            'bukti_pendaftaran' => 'assets/dashboard/img/surat-ppdb.png',
         ];
     }
 }

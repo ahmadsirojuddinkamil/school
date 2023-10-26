@@ -14,7 +14,7 @@ class StorePpdbRequest extends FormRequest
     public function rules()
     {
         return [
-            'nama_lengkap' => 'required|string',
+            'name' => 'required|string',
             'email' => 'required|email',
             'nisn' => 'required|numeric',
             'asal_sekolah' => 'required|string',

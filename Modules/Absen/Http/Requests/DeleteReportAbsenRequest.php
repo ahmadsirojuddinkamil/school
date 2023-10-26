@@ -14,7 +14,7 @@ class DeleteReportAbsenRequest extends FormRequest
     public function rules()
     {
         return [
-            'nisn' => 'required|string',
+            'data_absen' => 'required|string',
         ];
     }
 

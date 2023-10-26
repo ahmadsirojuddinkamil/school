@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard | ppdb</title>
-    @include('ppdb::bases.ppdb.css')
-    @include('ppdb::bases.ppdb.js')
+    @include('ppdb::bases.css')
+    @include('ppdb::bases.js')
 </head>
 
 <body>
@@ -50,7 +50,7 @@
                                 <div class="modal-footer d-flex justify-content-end">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
 
-                                    <form action="{{ route('ppdb.deleteOpenPpdb') }}" method="POST">
+                                    <form action="{{ route('ppdb.closePpdb') }}" method="POST">
                                         @csrf
                                         @method('delete')
 
@@ -107,8 +107,8 @@
                     @endif
                 </div>
 
-                @include('ppdb::components.ppdb.sweetalert-success')
-                @include('ppdb::components.ppdb.data-year-ppdb')
+                @include('ppdb::components.sweetalert-success')
+                @include('ppdb::components.data-year-ppdb')
 
             </div>
         </div>

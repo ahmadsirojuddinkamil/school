@@ -14,11 +14,9 @@ class StoreAbsenRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|string',
-            'nisn' => 'required|string',
             'status' => 'required|string',
             'persetujuan' => 'required|string',
-            'kehadiran' => 'required|string',
+            'keterangan' => 'required|string',
         ];
     }
 

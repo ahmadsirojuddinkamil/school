@@ -19,9 +19,9 @@
     @include('news::layouts.news.header')
 
     <div class="container border">
-        @include('ppdb::components.ppdb.alert-success')
-        @include('ppdb::components.ppdb.alert-error')
-        @include('ppdb::components.ppdb.form-register')
+        @include('ppdb::components.alert-success')
+        @include('ppdb::components.alert-error')
+        @include('ppdb::components.form-register')
     </div>
 
     <script>

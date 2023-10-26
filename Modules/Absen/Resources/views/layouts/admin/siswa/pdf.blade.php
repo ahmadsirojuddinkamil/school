@@ -53,7 +53,7 @@
         <thead>
             <tr>
                 <th style="text-align: center;" scope="col">#</th>
-                <th style="text-align: center;">Kehadiran</th>
+                <th style="text-align: center;">Keterangan</th>
                 <th style="text-align: center;">Tanggal</th>
             </tr>
         </thead>
@@ -62,7 +62,7 @@
             @foreach ($dataAbsen as $absen)
             <tr>
                 <td style="text-align: center;">{{ $loop->iteration }}</td>
-                <td style="text-align: center;">{{ $absen->kehadiran }}</td>
+                <td style="text-align: center;">{{ $absen->keterangan }}</td>
                 <td style="text-align: center;">{{ $absen->created_at }}</td>
             </tr>
             @endforeach

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Data pdf siswa lulus</title>
+    <title>Biodata siswa</title>
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
@@ -11,45 +11,152 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            border: 1px solid black;
         }
 
         th,
         td {
-            border: 1px solid black;
             padding: 8px;
             text-align: left;
+            border-bottom: 1px solid #ddd;
+            /* Tambahkan garis bawah pada setiap baris */
         }
+
+        th {
+            width: 35%;
+            /* Atur lebar kolom nama */
+        }
+
     </style>
 </head>
 
 <body>
-    <h1>Siswa lulus tahun {{ $dataSiswaGraduated[0]->tahun_lulus }} : {{ $totalSiswaGraduated }} peserta</h1>
+    <h5>Biodata Siswa Tahun : {{ $siswa->tahun_keluar }}</h5>
     <table>
-        <thead>
-            <tr>
-                <th scope="col">#</th>
-                <th style="text-align: center;">Nama Lengkap</th>
-                <th style="text-align: center;">NISN</th>
-                <th style="text-align: center;">Asal Sekolah</th>
-                <th style="text-align: center;">Telpon</th>
-                <th style="text-align: center;">Jenis Kelamin</th>
-            </tr>
-        </thead>
-
         <tbody>
-            @foreach ($dataSiswaGraduated as $siswaGraduated)
-                <tr>
-                    <td style="text-align: center;">{{ $loop->iteration }}</td>
+            <tr>
+                <th>Nama</th>
+                <td>{{ $siswa->name }}</td>
+            </tr>
 
-                    <td>{{ $siswaGraduated->nama_lengkap }}</td>
-                    <td>{{ $siswaGraduated->nisn }}</td>
-                    <td>{{ $siswaGraduated->asal_sekolah }}</td>
-                    <td>{{ $siswaGraduated->telpon_siswa }}</td>
-                    <td>{{ $siswaGraduated->jenis_kelamin }}</td>
+            <tr>
+                <th>NISN</th>
+                <td>{{ $siswa->nisn }}</td>
+            </tr>
 
-                </tr>
-            @endforeach
+            <tr>
+                <th>Tempat Lahir</th>
+                <td>{{ $siswa->tempat_lahir }}</td>
+            </tr>
+
+            <tr>
+                <th>Tanggal Lahir</th>
+                <td>{{ $siswa->tanggal_lahir }}</td>
+            </tr>
+
+            <tr>
+                <th>Agama</th>
+                <td>{{ $siswa->agama }}</td>
+            </tr>
+
+            <tr>
+                <th>Jenis Kelamin</th>
+                <td>{{ $siswa->jenis_kelamin }}</td>
+            </tr>
+
+            <tr>
+                <th>Asal Sekolah</th>
+                <td>{{ $siswa->asal_sekolah }}</td>
+            </tr>
+
+            <tr>
+                <th>Nem</th>
+                <td>{{ $siswa->nem }}</td>
+            </tr>
+
+            <tr>
+                <th>Tahun Lulus</th>
+                <td>{{ $siswa->tahun_lulus }}</td>
+            </tr>
+
+            <tr>
+                <th>Alamat</th>
+                <td>{{ $siswa->alamat_rumah }}</td>
+            </tr>
+
+            <tr>
+                <th>Provinsi</th>
+                <td>{{ $siswa->provinsi }}</td>
+            </tr>
+
+            <tr>
+                <th>Kecamatan</th>
+                <td>{{ $siswa->kecamatan }}</td>
+            </tr>
+
+            <tr>
+                <th>Kelurahan</th>
+                <td>{{ $siswa->kelurahan }}</td>
+            </tr>
+
+            <tr>
+                <th>Kode Pos</th>
+                <td>{{ $siswa->kode_pos }}</td>
+            </tr>
+
+            <tr>
+                <th>Email</th>
+                <td>{{ $siswa->email }}</td>
+            </tr>
+
+            <tr>
+                <th>No Telpon</th>
+                <td>{{ $siswa->no_telpon }}</td>
+            </tr>
+
+            <tr>
+                <th>Tahun Daftar</th>
+                <td>{{ $siswa->tahun_daftar }}</td>
+            </tr>
+
+            <tr>
+                <th>Tahun Keluar</th>
+                <td>{{ $siswa->tahun_keluar }}</td>
+            </tr>
+
+            <tr>
+                <th>Nama Bank</th>
+                <td>{{ $siswa->nama_bank }}</td>
+            </tr>
+
+            <tr>
+                <th>Nama Pemilik Buku Rekening</th>
+                <td>{{ $siswa->nama_buku_rekening }}</td>
+            </tr>
+
+            <tr>
+                <th>No Rekening</th>
+                <td>{{ $siswa->no_rekening }}</td>
+            </tr>
+
+            <tr>
+                <th>Nama Ayah</th>
+                <td>{{ $siswa->nama_ayah }}</td>
+            </tr>
+
+            <tr>
+                <th>Nama Ibu</th>
+                <td>{{ $siswa->nama_ibu }}</td>
+            </tr>
+
+            <tr>
+                <th>Nama Wali</th>
+                <td>{{ $siswa->nama_wali }}</td>
+            </tr>
+
+            <tr>
+                <th>Telpon Orang Tua</th>
+                <td>{{ $siswa->telpon_orang_tua }}</td>
+            </tr>
         </tbody>
     </table>
 </body>

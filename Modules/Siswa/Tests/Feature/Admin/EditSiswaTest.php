@@ -46,7 +46,7 @@ class EditSiswaTest extends TestCase
 
     public function test_edit_siswa_page_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $user = $this->roleService->createRoleAndUserGuru();
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
@@ -141,7 +141,7 @@ class EditSiswaTest extends TestCase
 
     public function test_update_siswa_graduated_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $user = $this->roleService->createRoleAndUserGuru();
         $this->actingAs($user);
 
         $siswa = Siswa::siswaGraduatedFactory()->create();

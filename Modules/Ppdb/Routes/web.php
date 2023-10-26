@@ -10,17 +10,22 @@ Route::controller(PpdbController::class)->group(function () {
     });
 
     Route::middleware('auth')->group(function () {
-        Route::group(['middleware' => ['role:admin']], function () {
+        Route::group(['middleware' => ['role:admin|super_admin']], function () {
             Route::get('/data-ppdb/tahun-daftar', 'year')->name('ppdb.year');
             Route::post('/data-ppdb/open', 'openPpdb')->name('ppdb.open');
-            Route::delete('/data-ppdb/status', 'deleteOpenPpdb')->name('ppdb.deleteOpenPpdb');
+            Route::delete('/data-ppdb/status', 'closePpdb')->name('ppdb.closePpdb');
             Route::get('/data-ppdb/tahun-daftar/{save_year_from_event}', 'showYear')->name('ppdb.year.show');
-            Route::post('/data-ppdb/download/pdf/{save_year_from_event}', 'downloadPdf')->name('ppdb.download.pdf');
-            Route::post('/data-ppdb/download/excel/{save_year_from_event}', 'downloadExcel')->name('ppdb.download.excel');
+            Route::get('/data-ppdb/download/pdf/{save_uuid_from_event}', 'downloadLaporanPpdbPdf')->name('ppdb.download.pdf');
+            Route::get('/data-ppdb/download/pdf/{save_year_from_event}/zip', 'downloadZipLaporanPpdbPdf')->name('ppdb.download.pdf.zip');
+            Route::get('/data-ppdb/download/excel/{save_uuid_from_event}', 'downloadLaporanPpdbExcel')->name('ppdb.download.excel');
+            Route::get('/data-ppdb/download/excel/{save_year_from_event}/zip', 'downloadZipLaporanPpdbExcel')->name('ppdb.download.excel.zip');
             Route::get('/data-ppdb/{save_uuid_from_event}', 'show')->name('ppdb.user.show');
             Route::post('/data-ppdb/{save_uuid_from_event}/accept', 'accept')->name('ppdb.accept');
             Route::get('/data-ppdb/{save_uuid_from_event}/edit', 'edit')->name('ppdb.show.edit');
             Route::put('/data-ppdb/{save_uuid_from_event}', 'update')->name('ppdb.update');
+        });
+
+        Route::group(['middleware' => ['role:super_admin']], function () {
             Route::delete('/data-ppdb/{save_uuid_from_event}', 'delete')->name('ppdb.delete');
         });
     });
