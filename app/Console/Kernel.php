@@ -36,12 +36,10 @@ class Kernel extends ConsoleKernel
                 }
             }
         })->timezone('Asia/Jakarta')
-            ->cron('01 14 * * *') // Menjadwalkan pada jam 14:13
-            ->everyMinute() // Menjalankan setiap menit dalam jangka waktu 10 menit (hingga 14:23)
+            ->cron('0 14 * * *') // Menjadwalkan pada jam 2 siang
             ->skip(function () {
-                return now()->format('i') >= 10; // Menghentikan penjadwalan setelah 14:23
+                return now()->format('i') >= 10; // Menghentikan penjadwalan setelah 14:09
             });
-        // ->dailyAt('14:26');
 
         // Penjadwalan untuk Guru
         $schedule->call(function () {
@@ -63,12 +61,10 @@ class Kernel extends ConsoleKernel
                 }
             }
         })->timezone('Asia/Jakarta')
-            ->cron('01 14 * * *')
-            ->everyMinute()
+            ->cron('0 14 * * *') // Menjadwalkan pada jam 2 siang
             ->skip(function () {
-                return now()->format('i') >= 10;
+                return now()->format('i') >= 10; // Menghentikan penjadwalan setelah 14:09
             });
-        // ->dailyAt('14:26');
     }
 
     /**
