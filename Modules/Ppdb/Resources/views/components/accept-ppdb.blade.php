@@ -1,10 +1,10 @@
 @if ($checkSiswaOrNot)
 <div>
-    <a href="{{ route('ppdb.download.pdf', ['save_uuid_from_event' => $getDataUserPpdb->uuid]) }}" title="pdf">
+    <a href="{{ route('ppdb.download.pdf', ['save_uuid_from_event' => $dataPpdb->uuid]) }}" title="pdf">
         <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
     </a>
 
-    <a href="{{ route('ppdb.download.excel', ['save_uuid_from_event' => $getDataUserPpdb->uuid]) }}" title="excel" style="margin-left: 10px">
+    <a href="{{ route('ppdb.download.excel', ['save_uuid_from_event' => $dataPpdb->uuid]) }}" title="excel" style="margin-left: 10px">
         <img src="{{ asset('assets/dashboard/img/icons/excel.svg') }}" alt="img">
     </a>
 </div>
@@ -30,7 +30,7 @@
             <div class="modal-footer d-flex justify-content-end">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
 
-                <form action="{{ route('ppdb.accept', ['save_uuid_from_event' => $getDataUserPpdb->uuid]) }}" method="POST">
+                <form action="{{ route('ppdb.accept', ['save_uuid_from_event' => $dataPpdb->uuid]) }}" method="POST">
                     @csrf
                     <button type="submit" class="btn btn-primary">Ya!</button>
                 </form>

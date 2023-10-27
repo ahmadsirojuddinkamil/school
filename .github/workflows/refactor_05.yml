@@ -1,9 +1,9 @@
 on:
   push:
     branches:
-      - feature_04_guru
+      - refactor_05
 
-name: feature_04_guru
+name: refactor_05
 
 jobs:
   ContinuousIntegration:

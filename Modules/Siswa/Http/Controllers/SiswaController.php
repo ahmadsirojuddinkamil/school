@@ -27,9 +27,9 @@ class SiswaController extends Controller
     public function getStatus()
     {
         $dataUserAuth = $this->userService->getProfileUser();
-        $getStatusSiswa = $this->siswaService->getStatusSiswaActiveOrNot();
+        $statusSiswa = $this->siswaService->getStatusSiswaActiveOrNot();
 
-        return view('siswa::layouts.admin.status', compact('dataUserAuth', 'getStatusSiswa'));
+        return view('siswa::layouts.admin.status', compact('dataUserAuth', 'statusSiswa'));
     }
 
     public function getListClassSiswa()

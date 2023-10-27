@@ -40,7 +40,7 @@
             <div class="content">
                 <div class="page-header">
                     <div class="page-title">
-                        <h4>PPDB tahun {{ $getDataPpdb[0]->tahun_daftar }} : {{ $totalDataPpdb }} peserta</h4>
+                        <h4>PPDB tahun {{ $dataPpdb[0]->tahun_daftar }} : {{ $totalPpdb }} peserta</h4>
                     </div>
                 </div>
 
@@ -56,13 +56,13 @@
                             <div class="wordset">
                                 <ul class="icon-list">
                                     <li>
-                                        <a href="{{ route('ppdb.download.pdf.zip', ['save_year_from_event' => $getDataPpdb[0]->tahun_daftar]) }}" title="pdf">
+                                        <a href="{{ route('ppdb.download.pdf.zip', ['save_year_from_event' => $dataPpdb[0]->tahun_daftar]) }}" title="pdf">
                                             <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
                                         </a>
                                     </li>
 
                                     <li>
-                                        <a href="{{ route('ppdb.download.excel.zip', ['save_year_from_event' => $getDataPpdb[0]->tahun_daftar]) }}" title="excel">
+                                        <a href="{{ route('ppdb.download.excel.zip', ['save_year_from_event' => $dataPpdb[0]->tahun_daftar]) }}" title="excel">
                                             <img src="{{ asset('assets/dashboard/img/icons/excel.svg') }}" alt="img">
                                         </a>
                                     </li>
