@@ -13,31 +13,31 @@
         </thead>
 
         <tbody>
-            @foreach ($getDataPpdb as $dataPpdb)
+            @foreach ($dataPpdb as $ppdb)
             <tr>
                 <td>{{ $loop->iteration }}</td>
 
-                <td>{{ $dataPpdb->name }}</td>
-                <td>{{ $dataPpdb->nisn }}</td>
-                <td>{{ $dataPpdb->asal_sekolah }}</td>
-                <td>{{ $dataPpdb->telpon_siswa }}</td>
-                <td>{{ $dataPpdb->jenis_kelamin }}</td>
+                <td>{{ $ppdb->name }}</td>
+                <td>{{ $ppdb->nisn }}</td>
+                <td>{{ $ppdb->asal_sekolah }}</td>
+                <td>{{ $ppdb->telpon_siswa }}</td>
+                <td>{{ $ppdb->jenis_kelamin }}</td>
                 <td class="actions">
 
-                    <a class="action-link" href="{{ route('ppdb.user.show', ['save_uuid_from_event' => $dataPpdb->uuid]) }}">
+                    <a class="action-link" href="{{ route('ppdb.user.show', ['save_uuid_from_event' => $ppdb->uuid]) }}">
                         <img src="{{ asset('assets/dashboard/img/icons/eye.svg') }}" alt="img">
                     </a>
 
-                    <a class="action-link" href="{{ route('ppdb.show.edit', ['save_uuid_from_event' => $dataPpdb->uuid]) }}">
+                    <a class="action-link" href="{{ route('ppdb.show.edit', ['save_uuid_from_event' => $ppdb->uuid]) }}">
                         <img src="{{ asset('assets/dashboard/img/icons/edit.svg') }}" alt="img">
                     </a>
 
                     @if($dataUserAuth[1] == 'super_admin')
-                    <a class="action-link" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal{{ $dataPpdb->uuid }}">
+                    <a class="action-link" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal{{ $ppdb->uuid }}">
                         <img src="{{ asset('assets/dashboard/img/icons/delete.svg') }}" alt="img">
                     </a>
 
-                    <div class="modal fade" id="exampleModal{{ $dataPpdb->uuid }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal fade" id="exampleModal{{ $ppdb->uuid }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -53,7 +53,7 @@
                                 <div class="modal-footer d-flex justify-content-end">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
 
-                                    <form action="{{ route('ppdb.delete', ['save_uuid_from_event' => $dataPpdb->uuid]) }}" method="POST" class="action-form">
+                                    <form action="{{ route('ppdb.delete', ['save_uuid_from_event' => $ppdb->uuid]) }}" method="POST" class="action-form">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-submit me-2">Ya!</button>

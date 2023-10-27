@@ -24,7 +24,6 @@ class UpdatePpdbRequest extends FormRequest
             'tempat_lahir' => 'string|required',
             'tanggal_lahir' => 'string|required',
             'tahun_daftar' => 'string|required',
-            'jurusan' => 'string|required',
             'nama_ayah' => 'string|required',
             'nama_ibu' => 'string|required',
             'telpon_orang_tua' => 'numeric|required',

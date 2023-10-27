@@ -11,6 +11,9 @@
 </head>
 
 <body>
+    @include('ppdb::components.sweetalert-success')
+    @include('ppdb::components.sweetalert-error')
+
     <div id="global-loader">
         <div class="whirly-loader"> </div>
     </div>

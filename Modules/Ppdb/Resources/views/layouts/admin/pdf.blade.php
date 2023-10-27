@@ -79,11 +79,6 @@
             </tr>
 
             <tr>
-                <th>Jurusan :</th>
-                <td>{{ $ppdb->jurusan }}</td>
-            </tr>
-
-            <tr>
                 <th>Nama Ayah :</th>
                 <td>{{ $ppdb->nama_ayah }}</td>
             </tr>
