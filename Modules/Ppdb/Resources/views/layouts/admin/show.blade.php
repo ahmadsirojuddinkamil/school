@@ -5,12 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard | ppdb {{ $getDataUserPpdb->name }}</title>
+    <title>Dashboard | ppdb {{ $dataPpdb->name }}</title>
     @include('ppdb::bases.css')
     @include('ppdb::bases.js')
 </head>
 
 <body>
+    @include('ppdb::components.sweetalert-success')
+    @include('ppdb::components.sweetalert-error')
+
     <div id="global-loader">
         <div class="whirly-loader"> </div>
     </div>

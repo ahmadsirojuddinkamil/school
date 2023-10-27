@@ -11,6 +11,7 @@ use Modules\Ppdb\Entities\{OpenPpdb, Ppdb};
 use Modules\Ppdb\Jobs\SendEmailPpdbJob;
 use Modules\Siswa\Entities\Siswa;
 use Ramsey\Uuid\Uuid;
+use ZipArchive;
 
 class PpdbService
 {
@@ -32,7 +33,7 @@ class PpdbService
         ]);
     }
 
-    public function saveDataSiswaPpdb($validateData)
+    public function createPpdb($validateData)
     {
         $buktiPendaftaranPpdbPath = $validateData['bukti_pendaftaran']->store('public/document_bukti_pendaftaran_siswa_baru');
 
@@ -49,7 +50,6 @@ class PpdbService
             'jenis_kelamin' => $validateData['jenis_kelamin'],
             'tempat_lahir' => $validateData['tempat_lahir'],
             'tanggal_lahir' => $validateData['tanggal_lahir'],
-            'jurusan' => $validateData['jurusan'],
             'nama_ayah' => $validateData['nama_ayah'],
             'nama_ibu' => $validateData['nama_ibu'],
             'telpon_orang_tua' => $validateData['telpon_orang_tua'],
@@ -58,7 +58,7 @@ class PpdbService
         ]);
     }
 
-    public function getListYearPpdb($saveYearFromController)
+    public function listYearPpdb($saveYearFromController)
     {
         $yearTotals = [];
         $previousYear = null;
@@ -84,21 +84,7 @@ class PpdbService
         return $yearTotals;
     }
 
-    public function checkUuidOrNot($saveUuidFromController)
-    {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromController)) {
-            return abort(404);
-        }
-    }
-
-    public function checkValidYear($saveYearFromController)
-    {
-        if (!preg_match('/^\d{4}$/', $saveYearFromController)) {
-            return abort(404);
-        }
-    }
-
-    public function getOpenPpdbTime()
+    public function openPpdbTime()
     {
         $todayDate = (new DateTime())->format('Y-m-d');
         $maxDate = date_modify((new DateTime()), '+7 days')->format('Y-m-d');
@@ -196,11 +182,36 @@ class PpdbService
             'tempat_lahir' => $validateData['tempat_lahir'],
             'tanggal_lahir' => $validateData['tanggal_lahir'],
             'tahun_daftar' => $validateData['tahun_daftar'],
-            'jurusan' => $validateData['jurusan'],
             'nama_ayah' => $validateData['nama_ayah'],
             'nama_ibu' => $validateData['nama_ibu'],
             'telpon_orang_tua' => $validateData['telpon_orang_tua'],
             'bukti_pendaftaran' => $changePublicToStoragePath ?? $validateData['bukti_pendaftaran_old'],
         ]);
+    }
+
+    public function createZip($saveFileNameFromCall, $saveFolderPathFromCall)
+    {
+        $zip = new ZipArchive;
+        $zipFileName = $saveFileNameFromCall;
+        $folderPath = $saveFolderPathFromCall;
+
+        $zip->open($zipFileName, ZipArchive::CREATE);
+
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            $fileName = basename($file);
+            $zip->addFile($file, $fileName);
+        }
+
+        $zip->close();
+
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+
+        return true;
     }
 }

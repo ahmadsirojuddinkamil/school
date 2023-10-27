@@ -23,7 +23,6 @@ class StorePpdbRequest extends FormRequest
             'jenis_kelamin' => 'required|string',
             'tempat_lahir' => 'required|string',
             'tanggal_lahir' => 'required|string',
-            'jurusan' => 'required|string',
             'nama_ayah' => 'required|string',
             'nama_ibu' => 'required|string',
             'telpon_orang_tua' => 'required|numeric',
