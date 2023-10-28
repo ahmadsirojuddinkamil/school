@@ -5,10 +5,11 @@ namespace Modules\Siswa\Services;
 use DateTime;
 use Illuminate\Support\Facades\File;
 use Modules\Siswa\Entities\Siswa;
+use ZipArchive;
 
 class SiswaService
 {
-    public function getStatusSiswaActiveOrNot()
+    public function statusSiswaActiveOrNot()
     {
         $getAllSiswa = Siswa::latest()->pluck('tahun_keluar');
 
@@ -28,7 +29,7 @@ class SiswaService
         return $statusSiswa;
     }
 
-    public function getListSiswaClass()
+    public function listSiswaInClass()
     {
         $getAllSiswa = Siswa::latest()->pluck('kelas');
 
@@ -99,20 +100,6 @@ class SiswaService
         ]);
     }
 
-    public function checkGraduatedUuidOrNot($saveUuidFromCaller)
-    {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
-            return redirect()->route('siswa.graduated')->with(['error' => 'Data siswa tidak ditemukan!']);
-        }
-    }
-
-    public function checkEditUuidOrNot($saveUuidFromCaller)
-    {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
-            return redirect()->route('siswa.status')->with(['error' => 'Data siswa tidak ditemukan!']);
-        }
-    }
-
     public function getEditTime()
     {
         return [
@@ -122,24 +109,29 @@ class SiswaService
         ];
     }
 
-    public function checkUpdateUuidOrNot($saveUuidFromCaller)
+    public function createZip($saveFileNameFromCall, $saveFolderPathFromCall)
     {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
-            return abort(404);
-        }
-    }
+        $zip = new ZipArchive;
+        $zipFileName = $saveFileNameFromCall;
+        $folderPath = $saveFolderPathFromCall;
 
-    public function checkValidYear($saveYearFromCaller)
-    {
-        if (!preg_match('/^\d{4}$/', $saveYearFromCaller)) {
-            return abort(404);
-        }
-    }
+        $zip->open($zipFileName, ZipArchive::CREATE);
 
-    public function checkDeleteUuidOrNot($saveUuidFromCaller)
-    {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
-            return abort(404);
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            $fileName = basename($file);
+            $zip->addFile($file, $fileName);
         }
+
+        $zip->close();
+
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+
+        return true;
     }
 }

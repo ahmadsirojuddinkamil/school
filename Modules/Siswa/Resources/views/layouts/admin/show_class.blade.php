@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Dashboard | siswa kelas {{ $saveClassFromRoute }}</title>
+    <title>Dashboard | siswa kelas {{ $saveClassFromCall }}</title>
 
     @include('siswa::bases.css')
     @include('siswa::bases.js')
@@ -32,7 +32,7 @@
             <div class="content">
                 <div class="page-header">
                     <div class="page-title">
-                        <h4>Daftar Siswa Kelas : {{ $saveClassFromRoute }}</h4>
+                        <h4>Daftar Siswa Kelas : {{ $saveClassFromCall }}</h4>
                     </div>
                 </div>
 
@@ -52,11 +52,11 @@
 
                             <div class="wordset">
                                 <ul>
-                                    <a href="{{ route('siswa.active.download.zip.pdf', ['save_class_from_event' => $saveClassFromRoute ]) }}" class="link-with-margin">
+                                    <a href="{{ route('siswa.active.download.zip.pdf', ['save_class_from_event' => $saveClassFromCall ]) }}" class="link-with-margin">
                                         <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
                                     </a>
 
-                                    <a href="{{ route('siswa.active.download.excel.zip', ['save_class_from_event' => $saveClassFromRoute ]) }}" class="link-with-margin">
+                                    <a href="{{ route('siswa.active.download.excel.zip', ['save_class_from_event' => $saveClassFromCall ]) }}" class="link-with-margin">
                                         <img src="{{ asset('assets/dashboard/img/icons/excel.svg') }}" alt="img">
                                     </a>
                                 </ul>
@@ -80,7 +80,7 @@
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($getListSiswa as $siswa)
+                                    @foreach ($listSiswa as $siswa)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
 
@@ -96,7 +96,7 @@
                                         <td>{{ $siswa->email }}</td>
                                         <td>{{ $siswa->jenis_kelamin }}</td>
                                         <td class="actions">
-                                            <a class="action-link" href="{{ route('show.siswa.active', [$saveClassFromRoute, $siswa->uuid]) }}">
+                                            <a class="action-link" href="{{ route('show.siswa.active', [$saveClassFromCall, $siswa->uuid]) }}">
                                                 <img src="{{ asset('assets/dashboard/img/icons/eye.svg') }}" alt="img">
                                             </a>
 
