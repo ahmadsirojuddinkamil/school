@@ -16,7 +16,7 @@
                 <div class="mb-4">
                     <label class="form-label">Tahun lulus</label>
                     <select class="form-select" name="save_year_from_event_excel" id="tahun_lulus_excel" required>
-                        @foreach ($ListYearGraduated as $year)
+                        @foreach ($listYearGraduated as $year)
                         <option value="{{ $year }}">
                             {{ $year }}
                         </option>
