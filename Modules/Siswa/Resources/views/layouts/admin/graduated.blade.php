@@ -66,7 +66,7 @@
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($getSiswaGraduated as $siswa)
+                                    @foreach ($dataSiswa as $siswa)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
 
