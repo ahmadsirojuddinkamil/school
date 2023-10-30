@@ -79,7 +79,7 @@
                                 </thead>
 
                                 <tbody>
-                                    @foreach ($getDataGuru as $guru)
+                                    @foreach ($dataGuru as $guru)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
                                         <td>{{ $guru->name }}</td>

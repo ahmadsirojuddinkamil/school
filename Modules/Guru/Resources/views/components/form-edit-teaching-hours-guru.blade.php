@@ -1,20 +1,20 @@
-<form action="{{ route('data.guru.update.teaching.hours', $biodataGuru->uuid) }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('data.guru.update.teaching.hours', $dataGuru->uuid) }}" method="POST" enctype="multipart/form-data">
     @csrf
     @method('PUT')
 
     <div class="mb-3">
         <label for="name" class="form-label">Nama</label>
-        <input type="text" class="form-control" id="name" value="{{ $biodataGuru->name }}" disabled>
+        <input type="text" class="form-control" id="name" value="{{ $dataGuru->name }}" disabled>
     </div>
 
     <div class="mb-3">
         <label for="mata_pelajaran" class="form-label">Mata Pelajaran</label>
-        <input type="text" class="form-control" id="mata_pelajaran" value="{{ $biodataGuru->mata_pelajaran }}" disabled>
+        <input type="text" class="form-control" id="mata_pelajaran" value="{{ $dataGuru->mata_pelajaran }}" disabled>
     </div>
 
     <div class="mb-3">
         <label for="jam_mengajar" class="form-label">Jam Mengajar</label>
-        <input type="datetime-local" class="form-control" id="jam_mengajar" value="{{ $biodataGuru->jam_mengajar }}" name="jam_mengajar" required>
+        <input type="datetime-local" class="form-control" id="jam_mengajar" value="{{ $dataGuru->jam_mengajar }}" name="jam_mengajar" required>
     </div>
     @error('jam_mengajar')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -36,7 +36,7 @@
                     </div>
 
                     <div class="modal-body">
-                        Data <span style="font-weight: bold">{{ $biodataGuru->name }}</span> akan berubah!
+                        Data <span style="font-weight: bold">{{ $dataGuru->name }}</span> akan berubah!
                     </div>
 
                     <div class="modal-footer d-flex justify-content-end">
@@ -96,13 +96,13 @@
                 fileInput.value = null;
             }
         } else {
-            previewImageSiswa.src = '{{ asset($biodataGuru->foto) }}';
+            previewImageSiswa.src = '{{ asset($dataGuru->foto) }}';
         }
     });
 
     fileInput.addEventListener('click', function() {
         fileInput.value = null;
-        previewImageSiswa.src = '{{ asset($biodataGuru->foto) }}';
+        previewImageSiswa.src = '{{ asset($dataGuru->foto) }}';
     });
 
 </script>

@@ -4,10 +4,11 @@ namespace Modules\Guru\Services;
 
 use Illuminate\Support\Facades\File;
 use Modules\Guru\Entities\Guru;
+use ZipArchive;
 
 class GuruService
 {
-    public function updateBiodataGuru($validateData, $saveUuidFromCall)
+    public function updateGuru($validateData, $saveUuidFromCall)
     {
         $biodataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
 
@@ -60,11 +61,37 @@ class GuruService
         $biodataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
 
         if (!$biodataGuru) {
-            return redirect('/data-guru')->with(['error' => 'Jam mengajar guru gagal di edit!']);
+            return redirect('/data-guru')->with(['error' => 'Data guru tidak ditemukan!']);
         }
 
         $biodataGuru->update([
             'jam_mengajar' => $validateData['jam_mengajar'],
         ]);
+    }
+
+    public function createZip($saveFileNameFromCall, $saveFolderPathFromCall)
+    {
+        $zip = new ZipArchive;
+        $zipFileName = $saveFileNameFromCall;
+        $folderPath = $saveFolderPathFromCall;
+
+        $zip->open($zipFileName, ZipArchive::CREATE);
+
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            $fileName = basename($file);
+            $zip->addFile($file, $fileName);
+        }
+
+        $zip->close();
+
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+
+        return true;
     }
 }

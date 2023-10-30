@@ -16,7 +16,7 @@ Route::controller(AbsenController::class)->middleware('auth')->group(function ()
 
 Route::controller(AbsenSiswaController::class)->middleware('auth')->group(function () {
     Route::group(['middleware' => ['role:admin|super_admin']], function () {
-        Route::get('/data-absen/siswa', 'getListClass')->name('data.absen');
+        Route::get('/data-absen/siswa', 'listClass')->name('data.absen');
         Route::get('/data-absen/siswa/{save_class_from_event}', 'showClass')->name('data.absen.class');
         Route::get('/data-absen/siswa/{save_uuid_from_event}/show', 'showDataAbsen')->name('data.absen.show');
 
@@ -37,7 +37,7 @@ Route::controller(AbsenSiswaController::class)->middleware('auth')->group(functi
 
 Route::controller(AbsenGuruController::class)->middleware('auth')->group(function () {
     Route::group(['middleware' => ['role:admin|super_admin']], function () {
-        Route::get('/data-absen/guru', 'listAbsen')->name('data.absen.guru');
+        Route::get('/data-absen/guru', 'listGuru')->name('data.absen.guru');
         Route::delete('/data-absen/guru', 'deleteAbsen')->name('data.absen.guru.delete');
         Route::get('/data-absen/guru/download/pdf/zip', 'downloadZipAbsenGuruPdf')->name('data.absen.guru.download.pdf.zip');
         Route::get('/data-absen/guru/download/excel/zip', 'downloadZipAbsenGuruExcel')->name('data.absen.guru.download.excel.zip');
