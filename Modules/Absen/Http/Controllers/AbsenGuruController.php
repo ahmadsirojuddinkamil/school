@@ -13,7 +13,6 @@ use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
 use Illuminate\Support\Facades\File;
 use Modules\Absen\Exports\ExportAbsen;
-use ZipArchive;
 
 class AbsenGuruController extends Controller
 {
@@ -28,7 +27,7 @@ class AbsenGuruController extends Controller
         $this->siswaService = $siswaService;
     }
 
-    public function listAbsen()
+    public function listGuru()
     {
         $dataUserAuth = $this->userService->getProfileUser();
         $listGuru = Guru::latest()->get();
@@ -45,21 +44,25 @@ class AbsenGuruController extends Controller
         }
 
         foreach ($dataGuru as $guru) {
-            $dataAbsen = $guru->absens()->latest()->get();
-            $listKeterangan = $this->absenService->getTotalKeterangan($dataAbsen);
+            $checkExistsAbsen = $guru->absens()->first();
 
-            $pdf = DomPDF::loadView('absen::layouts.admin.guru.pdf', [
-                'listAbsen' => $dataAbsen,
-                'totalAbsen' => $listKeterangan['totalAbsen'],
-                'name' => $guru->name,
-                'totalHadir' => $listKeterangan['totalHadir'],
-                'totalSakit' => $listKeterangan['totalSakit'],
-                'totalAcara' => $listKeterangan['totalAcara'],
-                'totalMusibah' => $listKeterangan['totalMusibah'],
-                'totalTidakHadir' => $listKeterangan['totalTidakHadir'],
-            ]);
+            if ($checkExistsAbsen) {
+                $dataAbsen = $guru->absens()->latest()->get();
+                $listKeterangan = $this->absenService->totalKeterangan($dataAbsen);
 
-            $pdf->save(public_path('storage/document_laporan_pdf_absen_guru/' . $guru->name . '.pdf'));
+                $pdf = DomPDF::loadView('absen::layouts.admin.guru.pdf', [
+                    'listAbsen' => $dataAbsen,
+                    'totalAbsen' => $listKeterangan['totalAbsen'],
+                    'name' => $guru->name,
+                    'totalHadir' => $listKeterangan['totalHadir'],
+                    'totalSakit' => $listKeterangan['totalSakit'],
+                    'totalAcara' => $listKeterangan['totalAcara'],
+                    'totalMusibah' => $listKeterangan['totalMusibah'],
+                    'totalTidakHadir' => $listKeterangan['totalTidakHadir'],
+                ]);
+
+                $pdf->save(public_path('storage/document_laporan_pdf_absen_guru/' . $guru->name . '.pdf'));
+            }
         }
 
         // Star ZIP
@@ -71,25 +74,10 @@ class AbsenGuruController extends Controller
         }
 
         $zipFileName = 'laporan_absen_pdf_guru.zip';
-        $zip = new ZipArchive;
+        $createZip = $this->absenService->createZip($zipFileName, $folderPath);
 
-        if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
-            return redirect('/data-absen/guru')->with('error', 'Gagal membuat arsip ZIP!');
-        }
-
-        $files = glob($folderPath . '/*');
-        foreach ($files as $file) {
-            $fileName = basename($file);
-            $zip->addFile($file, $fileName);
-        }
-
-        $zip->close();
-
-        $files = glob($folderPath . '/*');
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            }
+        if (!$createZip) {
+            return redirect('/data-absen/guru')->with('error', 'Gagal membuat laporan zip!');
         }
 
         return response()->download($zipFileName)->deleteFileAfterSend(true);
@@ -106,15 +94,19 @@ class AbsenGuruController extends Controller
         }
 
         foreach ($dataGuru as $guru) {
-            $absen = $guru->absens()->latest()->get();
-            $fileName = 'laporan absen ' . $guru['name'] . '.xlsx';
+            $checkExistsAbsen = $guru->absens()->first();
 
-            ExportExcel::store(new ExportAbsen($absen), $fileName, 'public');
+            if ($checkExistsAbsen) {
+                $absen = $guru->absens()->latest()->get();
+                $fileName = 'laporan absen ' . $guru['name'] . '.xlsx';
 
-            $sourcePath = storage_path('app/public/' . $fileName);
-            $destinationPath = storage_path('app/public/document_laporan_excel_absen_guru/' . $fileName);
+                ExportExcel::store(new ExportAbsen($absen), $fileName, 'public');
 
-            File::move($sourcePath, $destinationPath);
+                $sourcePath = storage_path('app/public/' . $fileName);
+                $destinationPath = storage_path('app/public/document_laporan_excel_absen_guru/' . $fileName);
+
+                File::move($sourcePath, $destinationPath);
+            }
         }
         // End EXCEL
 
@@ -127,25 +119,10 @@ class AbsenGuruController extends Controller
         }
 
         $zipFileName = 'laporan_absen_excel_guru.zip';
-        $zip = new ZipArchive;
+        $createZip = $this->absenService->createZip($zipFileName, $folderPath);
 
-        if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
-            return redirect('/data-absen/guru')->with('error', 'Gagal membuat arsip ZIP!');
-        }
-
-        $files = glob($folderPath . '/*');
-        foreach ($files as $file) {
-            $fileName = basename($file);
-            $zip->addFile($file, $fileName);
-        }
-
-        $zip->close();
-
-        $files = glob($folderPath . '/*');
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            }
+        if (!$createZip) {
+            return redirect('/data-absen/guru')->with('error', 'Gagal membuat laporan zip!');
         }
 
         return response()->download($zipFileName)->deleteFileAfterSend(true);
@@ -171,7 +148,7 @@ class AbsenGuruController extends Controller
             return redirect('/data-absen/guru')->with(['error' => 'Data absen tidak ditemukan!']);
         }
 
-        $listKehadiran = $this->absenService->getTotalKeterangan($listAbsen);
+        $listKehadiran = $this->absenService->totalKeterangan($listAbsen);
 
         return view('absen::layouts.admin.guru.report', compact('dataUserAuth', 'dataGuru', 'listKehadiran', 'listAbsen'));
     }
@@ -202,11 +179,12 @@ class AbsenGuruController extends Controller
 
         $dataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
         $dataAbsen = $dataGuru->absens()->latest()->get();
-        $listKeterangan = $this->absenService->getTotalKeterangan($dataAbsen);
 
-        if (empty($listKeterangan)) {
+        if ($dataAbsen->isEmpty()) {
             return redirect('/data-absen/guru/' . $saveUuidFromCall)->with('error', 'Data absen belum ada!');
         }
+
+        $listKeterangan = $this->absenService->totalKeterangan($dataAbsen);
 
         $pdf = DomPDF::loadView('absen::layouts.admin.guru.pdf', [
             'listAbsen' => $dataAbsen,
@@ -268,7 +246,7 @@ class AbsenGuruController extends Controller
     public function updateDateAbsen($saveUuidFromCall, UpdateDateAbsenRequest $request)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
-            return redirect('/data-absen')->with(['error' => 'Data absen tidak valid!']);
+            return redirect('/data-absen/guru')->with(['error' => 'Data absen tidak valid!']);
         }
 
         $validateData = $request->validated();

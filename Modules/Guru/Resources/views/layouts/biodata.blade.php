@@ -38,17 +38,17 @@
 
                     <div class="wordset">
                         <ul>
-                            <a href="{{ route('data.guru.download.pdf', ['save_uuid_from_event' => $biodataGuru->uuid]) }}" class="link-with-margin">
+                            <a href="{{ route('data.guru.download.pdf', ['save_uuid_from_event' => $dataGuru->uuid]) }}" class="link-with-margin">
                                 <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
                             </a>
 
                             @if(in_array($dataUserAuth[1], ['super_admin', 'admin']))
-                            <a href="{{ route('data.guru.download.excel', ['save_uuid_from_event' => $biodataGuru->uuid]) }}" class="link-with-margin">
+                            <a href="{{ route('data.guru.download.excel', ['save_uuid_from_event' => $dataGuru->uuid]) }}" class="link-with-margin">
                                 <img src="{{ asset('assets/dashboard/img/icons/excel.svg') }}" alt="img">
                             </a>
                             @endif
 
-                            <a href="{{ route('data.guru.edit', $biodataGuru->uuid) }}" class="link-with-margin">
+                            <a href="{{ route('data.guru.edit', $dataGuru->uuid) }}" class="link-with-margin">
                                 <img src="{{ asset('assets/dashboard/img/icons/edit.svg') }}" alt="img">
                             </a>
                         </ul>
@@ -63,18 +63,18 @@
                                     <ul class="product-bar">
                                         <li>
                                             <h4>Nama</h4>
-                                            <h6>{{ $biodataGuru->name }}</h6>
+                                            <h6>{{ $dataGuru->name }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>nuptk</h4>
-                                            <h6>{{ $biodataGuru->nuptk }}</h6>
+                                            <h6>{{ $dataGuru->nuptk }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>nip</h4>
-                                            @if($biodataGuru->nip)
-                                            <h6>{{ $biodataGuru->nip }}</h6>
+                                            @if($dataGuru->nip)
+                                            <h6>{{ $dataGuru->nip }}</h6>
                                             @else
                                             <h6>belum ada</h6>
                                             @endif
@@ -82,106 +82,106 @@
 
                                         <li>
                                             <h4>tempat lahir</h4>
-                                            <h6>{{ $biodataGuru->tempat_lahir }}</h6>
+                                            <h6>{{ $dataGuru->tempat_lahir }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>tanggal lahir</h4>
-                                            <h6>{{ $biodataGuru->tanggal_lahir }}</h6>
+                                            <h6>{{ $dataGuru->tanggal_lahir }}</h6>
                                         </li>
 
                                         {{-- <li>
                                             <h4>mata pelajaran</h4>
-                                            <h6>{{ $biodataGuru->mata_pelajaran }}</h6>
+                                            <h6>{{ $dataGuru->mata_pelajaran }}</h6>
                                         </li> --}}
 
                                         <li>
                                             <h4>agama</h4>
-                                            <h6>{{ $biodataGuru->agama }}</h6>
+                                            <h6>{{ $dataGuru->agama }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Jenis Kelamin</h4>
-                                            <h6>{{ $biodataGuru->jenis_kelamin }}</h6>
+                                            <h6>{{ $dataGuru->jenis_kelamin }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Status Perkawinan</h4>
-                                            <h6>{{ $biodataGuru->status_perkawinan }}</h6>
+                                            <h6>{{ $dataGuru->status_perkawinan }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Jam Mengajar</h4>
-                                            <h6>{{ $biodataGuru->jam_mengajar }}</h6>
+                                            <h6>{{ $dataGuru->jam_mengajar }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Pendidikan Terakhir</h4>
-                                            <h6>{{ $biodataGuru->pendidikan_terakhir }}</h6>
+                                            <h6>{{ $dataGuru->pendidikan_terakhir }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Nama Tempat Pendidikan</h4>
-                                            <h6>{{ $biodataGuru->nama_tempat_pendidikan }}</h6>
+                                            <h6>{{ $dataGuru->nama_tempat_pendidikan }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Ipk</h4>
-                                            <h6>{{ $biodataGuru->ipk }}</h6>
+                                            <h6>{{ $dataGuru->ipk }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Tahun_lulus</h4>
-                                            <h6>{{ $biodataGuru->tahun_lulus }}</h6>
+                                            <h6>{{ $dataGuru->tahun_lulus }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Alamat Rumah</h4>
-                                            <h6>{{ $biodataGuru->alamat_rumah }}</h6>
+                                            <h6>{{ $dataGuru->alamat_rumah }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Provinsi</h4>
-                                            <h6>{{ $biodataGuru->provinsi }}</h6>
+                                            <h6>{{ $dataGuru->provinsi }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Kecamatan</h4>
-                                            <h6>{{ $biodataGuru->kecamatan }}</h6>
+                                            <h6>{{ $dataGuru->kecamatan }}</h6>
                                         </li>
 
 
                                         <li>
                                             <h4>Kelurahan</h4>
-                                            <h6>{{ $biodataGuru->kelurahan }}</h6>
+                                            <h6>{{ $dataGuru->kelurahan }}</h6>
                                         </li>
 
 
                                         <li>
                                             <h4>Kode Pos</h4>
-                                            <h6>{{ $biodataGuru->kode_pos }}</h6>
+                                            <h6>{{ $dataGuru->kode_pos }}</h6>
                                         </li>
 
 
                                         <li>
                                             <h4>Email</h4>
-                                            <h6>{{ $biodataGuru->email }}</h6>
+                                            <h6>{{ $dataGuru->email }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>No Telpon</h4>
-                                            <h6>{{ $biodataGuru->no_telpon }}</h6>
+                                            <h6>{{ $dataGuru->no_telpon }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Tahun Daftar</h4>
-                                            <h6>{{ $biodataGuru->tahun_daftar }}</h6>
+                                            <h6>{{ $dataGuru->tahun_daftar }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Tahun Keluar</h4>
-                                            @if($biodataGuru->tahun_keluar)
-                                            <h6>{{ $biodataGuru->tahun_keluar }}</h6>
+                                            @if($dataGuru->tahun_keluar)
+                                            <h6>{{ $dataGuru->tahun_keluar }}</h6>
                                             @else
                                             <h6>aktif</h6>
                                             @endif
@@ -189,17 +189,17 @@
 
                                         <li>
                                             <h4>Nama Bank</h4>
-                                            <h6>{{ $biodataGuru->nama_bank }}</h6>
+                                            <h6>{{ $dataGuru->nama_bank }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>Nama Buku Rekening</h4>
-                                            <h6>{{ $biodataGuru->nama_buku_rekening }}</h6>
+                                            <h6>{{ $dataGuru->nama_buku_rekening }}</h6>
                                         </li>
 
                                         <li>
                                             <h4>No Rekening</h4>
-                                            <h6>{{ $biodataGuru->no_rekening }}</h6>
+                                            <h6>{{ $dataGuru->no_rekening }}</h6>
                                         </li>
 
                                     </ul>
@@ -214,7 +214,7 @@
                                 <div class="slider-product-details">
                                     <div class="owl-carousel owl-theme product-slide">
                                         <div class="slider-product">
-                                            <img src="{{ $biodataGuru->foto ? asset($biodataGuru->foto) : 'https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg' }}" alt="img">
+                                            <img src="{{ $dataGuru->foto ? asset($dataGuru->foto) : 'https://static.vecteezy.com/system/resources/previews/008/442/086/non_2x/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg' }}" alt="img">
                                             <h4>Foto</h4>
                                         </div>
                                     </div>

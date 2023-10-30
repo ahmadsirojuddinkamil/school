@@ -6,6 +6,7 @@ use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Illuminate\Support\Facades\DB;
 use Modules\Absen\Entities\Absen;
 use Ramsey\Uuid\Uuid;
+use ZipArchive;
 
 class AbsenService
 {
@@ -25,7 +26,7 @@ class AbsenService
         DB::commit();
     }
 
-    public function getTotalKeterangan($saveListAbsenFromCall)
+    public function totalKeterangan($saveListAbsenFromCall)
     {
         $listKeterangan = $saveListAbsenFromCall->pluck('keterangan')->map(function ($keterangan) {
             return in_array($keterangan, ['hadir', 'sakit', 'acara', 'musibah', 'tidak_hadir']) ? $keterangan : null;
@@ -52,83 +53,29 @@ class AbsenService
         return $result;
     }
 
-    public function getListLaporanAbsenSiswa($saveDataSiswaFromCall)
+    public function createZip($saveFileNameFromCall, $saveFolderPathFromCall)
     {
-        $listLaporanAbsen = [];
+        $zip = new ZipArchive;
+        $zipFileName = $saveFileNameFromCall;
+        $folderPath = $saveFolderPathFromCall;
 
-        foreach ($saveDataSiswaFromCall as $siswa) {
-            $dataAbsen = $siswa->absens()->latest()->get();
+        $zip->open($zipFileName, ZipArchive::CREATE);
 
-            if ($dataAbsen->isNotEmpty()) {
-                $namaSiswa = $siswa->nama_lengkap;
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            $fileName = basename($file);
+            $zip->addFile($file, $fileName);
+        }
 
-                $totalAbsen = 0;
+        $zip->close();
 
-                foreach ($dataAbsen as $absen) {
-                    if ($absen->keterangan === 'hadir' || $absen->keterangan === 'sakit' || $absen->keterangan === 'acara' || $absen->keterangan === 'musibah') {
-                        $totalAbsen++;
-                    }
-                }
-
-                $totalHadir = 0;
-                $totalSakit = 0;
-                $totalAcara = 0;
-                $totalMusibah = 0;
-                $totalTidakHadir = 0;
-
-                foreach ($dataAbsen as $absen) {
-                    if ($absen->keterangan === 'hadir') {
-                        $totalHadir++;
-                    } elseif ($absen->keterangan === 'sakit') {
-                        $totalSakit++;
-                    } elseif ($absen->keterangan === 'acara') {
-                        $totalAcara++;
-                    } elseif ($absen->keterangan === 'musibah') {
-                        $totalMusibah++;
-                    } elseif ($absen->keterangan === 'tidak_hadir') {
-                        $totalTidakHadir++;
-                    }
-                }
-
-                $listLaporanAbsen[$namaSiswa] = [
-                    'dataAbsen' => $dataAbsen,
-                    'totalAbsen' => $totalAbsen,
-                    'totalHadir' => $totalHadir,
-                    'totalSakit' => $totalSakit,
-                    'totalAcara' => $totalAcara,
-                    'totalMusibah' => $totalMusibah,
-                    'totalTidakHadir' => $totalTidakHadir,
-                ];
+        $files = glob($folderPath . '/*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
             }
         }
 
-        return $listLaporanAbsen;
-    }
-
-    public function createPdfLaporanAbsenSiswa($saveDataAbsenFromCall, $saveClassFromCall)
-    {
-        foreach ($saveDataAbsenFromCall as $name => $laporan) {
-            $pdf = DomPDF::loadView('absen::layouts.admin.siswa.pdf', [
-                'name' => $name,
-                'totalAbsen' => $laporan['totalAbsen'],
-                'dataAbsen' => $laporan['dataAbsen'],
-                'totalHadir' => $laporan['totalHadir'],
-                'totalSakit' => $laporan['totalSakit'],
-                'totalAcara' => $laporan['totalAcara'],
-                'totalMusibah' => $laporan['totalMusibah'],
-                'totalTidakHadir' => $laporan['totalTidakHadir'],
-            ]);
-
-            $pdf->save(public_path('storage/document_laporan_absen_kelas_' . $saveClassFromCall . '/' . $name . '.pdf'));
-        }
-
-        return 'success';
-    }
-
-    public function checkUuidOrNot($saveUuidFromCaller)
-    {
-        if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCaller)) {
-            return redirect('/data-absen')->with(['error' => 'Data siswa tidak ditemukan!']);
-        }
+        return true;
     }
 }
