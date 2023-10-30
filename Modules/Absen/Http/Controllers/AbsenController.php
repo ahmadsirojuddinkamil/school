@@ -96,7 +96,7 @@ class AbsenController extends Controller
             return redirect('/absen')->with('error', 'Data absen belum ada!');
         }
 
-        $listKehadiran = $this->absenService->getTotalKeterangan($listAbsen);
+        $listKehadiran = $this->absenService->totalKeterangan($listAbsen);
 
         return view('absen::layouts.laporan', compact('dataUserAuth', 'listAbsen', 'idRole', 'listKehadiran'));
     }
@@ -107,12 +107,12 @@ class AbsenController extends Controller
 
         if ($validateData['role'] == 'siswa') {
             $listAbsen = Absen::where('siswa_id', $validateData['id'])->latest()->get();
-            $listKeterangan = $this->absenService->getTotalKeterangan($listAbsen);
+            $listKeterangan = $this->absenService->totalKeterangan($listAbsen);
         }
 
         if ($validateData['role'] == 'guru') {
             $listAbsen = Absen::where('guru_id', $validateData['id'])->latest()->get();
-            $listKeterangan = $this->absenService->getTotalKeterangan($listAbsen);
+            $listKeterangan = $this->absenService->totalKeterangan($listAbsen);
         }
 
         if ($listAbsen->isEmpty()) {

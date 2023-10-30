@@ -15,6 +15,9 @@
         <div class="whirly-loader"> </div>
     </div>
 
+    @include('absen::components.sweetalert-success')
+    @include('absen::components.sweetalert-error')
+
     <div class="main-wrapper">
         @include('dashboard::layouts.header')
         @include('dashboard::layouts.sidebar')

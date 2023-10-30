@@ -37,7 +37,7 @@
                         </li>
 
                         <li>
-                            <a href="{{ route('data.absen') }}" class="{{ Request::is('data-absen*') ? 'active' : '' }}">Absen</a>
+                            <a href="{{ route('data.absen') }}" class="{{ Request::is('data-absen/siswa*') ? 'active' : '' }}">Absen</a>
                         </li>
                         @endif
 

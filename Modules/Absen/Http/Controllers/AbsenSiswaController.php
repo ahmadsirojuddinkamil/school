@@ -13,7 +13,6 @@ use Modules\Siswa\Entities\Siswa;
 use Modules\Siswa\Services\SiswaService;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
 use Modules\Absen\Exports\ExportAbsen;
-use ZipArchive;
 
 class AbsenSiswaController extends Controller
 {
@@ -28,10 +27,10 @@ class AbsenSiswaController extends Controller
         $this->siswaService = $siswaService;
     }
 
-    public function getListClass()
+    public function listClass()
     {
         $dataUserAuth = $this->userService->getProfileUser();
-        $listSiswaInClass = $this->siswaService->getListSiswaClass();
+        $listSiswaInClass = $this->siswaService->listSiswaInClass();
 
         return view('absen::layouts.admin.siswa.list_class', compact('dataUserAuth', 'listSiswaInClass'));
     }
@@ -39,7 +38,7 @@ class AbsenSiswaController extends Controller
     public function showClass($saveClassFromCall)
     {
         if (!is_numeric($saveClassFromCall) || !in_array($saveClassFromCall, ['10', '11', '12'])) {
-            return redirect('/dashboard')->with(['error' => 'Kelas tidak di temukan!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Kelas tidak di valid!']);
         }
 
         $dataUserAuth = $this->userService->getProfileUser();
@@ -49,7 +48,7 @@ class AbsenSiswaController extends Controller
             ->get();
 
         if ($listSiswa->isEmpty()) {
-            return redirect()->route('data.absen')->with(['error' => 'Data siswa tidak ditemukan!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
         $totalSiswa = count($listSiswa);
@@ -60,19 +59,23 @@ class AbsenSiswaController extends Controller
     public function showDataAbsen($saveUuidFromCall)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
-            return redirect('/data-absen')->with(['error' => 'Data absen tidak ditemukan!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Data absen tidak valid!']);
         }
 
         $dataUserAuth = $this->userService->getProfileUser();
         $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataSiswa) {
-            return redirect('/data-absen')->with(['error' => 'Data siswa tidak ditemukan!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Data siswa tidak ditemukan!']);
         }
 
         $listAbsen = $dataSiswa->absens()->latest()->get();
 
-        $listKehadiran = $this->absenService->getTotalKeterangan($listAbsen);
+        if ($listAbsen->isEmpty()) {
+            return redirect('/data-absen/siswa')->with(['error' => 'Data absen tidak ditemukan!']);
+        }
+
+        $listKehadiran = $this->absenService->totalKeterangan($listAbsen);
 
         return view('absen::layouts.admin.siswa.show_report', compact('dataUserAuth', 'dataSiswa', 'listKehadiran', 'listAbsen'));
     }
@@ -80,16 +83,17 @@ class AbsenSiswaController extends Controller
     public function adminDownloadPdfLaporanAbsen($saveUuidFromCall)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
-            return redirect('/data-absen')->with(['error' => 'Data absen tidak valid!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Data absen tidak valid!']);
         }
 
         $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
         $dataAbsen = $dataSiswa->absens()->latest()->get();
-        $listKeterangan = $this->absenService->getTotalKeterangan($dataAbsen);
 
-        if (empty($listKeterangan)) {
+        if ($dataAbsen->isEmpty()) {
             return redirect('/data-absen/siswa/' . $saveUuidFromCall . '/show')->with('error', 'Data absen belum ada!');
         }
+
+        $listKeterangan = $this->absenService->totalKeterangan($dataAbsen);
 
         $pdf = DomPDF::loadView('absen::layouts.admin.siswa.pdf_user', [
             'listAbsen' => $dataAbsen,
@@ -108,7 +112,7 @@ class AbsenSiswaController extends Controller
     public function adminDownloadExcelLaporanAbsen($saveUuidFromCall)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
-            return redirect('/data-absen')->with(['error' => 'Data absen tidak valid!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Data absen tidak valid!']);
         }
 
         $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
@@ -129,24 +133,24 @@ class AbsenSiswaController extends Controller
     public function deleteLaporanAbsenSiswa(DeleteReportAbsenRequest $request)
     {
         $validateData = $request->validated();
-        $data_absen = json_decode($validateData['data_absen']);
+        $dataAbsen = json_decode($validateData['data_absen']);
 
-        if (empty($data_absen)) {
-            return redirect('/data-absen')->with('error', 'Data laporan tidak ditemukan!');
+        if (empty($dataAbsen)) {
+            return redirect('/data-absen/siswa')->with('error', 'Data laporan tidak ditemukan!');
         }
 
-        foreach ($data_absen as $absen) {
+        foreach ($dataAbsen as $absen) {
             $absenModel = Absen::where('uuid', $absen->uuid)->first();
             $absenModel->delete();
         }
 
-        return redirect('/data-absen')->with('success', 'Data laporan absen berhasil dihapus!');
+        return redirect('/data-absen/siswa')->with('success', 'Data laporan absen berhasil dihapus!');
     }
 
     public function downloadZipLaporanAbsenSiswaPdf($saveClassFromCall)
     {
         if (!is_numeric($saveClassFromCall) || !in_array($saveClassFromCall, ['10', '11', '12'])) {
-            return redirect('/data-absen')->with(['error' => 'Kelas tidak valid!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Kelas tidak valid!']);
         }
 
         $dataSiswa = Siswa::where('kelas', $saveClassFromCall)->latest()->get();
@@ -156,16 +160,29 @@ class AbsenSiswaController extends Controller
         }
 
         foreach ($dataSiswa as $siswa) {
-            $pdf = DomPDF::loadView('absen::layouts.admin.siswa.pdf_siswa', [
-                'name' => $siswa->name,
-                'dataAbsen' => $siswa->absens()->latest()->get(),
-            ]);
+            $checkExistsAbsen = $siswa->absens()->first();
 
-            $pdf->save(public_path('storage/document_laporan_pdf_absen/' . $siswa->name . '.pdf'));
+            if ($checkExistsAbsen) {
+                $dataAbsen = $siswa->absens()->latest()->get();
+                $listKeterangan = $this->absenService->totalKeterangan($dataAbsen);
+
+                $pdf = DomPDF::loadView('absen::layouts.admin.siswa.pdf_user', [
+                    'listAbsen' => $dataAbsen,
+                    'totalAbsen' => $listKeterangan['totalAbsen'],
+                    'name' => $siswa->name,
+                    'totalHadir' => $listKeterangan['totalHadir'],
+                    'totalSakit' => $listKeterangan['totalSakit'],
+                    'totalAcara' => $listKeterangan['totalAcara'],
+                    'totalMusibah' => $listKeterangan['totalMusibah'],
+                    'totalTidakHadir' => $listKeterangan['totalTidakHadir'],
+                ]);
+
+                $pdf->save(public_path('storage/document_laporan_pdf_absen_siswa/' . $siswa->name . '.pdf'));
+            }
         }
 
         // Star ZIP
-        $folderPath = public_path('storage/document_laporan_pdf_absen');
+        $folderPath = public_path('storage/document_laporan_pdf_absen_siswa');
         $fileCount = count(array_diff(scandir($folderPath), ['.', '..']));
 
         if ($fileCount < 1) {
@@ -173,25 +190,10 @@ class AbsenSiswaController extends Controller
         }
 
         $zipFileName = 'laporan_absen_siswa_kelas_' . $saveClassFromCall . '.zip';
-        $zip = new ZipArchive;
+        $createZip = $this->absenService->createZip($zipFileName, $folderPath);
 
-        if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
-            return redirect('/data-absen/siswa/' . $saveClassFromCall)->with(['error' => 'Gagal membuat arsip ZIP']);
-        }
-
-        $files = glob($folderPath . '/*');
-        foreach ($files as $file) {
-            $fileName = basename($file);
-            $zip->addFile($file, $fileName);
-        }
-
-        $zip->close();
-
-        $files = glob($folderPath . '/*');
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            }
+        if (!$createZip) {
+            return redirect('/data-absen/siswa/' . $saveClassFromCall)->with('error', 'Gagal membuat laporan zip!');
         }
 
         return response()->download($zipFileName)->deleteFileAfterSend(true);
@@ -201,7 +203,7 @@ class AbsenSiswaController extends Controller
     public function downloadZipLaporanAbsenSiswaExcel($saveClassFromCall)
     {
         if (!is_numeric($saveClassFromCall) || !in_array($saveClassFromCall, ['10', '11', '12'])) {
-            return redirect('/data-absen')->with(['error' => 'Kelas tidak di temukan!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Kelas tidak valid!']);
         }
 
         // Star EXCEL
@@ -212,20 +214,24 @@ class AbsenSiswaController extends Controller
         }
 
         foreach ($listSiswa as $siswa) {
-            $absen = $siswa->absens()->latest()->get();
-            $fileName = 'laporan absen ' . $siswa['name'] . ' kelas ' . $saveClassFromCall . '.xlsx';
+            $checkExistsAbsen = $siswa->absens()->first();
 
-            ExportExcel::store(new ExportAbsen($absen), $fileName, 'public');
+            if ($checkExistsAbsen) {
+                $absen = $siswa->absens()->latest()->get();
+                $fileName = 'laporan absen ' . $siswa['name'] . ' kelas ' . $saveClassFromCall . '.xlsx';
 
-            $sourcePath = storage_path('app/public/' . $fileName);
-            $destinationPath = storage_path('app/public/document_laporan_excel_absen/' . $fileName);
+                ExportExcel::store(new ExportAbsen($absen), $fileName, 'public');
 
-            File::move($sourcePath, $destinationPath);
+                $sourcePath = storage_path('app/public/' . $fileName);
+                $destinationPath = storage_path('app/public/document_laporan_excel_absen_siswa/' . $fileName);
+
+                File::move($sourcePath, $destinationPath);
+            }
         }
         // End EXCEL
 
         // Star ZIP
-        $folderPath = public_path('storage/document_laporan_excel_absen');
+        $folderPath = public_path('storage/document_laporan_excel_absen_siswa');
         $fileCount = count(array_diff(scandir($folderPath), ['.', '..']));
 
         if ($fileCount < 1) {
@@ -233,24 +239,10 @@ class AbsenSiswaController extends Controller
         }
 
         $zipFileName = 'laporan_excel_absen_kelas_' . $saveClassFromCall . '.zip';
-        $zip = new ZipArchive;
+        $createZip = $this->absenService->createZip($zipFileName, $folderPath);
 
-        if ($zip->open($zipFileName, ZipArchive::CREATE) !== true) {
-            return redirect('/data-absen/siswa/' . $saveClassFromCall)->with('error', 'Gagal membuat arsip ZIP');
-        }
-
-        $files = glob($folderPath . '/*');
-        foreach ($files as $file) {
-            $fileName = basename($file);
-            $zip->addFile($file, $fileName);
-        }
-
-        $zip->close();
-        $files = glob($folderPath . '/*');
-        foreach ($files as $file) {
-            if (is_file($file)) {
-                unlink($file);
-            }
+        if (!$createZip) {
+            return redirect('/data-absen/siswa/' . $saveClassFromCall)->with('error', 'Gagal membuat laporan zip!');
         }
 
         return response()->download($zipFileName)->deleteFileAfterSend(true);
@@ -260,20 +252,20 @@ class AbsenSiswaController extends Controller
     public function editTanggalAbsenSiswa($saveUuidFromCall, $saveDateFromCaller)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
-            return redirect('/data-absen')->with(['error' => 'Data tanggal absen tidak ditemukan!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Data absen tidak valid!']);
         }
 
         $timestamp = strtotime($saveDateFromCaller);
 
         if ($timestamp === false) {
-            return redirect('/data-absen')->with('error', 'Data tanggal absen tidak ditemukan!');
+            return redirect('/data-absen/siswa')->with('error', 'Data tanggal absen tidak ditemukan!');
         }
 
         $dataUserAuth = $this->userService->getProfileUser();
         $dataAbsen = Absen::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataAbsen) {
-            return redirect('/data-absen')->with('error', 'Data absen tidak ditemukan!');
+            return redirect('/data-absen/siswa')->with('error', 'Data absen tidak ditemukan!');
         }
 
         return view('absen::layouts.admin.siswa.edit_date', compact('dataUserAuth', 'dataAbsen'));
@@ -282,7 +274,7 @@ class AbsenSiswaController extends Controller
     public function updateTanggalAbsenSiswa($saveUuidFromCall, UpdateDateAbsenRequest $request)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
-            return redirect('/data-absen')->with(['error' => 'Data tanggal absen tidak ditemukan!']);
+            return redirect('/data-absen/siswa')->with(['error' => 'Data absen tidak valid!']);
         }
 
         $validateData = $request->validated();
@@ -307,7 +299,7 @@ class AbsenSiswaController extends Controller
         $getDataAbsen = Absen::where('uuid', $validateData['uuid'])->first();
 
         if (!$getDataAbsen) {
-            return redirect('/data-absen')->with('error', 'Data tanggal absen tidak ditemukan!');
+            return redirect('/data-absen/siswa')->with('error', 'Data tanggal absen tidak ditemukan!');
         }
 
         $getDataAbsen->delete();
