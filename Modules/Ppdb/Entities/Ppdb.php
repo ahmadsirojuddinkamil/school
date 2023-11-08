@@ -11,7 +11,7 @@ class Ppdb extends Model
 
     protected $fillable = [
         'uuid',
-        'nama_lengkap',
+        'name',
         'email',
         'nisn',
         'asal_sekolah',

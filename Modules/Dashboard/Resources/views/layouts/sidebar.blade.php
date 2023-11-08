@@ -7,11 +7,11 @@
                             Dashboard</span> </a>
                 </li>
 
-                {{-- data siswa --}}
+                {{-- siswa --}}
                 <li class="submenu">
                     <a href="javascript:void(0);" class="menu-link">
                         <img src="{{ asset('assets/dashboard/img/icons/product.svg') }}" alt="img">
-                        @if ($dataUserAuth[1] == 'admin' || $dataUserAuth[1] == 'super_admin')
+                        @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
                         <span>Data Siswa</span>
                         @endif
 
@@ -65,12 +65,12 @@
                     </ul>
                 </li>
 
-                {{-- data guru --}}
-                @if ($dataUserAuth[1] == 'admin' || $dataUserAuth[1] == 'super_admin')
+                {{-- guru --}}
+                @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
                 <li class="submenu">
                     <a href="javascript:void(0);" class="menu-link">
                         <img src="{{ asset('assets/dashboard/img/icons/product.svg') }}" alt="img">
-                        @if ($dataUserAuth[1] == 'admin' || $dataUserAuth[1] == 'super_admin')
+                        @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
                         <span>Data Guru</span>
                         @endif
 
@@ -78,13 +78,35 @@
                     </a>
 
                     <ul>
-                        @if ($dataUserAuth[1] == 'admin' || $dataUserAuth[1] == 'super_admin')
+                        @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
                         <li>
-                            <a href="{{ route('data.guru') }}" class="{{ Request::is('data-guru*') ? 'active' : '' }}">Daftar Guru</a>
+                            <a href="{{ route('data.guru') }}" class="{{ Request::is('data-guru*') ? 'active' : '' }}">Guru</a>
                         </li>
 
                         <li>
                             <a href="{{ route('data.absen.guru') }}" class="{{ Request::is('data-absen/guru*') ? 'active' : '' }}">Absen</a>
+                        </li>
+                        @endif
+                    </ul>
+                </li>
+                @endif
+
+                {{-- mata pelajaran --}}
+                @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
+                <li class="submenu">
+                    <a href="javascript:void(0);" class="menu-link">
+                        <img src="{{ asset('assets/dashboard/img/icons/product.svg') }}" alt="img">
+                        @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
+                        <span>Mata Pelajaran</span>
+                        @endif
+
+                        <span class="menu-arrow"></span>
+                    </a>
+
+                    <ul>
+                        @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
+                        <li>
+                            <a href="{{ route('data.mata.pelajaran') }}" class="{{ Request::is('data-mata-pelajaran*') ? 'active' : '' }}">Daftar Mata Pelajaran</a>
                         </li>
                         @endif
                     </ul>

@@ -45,7 +45,7 @@ class PpdbController extends Controller
 
         $this->ppdbService->createPpdb($validateData);
 
-        return redirect()->route('ppdb.register')->with(['success' => 'Data ppdb anda berhasil dikirim! Tolong check email dalam 24 jam']);
+        return redirect('/ppdb')->with(['success' => 'Data ppdb anda berhasil dikirim! Tolong check email dalam 24 jam']);
     }
 
     public function year()
@@ -162,7 +162,7 @@ class PpdbController extends Controller
         }
 
         foreach ($listPpdb as $ppdb) {
-            $fileName = 'biodata ' . $ppdb['name'] . 'ppdb ' . $ppdb['tahun_daftar'] . '.xlsx';
+            $fileName = $ppdb['name'] . '.xlsx';
 
             ExportExcel::store(new ExportPpdb($ppdb->uuid), $fileName, 'public');
 

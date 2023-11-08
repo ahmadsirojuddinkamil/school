@@ -14,7 +14,8 @@ class UpdateTeachingHoursRequest extends FormRequest
     public function rules()
     {
         return [
-            'jam_mengajar' => 'required|string',
+            'jam_mengajar_awal' => 'required|string',
+            'jam_mengajar_akhir' => 'required|string',
         ];
     }
 

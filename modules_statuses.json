@@ -4,5 +4,6 @@
     "Dashboard": true,
     "News": true,
     "Absen": true,
-    "Guru": true
+    "Guru": true,
+    "MataPelajaran": true
 }

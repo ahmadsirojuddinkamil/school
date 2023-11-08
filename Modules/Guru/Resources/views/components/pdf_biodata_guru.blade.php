@@ -70,8 +70,12 @@
                 <td>{{ $biodata->status_perkawinan }}</td>
             </tr>
             <tr>
-                <th>Jam Mengajar :</th>
-                <td>{{ $biodata->jam_mengajar }}</td>
+                <th>Jam Mengajar Awal :</th>
+                <td>{{ $biodata->jam_mengajar_awal }}</td>
+            </tr>
+            <tr>
+                <th>Jam Mengajar Akhir :</th>
+                <td>{{ $biodata->jam_mengajar_akhir }}</td>
             </tr>
             <tr>
                 <th>Pendidikan Terakhir :</th>

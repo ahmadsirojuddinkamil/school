@@ -19,13 +19,13 @@
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
     @else
-    <input type="hidden" name="nisn" value="{{ $dataSiswa->nisn }}" disabled>
+    <input type="hidden" name="nisn" value="{{ $dataSiswa->nisn }}">
     @endif
 
     @if(in_array($dataUserAuth[1], ['super_admin', 'admin']))
     <div class="mb-3">
-        @if ($dataSiswa->kelas === 'lulus')
-        <input type="hidden" name="kelas" value="lulus">
+        @if ($dataSiswa->kelas === null)
+        <input type="hidden" name="kelas" value="">
         @else
         <div class="mb-3">
             <label class="form-label">Kelas</label>
@@ -43,7 +43,7 @@
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
     @else
-    <input type="hidden" name="kelas" value="{{ $dataSiswa->kelas }}" disabled>
+    <input type="hidden" name="kelas" value="{{ $dataSiswa->kelas }}">
     @endif
 
     <div class="mb-3">
@@ -64,7 +64,7 @@
 
     <div class="mb-3">
         <label class="form-label">Agama</label>
-        <select class="form-select" name="agama" required>
+        <select class="form-select" name="agama">
             @foreach (['islam', 'kristen', 'katolik', 'hindu', 'buddha', 'konghucu'] as $option)
             <option value="{{ $option }}" {{ $dataSiswa->agama == $option ? 'selected' : '' }}>
                 {{ ucfirst($option) }}
@@ -91,7 +91,7 @@
     @enderror
 
     <div class="mb-3">
-        <label for="asal-sekolah" class="form-label">Asal Sekolah</label>
+        <label for="asal-sekolah" class="form-label">Asal Sekolah Smp / Mts</label>
         <input type="text" class="form-control" id="asal-sekolah" value="{{ $dataSiswa->asal_sekolah }}" name="asal_sekolah" required>
     </div>
     @error('asal_sekolah')
@@ -101,7 +101,7 @@
     @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
     <div class="mb-3">
         <label for="nem" class="form-label">Nem</label>
-        <input type="number" class="form-control" id="nem" value="{{ $dataSiswa->nem }}" name="nem" required>
+        <input type="number" class="form-control" id="nem" value="{{ $dataSiswa->nem }}" name="nem">
     </div>
     @error('nem')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -112,12 +112,8 @@
 
     @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
     <div class="mb-3">
-        @if ($dataSiswa->tahun_lulus)
-        <label for="tahun-lulus" class="form-label">Tahun Lulus</label>
-        <input type="date" class="form-control" id="tahun-lulus" value="{{ $dataSiswa->tahun_lulus }}" name="tahun_lulus" required>
-        @else
-        <input type="hidden" name="tahun_lulus" value="null">
-        @endif
+        <label for="tahun-lulus" class="form-label">Tahun Lulus Smp / Mts</label>
+        <input type="text" class="form-control" id="tahun-lulus" value="{{ $dataSiswa->tahun_lulus }}" name="tahun_lulus">
     </div>
     @error('tahun_lulus')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -128,7 +124,7 @@
 
     <div class="mb-3">
         <label for="alamat-rumah" class="form-label">Alamat Rumah</label>
-        <input type="text" class="form-control" id="alamat-rumah" value="{{ $dataSiswa->alamat_rumah }}" name="alamat_rumah" required>
+        <input type="text" class="form-control" id="alamat-rumah" value="{{ $dataSiswa->alamat_rumah }}" name="alamat_rumah">
     </div>
     @error('alamat_rumah')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -136,7 +132,7 @@
 
     <div class="mb-3">
         <label for="provinsi" class="form-label">Provinsi</label>
-        <input type="text" class="form-control" id="provinsi" value="{{ $dataSiswa->provinsi }}" name="provinsi" required>
+        <input type="text" class="form-control" id="provinsi" value="{{ $dataSiswa->provinsi }}" name="provinsi">
     </div>
     @error('provinsi')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -144,7 +140,7 @@
 
     <div class="mb-3">
         <label for="kecamatan" class="form-label">Kecamatan</label>
-        <input type="text" class="form-control" id="kecamatan" value="{{ $dataSiswa->kecamatan }}" name="kecamatan" required>
+        <input type="text" class="form-control" id="kecamatan" value="{{ $dataSiswa->kecamatan }}" name="kecamatan">
     </div>
     @error('kecamatan')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -152,7 +148,7 @@
 
     <div class="mb-3">
         <label for="kelurahan" class="form-label">Kelurahan</label>
-        <input type="text" class="form-control" id="kelurahan" value="{{ $dataSiswa->kelurahan }}" name="kelurahan" required>
+        <input type="text" class="form-control" id="kelurahan" value="{{ $dataSiswa->kelurahan }}" name="kelurahan">
     </div>
     @error('kelurahan')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -160,7 +156,7 @@
 
     <div class="mb-3">
         <label for="kode-pos" class="form-label">Kode Pos</label>
-        <input type="number" class="form-control" id="kode-pos" value="{{ $dataSiswa->kode_pos }}" name="kode_pos" required>
+        <input type="number" class="form-control" id="kode-pos" value="{{ $dataSiswa->kode_pos }}" name="kode_pos">
     </div>
     @error('kode_pos')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -182,33 +178,37 @@
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 
+    @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
     <div class="mb-3">
         <label for="tahun_daftar" class="form-label">Tahun Daftar</label>
-        <input type="date" class="form-control" id="tahun_daftar" value="{{ $dataSiswa->tahun_daftar }}" name="tahun_daftar" required>
+        <input type="text" class="form-control" id="tahun_daftar" value="{{ $dataSiswa->tahun_daftar }}" name="tahun_daftar" required>
     </div>
     @error('tahun_daftar')
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
+    @else
+    <input type="hidden" name="tahun_daftar" value="{{ $dataSiswa->tahun_daftar }}" readonly>
+    @endif
 
     @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
+    @if($dataSiswa->tahun_keluar)
     <div class="mb-3">
-        @if($dataSiswa->tahun_keluar)
         <label for="tahun_keluar" class="form-label">Tahun Keluar</label>
-        <input type="text" class="form-control" id="tahun_keluar" value="{{ $dataSiswa->tahun_keluar }}" name="tahun_keluar" required>
-        @else
-        <input type="hidden" name="tahun_keluar" value="null">
-        @endif
+        <input type="text" class="form-control" id="tahun_keluar" value="{{ $dataSiswa->tahun_keluar }}" name="tahun_keluar">
     </div>
     @error('tahun_keluar')
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
     @else
-    <input type="hidden" name="nem" value="null">
+    <input type="hidden" name="tahun_keluar" value="" readonly>
+    @endif
+    @else
+    <input type="hidden" name="tahun_keluar" value="" readonly>
     @endif
 
     <div class="mb-3">
         <label for="nama_bank" class="form-label">Nama Bank</label>
-        <input type="text" class="form-control" id="nama_bank" value="{{ $dataSiswa->nama_bank }}" name="nama_bank" required>
+        <input type="text" class="form-control" id="nama_bank" value="{{ $dataSiswa->nama_bank }}" name="nama_bank">
     </div>
     @error('nama_bank')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -216,7 +216,7 @@
 
     <div class="mb-3">
         <label for="nama_buku_rekening" class="form-label">Nama Pemilik Buku Rekening</label>
-        <input type="text" class="form-control" id="nama_buku_rekening" value="{{ $dataSiswa->nama_buku_rekening }}" name="nama_buku_rekening" required>
+        <input type="text" class="form-control" id="nama_buku_rekening" value="{{ $dataSiswa->nama_buku_rekening }}" name="nama_buku_rekening">
     </div>
     @error('nama_buku_rekening')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -224,7 +224,7 @@
 
     <div class="mb-3">
         <label for="no_rekening" class="form-label">No Rekening</label>
-        <input type="text" class="form-control" id="no_rekening" value="{{ $dataSiswa->no_rekening }}" name="no_rekening" required>
+        <input type="number" class="form-control" id="no_rekening" value="{{ $dataSiswa->no_rekening }}" name="no_rekening">
     </div>
     @error('no_rekening')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -248,7 +248,7 @@
 
     <div class="mb-3">
         <label for="nama_wali" class="form-label">Nama Wali</label>
-        <input type="text" class="form-control" id="nama_wali" value="{{ $dataSiswa->nama_wali }}" name="nama_wali" required>
+        <input type="text" class="form-control" id="nama_wali" value="{{ $dataSiswa->nama_wali }}" name="nama_wali">
     </div>
     @error('nama_wali')
     <div class="alert alert-danger">{{ $message }}</div>

@@ -14,7 +14,7 @@ class UserDownloadPdfAbsenRequest extends FormRequest
     public function rules()
     {
         return [
-            'id' => 'required|integer',
+            'uuid' => 'required|uuid',
             'role' => 'required|string',
         ];
     }

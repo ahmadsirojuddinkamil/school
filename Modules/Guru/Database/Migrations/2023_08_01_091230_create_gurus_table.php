@@ -15,9 +15,9 @@ return new class extends Migration
     {
         Schema::create('gurus', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable();
-            $table->foreignId('mata_pelajaran_id')->nullable();
-            $table->uuid('uuid');
+            $table->foreignUuid('user_uuid')->nullable();
+            $table->foreignUuid('mata_pelajaran_uuid')->nullable();
+            $table->uuid('uuid')->unique();
 
             $table->string('name');
             $table->string('nuptk', 16)->unique();
@@ -27,7 +27,8 @@ return new class extends Migration
             $table->string('agama');
             $table->string('jenis_kelamin');
             $table->string('status_perkawinan');
-            $table->string('jam_mengajar')->nullable();
+            $table->string('jam_mengajar_awal')->nullable();
+            $table->string('jam_mengajar_akhir')->nullable();
             $table->string('pendidikan_terakhir');
             $table->string('nama_tempat_pendidikan');
             $table->string('ipk');

@@ -26,6 +26,14 @@
                     <div class="page-title">
                         <h4>Daftar Kelas</h4>
                     </div>
+
+                    <div class="wordset">
+                        <ul>
+                            <a href="{{ route('siswa.create') }}" class="link-with-margin">
+                                <img src="{{ asset('assets/dashboard/img/icons/plus.svg') }}" alt="img">
+                            </a>
+                        </ul>
+                    </div>
                 </div>
 
                 @include('siswa::components.sweetalert-success')

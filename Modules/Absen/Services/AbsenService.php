@@ -10,14 +10,14 @@ use ZipArchive;
 
 class AbsenService
 {
-    public function create($validateData, $saveIdFromCaller)
+    public function create($validateData, $saveUuidFromCall)
     {
         DB::beginTransaction();
 
         Absen::create([
-            'siswa_id' => in_array($validateData['status'], ['10', '11', '12']) ? $saveIdFromCaller : null,
-            'guru_id' => $validateData['status'] == 'guru' ? $saveIdFromCaller : null,
-            'uuid' => Uuid::uuid4()->toString(),
+            'siswa_uuid' => in_array($validateData['status'], ['10', '11', '12']) ? $saveUuidFromCall : null,
+            'guru_uuid' => $validateData['status'] == 'guru' ? $saveUuidFromCall : null,
+            'uuid' => Uuid::uuid4(),
             'status' => $validateData['status'],
             'keterangan' => $validateData['keterangan'],
             'persetujuan' => $validateData['persetujuan'],
@@ -60,11 +60,13 @@ class AbsenService
         $folderPath = $saveFolderPathFromCall;
 
         $zip->open($zipFileName, ZipArchive::CREATE);
+        $zip->addEmptyDir($saveFileNameFromCall);
 
         $files = glob($folderPath . '/*');
         foreach ($files as $file) {
             $fileName = basename($file);
-            $zip->addFile($file, $fileName);
+            $relativePath = $saveFileNameFromCall . '/' . $fileName;
+            $zip->addFile($file, $relativePath);
         }
 
         $zip->close();

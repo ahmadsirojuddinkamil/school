@@ -19,7 +19,7 @@
 
     <div class="mb-3">
         <label for="nip" class="form-label">Nip</label>
-        <input type="text" class="form-control" id="nip" name="nip" required>
+        <input type="text" class="form-control" id="nip" name="nip">
     </div>
     @error('nip')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -87,10 +87,18 @@
     @enderror
 
     <div class="mb-3">
-        <label for="jam_mengajar" class="form-label">Jam Mengajar</label>
-        <input type="datetime-local" class="form-control" id="jam_mengajar" name="jam_mengajar" required>
+        <label for="jam_mengajar_awal" class="form-label">Jam Mengajar Awal</label>
+        <input type="time" class="form-control" id="jam_mengajar_awal" name="jam_mengajar_awal" required>
     </div>
-    @error('jam_mengajar')
+    @error('jam_mengajar_awal')
+    <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
+
+    <div class="mb-3">
+        <label for="jam_mengajar_akhir" class="form-label">Jam Mengajar Akhir</label>
+        <input type="time" class="form-control" id="jam_mengajar_akhir" name="jam_mengajar_akhir" required>
+    </div>
+    @error('jam_mengajar_akhir')
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 
@@ -120,7 +128,7 @@
 
     <div class="mb-3">
         <label for="tahun_lulus" class="form-label">Tahun Lulus</label>
-        <input type="date" class="form-control" id="tahun_lulus" name="tahun_lulus" required>
+        <input type="text" class="form-control" id="tahun_lulus" name="tahun_lulus" required>
     </div>
     @error('tahun_lulus')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -183,16 +191,14 @@
     @enderror
 
     <div class="mb-3">
-        <label for="tahun_daftar" class="form-label">Tahun Daftar</label>
-        <input type="date" class="form-control" id="tahun_daftar" name="tahun_daftar" required>
+        <input type="hidden" class="form-control" id="tahun_daftar" name="tahun_daftar" value="{{ date('Y') }}" required>
     </div>
     @error('tahun_daftar')
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 
     <div class="mb-3">
-        <label for="tahun_keluar" class="form-label">Tahun Keluar</label>
-        <input type="date" class="form-control" id="tahun_keluar" name="tahun_keluar" required>
+        <input type="hidden" class="form-control" id="tahun_keluar" name="tahun_keluar" value="">
     </div>
     @error('tahun_keluar')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -200,7 +206,7 @@
 
     <div class="mb-3">
         <label for="nama_bank" class="form-label">Nama Bank</label>
-        <input type="text" class="form-control" id="nama_bank" name="nama_bank" required>
+        <input type="text" class="form-control" id="nama_bank" name="nama_bank">
     </div>
     @error('nama_bank')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -208,7 +214,7 @@
 
     <div class="mb-3">
         <label for="nama_buku_rekening" class="form-label">Nama Buku Rekening</label>
-        <input type="text" class="form-control" id="nama_buku_rekening" name="nama_buku_rekening" required>
+        <input type="text" class="form-control" id="nama_buku_rekening" name="nama_buku_rekening">
     </div>
     @error('nama_buku_rekening')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -216,7 +222,7 @@
 
     <div class="mb-3">
         <label for="no_rekening" class="form-label">No Rekening</label>
-        <input type="string" class="form-control" id="no_rekening" name="no_rekening" required>
+        <input type="string" class="form-control" id="no_rekening" name="no_rekening">
     </div>
     @error('no_rekening')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -224,10 +230,11 @@
 
     <div class="col-lg-12">
         <div class="form-group">
-            <label for="foto" class="form-label">Foto</label>
-            <input type="file" id="foto" name="foto" required>
+            <label>Foto</label>
+            <input type="file" id="fileInput" name="foto" accept=".jpg, .jpeg, .png" onchange="validateFile(this)" required>
+            <br><br>
+            <img id="previewImageGuru" alt="foto-guru" height="100" width="100" style="display: none;">
         </div>
-        <img id="image-preview" src="#" alt="Preview" style="display: none; max-width: 100%;">
     </div>
     @error('foto')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -264,39 +271,42 @@
 </form>
 
 <script>
-    // Ambil elemen input file
-    const fileInput = document.getElementById('foto');
-    // Ambil elemen pratinjau gambar
-    const imagePreview = document.getElementById('image-preview');
+    const fileInput = document.getElementById('fileInput');
+    const previewImageGuru = document.getElementById('previewImageGuru');
+    const maxFileSize = 3 * 1024 * 1024; // 3MB
 
-    // Tambahkan event listener untuk perubahan input file
     fileInput.addEventListener('change', function() {
-        const file = this.files[0];
+        const file = fileInput.files[0];
+
         if (file) {
-            // Validasi jenis file (jpg atau png)
-            const allowedTypes = ['image/jpeg', 'image/png'];
-            if (allowedTypes.includes(file.type)) {
-                // Validasi ukuran file (maksimum 3 MB)
-                if (file.size <= 3 * 1024 * 1024) {
+            if (file.type === 'image/jpeg' || file.type === 'image/png') {
+                if (file.size <= maxFileSize) {
                     const reader = new FileReader();
 
                     reader.onload = function(e) {
-                        imagePreview.src = e.target.result;
-                        imagePreview.style.display = 'block';
+                        previewImageGuru.src = e.target.result;
+                        previewImageGuru.style.display = 'block'; // Menampilkan gambar
                     };
 
                     reader.readAsDataURL(file);
                 } else {
-                    alert('Ukuran file melebihi batas maksimum (3 MB).');
-                    this.value = ''; // Mengosongkan input file
+                    alert('Ukuran file foto melebihi batas 3MB.');
+                    fileInput.value = null;
                 }
             } else {
-                alert('Jenis file tidak didukung. Hanya file JPG atau PNG yang diizinkan.');
-                this.value = ''; // Mengosongkan input file
+                alert('Format file tidak valid. Hanya diperbolehkan JPG dan PNG.');
+                fileInput.value = null;
             }
         } else {
-            imagePreview.style.display = 'none';
+            previewImageGuru.src = '';
+            previewImageGuru.style.display = 'none'; // Sembunyikan gambar ketika tidak ada gambar yang dipilih
         }
+    });
+
+    fileInput.addEventListener('click', function() {
+        fileInput.value = null;
+        previewImageGuru.src = '';
+        previewImageGuru.style.display = 'none'; // Sembunyikan gambar ketika tombol 'Browse' diklik
     });
 
 </script>

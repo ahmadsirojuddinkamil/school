@@ -27,24 +27,17 @@ class AbsenController extends Controller
     public function absen()
     {
         $dataUserAuth = $this->userService->getProfileUser();
-        $checkAbsenOrNot = null;
         $today = now()->format('Y-m-d');
 
-        if ($dataUserAuth[1] == 'siswa') {
-            $latestAbsen = $dataUserAuth[0]->siswa->absens()->latest()->first();
+        $latestAbsen = null;
 
-            if ($latestAbsen && $latestAbsen->created_at->format('Y-m-d') == $today) {
-                $checkAbsenOrNot = true;
-            }
+        if ($dataUserAuth[1] == 'siswa' || $dataUserAuth[1] == 'guru') {
+            $role = $dataUserAuth[1];
+            $profileData = $dataUserAuth[0]->load("$role.absens");
+            $latestAbsen = $profileData->$role->absens()->latest()->first();
         }
 
-        if ($dataUserAuth[1] == 'guru') {
-            $latestAbsen = $dataUserAuth[0]->guru->absens()->latest()->first();
-
-            if ($latestAbsen && $latestAbsen->created_at->format('Y-m-d') == $today) {
-                $checkAbsenOrNot = true;
-            }
-        }
+        $checkAbsenOrNot = $latestAbsen && $latestAbsen->created_at->format('Y-m-d') == $today;
 
         return view('absen::layouts.create_absen', compact('dataUserAuth', 'checkAbsenOrNot'));
     }
@@ -52,26 +45,19 @@ class AbsenController extends Controller
     public function store(StoreAbsenRequest $request)
     {
         $validateData = $request->validated();
+        $dataUserAuth = $this->userService->getProfileUser();
         $today = now()->format('Y-m-d');
+        $role = $dataUserAuth[1];
 
-        if (in_array($validateData['status'], ['10', '11', '12'])) {
-            $latestAbsenTime = Auth::user()->siswa->absens()->latest()->value('created_at');
-
-            if ($latestAbsenTime === $today) {
-                return redirect('/absen')->with('error', 'Anda sudah melakukan absen!');
-            }
-
-            $this->absenService->create($validateData, Auth::user()->siswa->id);
-        }
-
-        if ($validateData['status'] == 'guru') {
-            $latestAbsenTime = Auth::user()->guru->absens()->latest()->value('created_at');
+        if (in_array($validateData['status'], ['10', '11', '12', 'guru'])) {
+            $latestAbsenTime = $dataUserAuth[0]->load("{$role}.absens")->{"{$role}"}
+                ->absens()->latest()->value('created_at');
 
             if ($latestAbsenTime === $today) {
                 return redirect('/absen')->with('error', 'Anda sudah melakukan absen!');
             }
 
-            $this->absenService->create($validateData, Auth::user()->guru->id);
+            $this->absenService->create($validateData, $dataUserAuth[0]->load($role)->{$role}->uuid);
         }
 
         return redirect('/absen')->with('success', 'Anda berhasil melakukan absen!');
@@ -80,16 +66,13 @@ class AbsenController extends Controller
     public function laporan()
     {
         $dataUserAuth = $this->userService->getProfileUser();
-        $idRole = null;
+        $role = $dataUserAuth[1];
+        $uuidRole = null;
 
-        if ($dataUserAuth[1] == 'siswa') {
-            $listAbsen = $dataUserAuth[0]->siswa->absens()->latest()->get();
-            $idRole = $dataUserAuth[0]->siswa->id;
-        }
-
-        if ($dataUserAuth[1] == 'guru') {
-            $listAbsen = $dataUserAuth[0]->guru->absens()->latest()->get();
-            $idRole = $dataUserAuth[0]->guru->id;
+        if (in_array($role, ['siswa', 'guru'])) {
+            $listAbsen = $dataUserAuth[0]->load("{$role}.absens")->{"{$role}"}
+                ->absens()->latest()->get();
+            $uuidRole = $dataUserAuth[0]->load($role)->{$role}->uuid;
         }
 
         if ($listAbsen->isEmpty()) {
@@ -98,26 +81,22 @@ class AbsenController extends Controller
 
         $listKehadiran = $this->absenService->totalKeterangan($listAbsen);
 
-        return view('absen::layouts.laporan', compact('dataUserAuth', 'listAbsen', 'idRole', 'listKehadiran'));
+        return view('absen::layouts.laporan', compact('dataUserAuth', 'listAbsen', 'uuidRole', 'listKehadiran'));
     }
 
     public function userDownloadPdfLaporanAbsen(UserDownloadPdfAbsenRequest $request)
     {
         $validateData = $request->validated();
+        $role = $validateData['role'];
+        $uuid = $validateData['uuid'];
 
-        if ($validateData['role'] == 'siswa') {
-            $listAbsen = Absen::where('siswa_id', $validateData['id'])->latest()->get();
-            $listKeterangan = $this->absenService->totalKeterangan($listAbsen);
-        }
-
-        if ($validateData['role'] == 'guru') {
-            $listAbsen = Absen::where('guru_id', $validateData['id'])->latest()->get();
-            $listKeterangan = $this->absenService->totalKeterangan($listAbsen);
-        }
+        $listAbsen = Absen::where("{$role}_uuid", $uuid)->latest()->get();
 
         if ($listAbsen->isEmpty()) {
             return redirect('/absen')->with('error', 'Data absen belum ada!');
         }
+
+        $listKeterangan = $this->absenService->totalKeterangan($listAbsen);
 
         $pdf = DomPDF::loadView('absen::layouts.pdf_user', [
             'listAbsen' => $listAbsen,
