@@ -2,6 +2,7 @@
 
 namespace Modules\Guru\Database\factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ramsey\Uuid\Uuid;
 
@@ -55,9 +56,9 @@ class GuruFactory extends Factory
         ];
 
         return [
-            'user_id' => null,
-            'mata_pelajaran_id' => null,
-            'uuid' => Uuid::uuid4()->toString(),
+            'user_uuid' => null,
+            'mata_pelajaran_uuid' => null,
+            'uuid' => Uuid::uuid4(),
             'name' => $faker->name,
             'nuptk' => $faker->regexify('[0-9]{16}'),
             'nip' => $faker->regexify('[0-9]{18}'),
@@ -66,7 +67,8 @@ class GuruFactory extends Factory
             'agama' => $faker->randomElement($agama),
             'jenis_kelamin' => $faker->randomElement(['laki-laki', 'perempuan']),
             'status_perkawinan' => $faker->randomElement(['belum-menikah', 'sudah-menikah']),
-            'jam_mengajar' => $faker->dateTimeBetween('2000-01-01', '2023-12-31')->format('Y-m-d H:i:s'),
+            'jam_mengajar_awal' => $faker->dateTimeBetween('2000-01-01', '2023-12-31')->format('H:i:s'),
+            'jam_mengajar_akhir' => $faker->dateTimeBetween('2000-01-01', '2023-12-31')->format('H:i:s'),
             'pendidikan_terakhir' => $faker->randomElement(['s1', 's2']),
             'nama_tempat_pendidikan' => $faker->company,
             'ipk' => number_format($faker->randomFloat(2, 3.5, 4.0), 2),
@@ -80,8 +82,7 @@ class GuruFactory extends Factory
             'no_telpon' => '0' . $faker->unique()->numberBetween(821, 899) . $faker->randomNumber(6),
             'tahun_daftar' => $faker->dateTimeBetween('2000-01-01', '2023-12-31')->format('Y-m-d'),
             'tahun_keluar' => $faker->dateTimeBetween('2000-01-01', '2023-12-31')->format('Y-m-d'),
-            // 'tahun_keluar' => $faker->optional()->dateTimeBetween('2000-01-01', '2023-12-31') ? $faker->dateTimeBetween('2000-01-01', '2023-12-31')->format('Y-m-d') : null,
-            'foto' => 'assets/dashboard/img/foto-siswa.png',
+            'foto' => 'assets/dashboard/img/foto-guru.png',
             'nama_bank' => $faker->randomElement($bank),
             'nama_buku_rekening' => $faker->name,
             'no_rekening' => $faker->regexify('[0-9]{10,16}')

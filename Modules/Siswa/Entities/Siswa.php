@@ -12,8 +12,8 @@ class Siswa extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'mata_pelajaran_id',
+        'user_uuid',
+        'mata_pelajaran_uuid',
         'uuid',
         'name',
         'nisn',
@@ -72,6 +72,6 @@ class Siswa extends Model
 
     public function absens()
     {
-        return $this->hasMany(Absen::class);
+        return $this->hasMany(Absen::class, 'siswa_uuid', 'uuid');
     }
 }

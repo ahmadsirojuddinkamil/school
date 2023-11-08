@@ -12,7 +12,8 @@ class Guru extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'user_uuid',
+        'mata_pelajaran_uuid',
         'uuid',
         'name',
         'nuptk',
@@ -23,7 +24,8 @@ class Guru extends Model
         'agama',
         'jenis_kelamin',
         'status_perkawinan',
-        'jam_mengajar',
+        'jam_mengajar_awal',
+        'jam_mengajar_akhir',
         'pendidikan_terakhir',
         'nama_tempat_pendidikan',
         'ipk',
@@ -56,6 +58,6 @@ class Guru extends Model
 
     public function absens()
     {
-        return $this->hasMany(Absen::class);
+        return $this->hasMany(Absen::class, 'guru_uuid', 'uuid');
     }
 }

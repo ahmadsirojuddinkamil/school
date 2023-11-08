@@ -12,16 +12,16 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('siswas', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_uuid')->references('uuid')->on('users');
         });
 
         Schema::table('gurus', function (Blueprint $table) {
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_uuid')->references('uuid')->on('users');
         });
 
         Schema::table('absens', function (Blueprint $table) {
-            $table->foreign('siswa_id')->references('id')->on('siswas')->onDelete('cascade');
-            $table->foreign('guru_id')->references('id')->on('gurus')->onDelete('cascade');
+            $table->foreign('siswa_uuid')->references('uuid')->on('siswas');
+            $table->foreign('guru_uuid')->references('uuid')->on('gurus');
         });
     }
 

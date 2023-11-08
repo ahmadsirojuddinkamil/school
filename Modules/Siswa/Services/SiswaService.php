@@ -2,9 +2,12 @@
 
 namespace Modules\Siswa\Services;
 
+use App\Models\User;
 use DateTime;
 use Illuminate\Support\Facades\File;
+use Modules\Absen\Entities\Absen;
 use Modules\Siswa\Entities\Siswa;
+use Ramsey\Uuid\Uuid;
 use ZipArchive;
 
 class SiswaService
@@ -116,11 +119,13 @@ class SiswaService
         $folderPath = $saveFolderPathFromCall;
 
         $zip->open($zipFileName, ZipArchive::CREATE);
+        $zip->addEmptyDir($saveFileNameFromCall);
 
         $files = glob($folderPath . '/*');
         foreach ($files as $file) {
             $fileName = basename($file);
-            $zip->addFile($file, $fileName);
+            $relativePath = $saveFileNameFromCall . '/' . $fileName;
+            $zip->addFile($file, $relativePath);
         }
 
         $zip->close();
@@ -131,6 +136,68 @@ class SiswaService
                 unlink($file);
             }
         }
+
+        return true;
+    }
+
+    public function createSiswa($validateData)
+    {
+        $saveFoto = $validateData['foto']->store('public/document_foto_resmi_siswa');
+        $changePublicToStoragePath = str_replace('public/', 'storage/', $saveFoto);
+
+        $siswa = Siswa::create([
+            'user_uuid' => null,
+            'mata_pelajaran_uuid' => null,
+            'uuid' => Uuid::uuid4()->toString(),
+            'name' => $validateData['name'],
+            'nisn' => $validateData['nisn'],
+            'kelas' => $validateData['kelas'],
+            'tempat_lahir' => $validateData['tempat_lahir'],
+            'tanggal_lahir' => $validateData['tanggal_lahir'],
+            'agama' => $validateData['agama'],
+            'jenis_kelamin' => $validateData['jenis_kelamin'],
+            'asal_sekolah' => $validateData['asal_sekolah'],
+            'nem' => $validateData['nem'],
+            'tahun_lulus' => $validateData['tahun_lulus'],
+            'alamat_rumah' => $validateData['alamat_rumah'],
+            'provinsi' => $validateData['provinsi'],
+            'kecamatan' => $validateData['kecamatan'],
+            'kelurahan' => $validateData['kelurahan'],
+            'kode_pos' => $validateData['kode_pos'],
+            'email' => $validateData['email'],
+            'no_telpon' => $validateData['no_telpon'],
+            'tahun_daftar' => $validateData['tahun_daftar'],
+            'tahun_keluar' => $validateData['tahun_keluar'],
+            'foto' => $changePublicToStoragePath,
+            'nama_bank' => null,
+            'nama_buku_rekening' => null,
+            'no_rekening' => null,
+            'nama_ayah' => $validateData['nama_ayah'],
+            'nama_ibu' => $validateData['nama_ibu'],
+            'nama_wali' => $validateData['nama_wali'],
+            'telpon_orang_tua' => $validateData['telpon_orang_tua'],
+        ]);
+
+        $user = User::create([
+            'uuid' => Uuid::uuid4()->toString(),
+            'name' => $siswa->name,
+            'email' => $siswa->email,
+            'password' => $siswa->nisn,
+        ]);
+        $user->assignRole('siswa');
+
+        $siswa->update([
+            'user_uuid' => $user->uuid,
+        ]);
+
+        Absen::create([
+            'siswa_uuid' => $siswa->uuid,
+            'guru_uuid' => null,
+            'uuid' => Uuid::uuid4()->toString(),
+            'status' => $siswa->kelas,
+            'keterangan' => 'hadir',
+            'persetujuan' => 'setuju',
+        ]);
 
         return true;
     }

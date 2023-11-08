@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\File;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
 use Modules\Guru\Exports\{ExportExcelBiodataGuru, ExportExcelListGuru};
-use Ramsey\Uuid\Uuid;
 
 class GuruController extends Controller
 {
@@ -60,55 +59,23 @@ class GuruController extends Controller
     {
         $validateData = $request->validated();
 
-        $existsGuruOrNot = Guru::where('nuptk', $validateData['nuptk'])->first();
+        // $existsGuruOrNot = Guru::where('nuptk', $validateData['nuptk'])->first();
 
-        if ($existsGuruOrNot) {
-            return redirect('/data-guru')->with('error', 'Data guru sudah ada!');
+        // if ($existsGuruOrNot) {
+        //     return redirect('/data-guru')->with('error', 'Data guru sudah ada!');
+        // }
+
+        // $existsEmailOrNot = Guru::where('email', $validateData['email'])->first();
+
+        // if ($existsEmailOrNot) {
+        //     return redirect('/data-guru')->with('error', 'Email sudah digunakan!');
+        // }
+
+        $createGuru = $this->guruService->createGuru($validateData);
+
+        if (!$createGuru) {
+            return redirect('/data-guru')->with('error', 'Data guru gagal dibuat!');
         }
-
-        $user = User::create([
-            'uuid' => Uuid::uuid4()->toString(),
-            'name' => $validateData['name'],
-            'email' => $validateData['email'],
-            'password' => $validateData['nuptk'],
-        ]);
-        $user->assignRole('guru');
-
-        $saveFoto = $validateData['foto']->store('public/document_foto_resmi_guru');
-        $changePublicToStoragePath = str_replace('public/', 'storage/', $saveFoto);
-
-        Guru::create([
-            'user_id' => $user->id,
-            'mata_pelajaran_id' => null,
-            'uuid' => Uuid::uuid4()->toString(),
-            'name' => $validateData['name'],
-            'nuptk' => $validateData['nuptk'],
-            'nip' => $validateData['nip'] ?? null,
-            'tempat_lahir' => $validateData['tempat_lahir'],
-            'tanggal_lahir' => $validateData['tanggal_lahir'],
-            // 'mata_pelajaran' => $validateData['mata_pelajaran'],
-            'agama' => $validateData['agama'],
-            'jenis_kelamin' => $validateData['jenis_kelamin'],
-            'status_perkawinan' => $validateData['status_perkawinan'],
-            'jam_mengajar' => $validateData['jam_mengajar'],
-            'pendidikan_terakhir' => $validateData['pendidikan_terakhir'],
-            'nama_tempat_pendidikan' => $validateData['nama_tempat_pendidikan'],
-            'ipk' => $validateData['ipk'],
-            'tahun_lulus' => $validateData['tahun_lulus'],
-            'alamat_rumah' => $validateData['alamat_rumah'],
-            'provinsi' => $validateData['provinsi'],
-            'kecamatan' => $validateData['kecamatan'],
-            'kelurahan' => $validateData['kelurahan'],
-            'kode_pos' => $validateData['kode_pos'],
-            'email' => $validateData['email'],
-            'no_telpon' => $validateData['no_telpon'],
-            'tahun_daftar' => $validateData['tahun_daftar'],
-            'tahun_keluar' => $validateData['tahun_keluar'],
-            'foto' => $changePublicToStoragePath,
-            'nama_bank' => $validateData['nama_bank'] ?? null,
-            'nama_buku_rekening' => $validateData['nama_buku_rekening'] ?? null,
-            'no_rekening' => $validateData['no_rekening'] ?? null,
-        ]);
 
         return redirect('/data-guru')->with('success', 'Data guru berhasil dibuat!');
     }
@@ -158,7 +125,7 @@ class GuruController extends Controller
         }
 
         foreach ($listGuru as $guru) {
-            $fileName = 'biodata ' . $guru['name'] . 'guru ' . $guru['mata_pelajaran'] . '.xlsx';
+            $fileName = $guru['name'] . '.xlsx';
 
             ExportExcel::store(new ExportExcelListGuru($guru->uuid), $fileName, 'public');
 
@@ -177,7 +144,7 @@ class GuruController extends Controller
             return redirect('/data-guru')->with('error', 'Laporan excel tidak ditemukan!');
         }
 
-        $zipFileName = 'excel_daftar_biodata_guru.zip';
+        $zipFileName = 'laporan_excel_guru.zip';
         $createZip = $this->guruService->createZip($zipFileName, $folderPath);
 
         if (!$createZip) {
@@ -204,7 +171,7 @@ class GuruController extends Controller
             'biodata' => $dataGuru,
         ]);
 
-        return $pdf->download('laporan pdf guru ' . $dataGuru['name'] . '.pdf');
+        return $pdf->download('laporan pdf ' . $dataGuru['name'] . '.pdf');
     }
 
     public function downloadExcelBiodataGuru($saveUuidFromCall)
@@ -219,7 +186,7 @@ class GuruController extends Controller
             return redirect('/data-guru')->with('error', 'Data tidak ditemukan!');
         }
 
-        return ExportExcel::download(new ExportExcelBiodataGuru($saveUuidFromCall), 'biodata ' . $dataGuru['name'] . ' guru ' . $dataGuru['mata_pelajaran'] . '.xlsx');
+        return ExportExcel::download(new ExportExcelBiodataGuru($saveUuidFromCall), 'laporan excel ' . $dataGuru['name'] . '.xlsx');
     }
 
     public function edit($saveUuidFromCall)
@@ -281,7 +248,7 @@ class GuruController extends Controller
             return redirect('/data-guru')->with(['error' => 'Data guru gagal di hapus!']);
         }
 
-        if ($dataGuru->foto !== 'assets/dashboard/img/foto-siswa.png') {
+        if ($dataGuru->foto !== 'assets/dashboard/img/foto-guru.png') {
             File::delete($dataGuru->foto);
         }
 

@@ -73,11 +73,7 @@
 
                                         <li>
                                             <h4>nip</h4>
-                                            @if($dataGuru->nip)
                                             <h6>{{ $dataGuru->nip }}</h6>
-                                            @else
-                                            <h6>belum ada</h6>
-                                            @endif
                                         </li>
 
                                         <li>
@@ -89,11 +85,6 @@
                                             <h4>tanggal lahir</h4>
                                             <h6>{{ $dataGuru->tanggal_lahir }}</h6>
                                         </li>
-
-                                        {{-- <li>
-                                            <h4>mata pelajaran</h4>
-                                            <h6>{{ $dataGuru->mata_pelajaran }}</h6>
-                                        </li> --}}
 
                                         <li>
                                             <h4>agama</h4>
@@ -111,8 +102,13 @@
                                         </li>
 
                                         <li>
-                                            <h4>Jam Mengajar</h4>
-                                            <h6>{{ $dataGuru->jam_mengajar }}</h6>
+                                            <h4>Jam Mengajar Awal</h4>
+                                            <h6>{{ $dataGuru->jam_mengajar_awal }}</h6>
+                                        </li>
+
+                                        <li>
+                                            <h4>Jam Mengajar Akhir</h4>
+                                            <h6>{{ $dataGuru->jam_mengajar_akhir }}</h6>
                                         </li>
 
                                         <li>

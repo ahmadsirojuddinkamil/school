@@ -21,9 +21,9 @@
     <div class="mb-3">
         <label for="nip" class="form-label">Nip</label>
         @if($dataGuru->nip != 'belum ada')
-        <input type="number" class="form-control" id="nip" value="{{ $dataGuru->nip }}" name="nip" required>
+        <input type="number" class="form-control" id="nip" value="{{ $dataGuru->nip }}" name="nip">
         @else
-        <input type="text" class="form-control" id="nip" value="belum ada" name="nip" required>
+        <input type="text" class="form-control" id="nip" value="" name="nip">
         @endif
     </div>
     @error('nip')
@@ -97,10 +97,18 @@
     @enderror
 
     <div class="mb-3">
-        <label for="jam_mengajar" class="form-label">Jam Mengajar</label>
-        <input type="datetime-local" class="form-control" id="jam_mengajar" value="{{ $dataGuru->jam_mengajar }}" name="jam_mengajar" required>
+        <label for="jam_mengajar_awal" class="form-label">Jam Mengajar Awal</label>
+        <input type="time" class="form-control" id="jam_mengajar_awal" value="{{ $dataGuru->jam_mengajar_awal }}" name="jam_mengajar_awal" required>
     </div>
-    @error('jam_mengajar')
+    @error('jam_mengajar_awal')
+    <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
+
+    <div class="mb-3">
+        <label for="jam_mengajar_akhir" class="form-label">Jam Mengajar Akhir</label>
+        <input type="time" class="form-control" id="jam_mengajar_akhir" value="{{ $dataGuru->jam_mengajar_akhir }}" name="jam_mengajar_akhir" required>
+    </div>
+    @error('jam_mengajar_akhir')
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 
@@ -130,7 +138,7 @@
 
     <div class="mb-3">
         <label for="tahun_lulus" class="form-label">Tahun Lulus</label>
-        <input type="date" class="form-control" id="tahun_lulus" value="{{ $dataGuru->tahun_lulus }}" name="tahun_lulus" required>
+        <input type="text" class="form-control" id="tahun_lulus" value="{{ $dataGuru->tahun_lulus }}" name="tahun_lulus" required>
     </div>
     @error('tahun_lulus')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -194,35 +202,31 @@
 
     <div class="mb-3">
         <label for="tahun_daftar" class="form-label">Tahun Daftar</label>
-        <input type="date" class="form-control" id="tahun_daftar" value="{{ $dataGuru->tahun_daftar }}" name="tahun_daftar" required>
+        <input type="text" class="form-control" id="tahun_daftar" value="{{ $dataGuru->tahun_daftar }}" name="tahun_daftar" required>
     </div>
     @error('tahun_daftar')
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 
+    @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
+    @if($dataGuru->tahun_keluar)
     <div class="mb-3">
         <label for="tahun_keluar" class="form-label">Tahun Keluar</label>
-        @if($dataGuru->tahun_keluar)
-        <input type="date" class="form-control" id="tahun_keluar" value="{{ $dataGuru->tahun_keluar }}" name="tahun_keluar" required>
-        @else
-        <select class="form-select" name="tahun_keluar" id="tahun_keluar" required>
-            <option value="aktif" {{ $dataGuru->tahun_keluar == 'aktif' ? 'selected' : '' }}>
-                aktif
-            </option>
-
-            <option value="tanggal_waktu_sekarang" id="tahun_tidak_aktif">
-                tidak aktif
-            </option>
-        </select>
-        @endif
+        <input type="text" class="form-control" id="tahun_keluar" value="{{ $dataGuru->tahun_keluar }}" name="tahun_keluar">
     </div>
     @error('tahun_keluar')
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
+    @else
+    <input type="hidden" class="form-control" id="tahun_keluar" value="" name="tahun_keluar">
+    @endif
+    @else
+    <input type="hidden" class="form-control" id="tahun_keluar" value="" name="tahun_keluar">
+    @endif
 
     <div class="mb-3">
         <label for="nama_bank" class="form-label">Nama Bank</label>
-        <input type="text" class="form-control" id="nama_bank" value="{{ $dataGuru->nama_bank }}" name="nama_bank" required>
+        <input type="text" class="form-control" id="nama_bank" value="{{ $dataGuru->nama_bank }}" name="nama_bank">
     </div>
     @error('nama_bank')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -230,7 +234,7 @@
 
     <div class="mb-3">
         <label for="nama_buku_rekening" class="form-label">Nama Buku Rekening</label>
-        <input type="text" class="form-control" id="nama_buku_rekening" value="{{ $dataGuru->nama_buku_rekening }}" name="nama_buku_rekening" required>
+        <input type="text" class="form-control" id="nama_buku_rekening" value="{{ $dataGuru->nama_buku_rekening }}" name="nama_buku_rekening">
     </div>
     @error('nama_buku_rekening')
     <div class="alert alert-danger">{{ $message }}</div>
@@ -238,7 +242,7 @@
 
     <div class="mb-3">
         <label for="no_rekening" class="form-label">No Rekening</label>
-        <input type="number" class="form-control" id="no_rekening" value="{{ $dataGuru->no_rekening }}" name="no_rekening" required>
+        <input type="number" class="form-control" id="no_rekening" value="{{ $dataGuru->no_rekening }}" name="no_rekening">
     </div>
     @error('no_rekening')
     <div class="alert alert-danger">{{ $message }}</div>

@@ -29,7 +29,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            @if($dataUserAuth[1] == 'super_admin' || $dataUserAuth[1] == 'guru')
+                            @if (in_array($dataUserAuth[1], ['super_admin', 'guru']))
                             @include('guru::components.form-edit-biodata-guru')
                             @else
                             @include('guru::components.form-edit-teaching-hours-guru')

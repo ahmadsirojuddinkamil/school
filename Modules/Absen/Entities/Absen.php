@@ -12,14 +12,15 @@ class Absen extends Model
     use HasFactory;
 
     protected $fillable = [
-        'siswa_id',
-        'guru_id',
+        'siswa_uuid',
+        'guru_uuid',
         'uuid',
         'status',
         'keterangan',
         'persetujuan',
     ];
 
+    // factory
     protected static function AbsenSiswaFactory()
     {
         return \Modules\Absen\Database\factories\AbsenSiswaFactory::new();

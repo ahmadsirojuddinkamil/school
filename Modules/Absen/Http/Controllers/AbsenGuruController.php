@@ -44,10 +44,10 @@ class AbsenGuruController extends Controller
         }
 
         foreach ($dataGuru as $guru) {
-            $checkExistsAbsen = $guru->absens()->first();
+            $checkExistsAbsen = $guru->load('absens')->absens()->first();
 
             if ($checkExistsAbsen) {
-                $dataAbsen = $guru->absens()->latest()->get();
+                $dataAbsen = $guru->load('absens')->absens()->latest()->get();
                 $listKeterangan = $this->absenService->totalKeterangan($dataAbsen);
 
                 $pdf = DomPDF::loadView('absen::layouts.admin.guru.pdf', [
@@ -94,10 +94,10 @@ class AbsenGuruController extends Controller
         }
 
         foreach ($dataGuru as $guru) {
-            $checkExistsAbsen = $guru->absens()->first();
+            $checkExistsAbsen = $guru->load('absens')->absens()->first();
 
             if ($checkExistsAbsen) {
-                $absen = $guru->absens()->latest()->get();
+                $absen = $guru->load('absens')->absens()->latest()->get();
                 $fileName = 'laporan absen ' . $guru['name'] . '.xlsx';
 
                 ExportExcel::store(new ExportAbsen($absen), $fileName, 'public');
@@ -142,7 +142,7 @@ class AbsenGuruController extends Controller
             return redirect('/data-absen/guru')->with(['error' => 'Data guru tidak ditemukan!']);
         }
 
-        $listAbsen = $dataGuru->absens()->latest()->get();
+        $listAbsen = $dataGuru->load('absens')->absens()->latest()->get();
 
         if ($listAbsen->isEmpty()) {
             return redirect('/data-absen/guru')->with(['error' => 'Data absen tidak ditemukan!']);
@@ -158,7 +158,7 @@ class AbsenGuruController extends Controller
         $validateData = $request->validated();
 
         $dataGuru = Guru::where('uuid', $validateData['uuid'])->first();
-        $dataAbsen = $dataGuru->absens()->latest()->get();
+        $dataAbsen = $dataGuru->load('absens')->absens()->latest()->get();
 
         if ($dataAbsen->isEmpty()) {
             return redirect('/data-absen/guru')->with('error', 'Data laporan absen tidak ditemukan!');
@@ -178,7 +178,7 @@ class AbsenGuruController extends Controller
         }
 
         $dataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
-        $dataAbsen = $dataGuru->absens()->latest()->get();
+        $dataAbsen = $dataGuru->load('absens')->absens()->latest()->get();
 
         if ($dataAbsen->isEmpty()) {
             return redirect('/data-absen/guru/' . $saveUuidFromCall)->with('error', 'Data absen belum ada!');
@@ -212,7 +212,7 @@ class AbsenGuruController extends Controller
             return redirect('/data-absen/guru/' . $saveUuidFromCall)->with(['error' => 'Data guru tidak ditemukan!']);
         }
 
-        $dataAbsen = $dataGuru->absens()->latest()->get();
+        $dataAbsen = $dataGuru->load('absens')->absens()->latest()->get();
 
         if ($dataAbsen->isEmpty()) {
             return redirect('/data-absen/guru/' . $saveUuidFromCall)->with(['error' => 'Data absen tidak ditemukan!']);

@@ -99,7 +99,7 @@
                                         </li>
 
                                         <li>
-                                            <h4>Asal Sekolah</h4>
+                                            <h4>Asal Sekolah Smp / Mts</h4>
                                             <h6>{{ $dataSiswa->asal_sekolah }}</h6>
                                         </li>
 
