@@ -24,7 +24,7 @@ class PpdbFactory extends Factory
         $faker = \Faker\Factory::create('id_ID');
 
         return [
-            'uuid' => Uuid::uuid4()->toString(),
+            'uuid' => Uuid::uuid4(),
             'name' => $faker->name,
             'email' => $faker->unique()->safeEmail,
             'nisn' => $faker->numberBetween(1234524534, 4332498964),

@@ -8,15 +8,18 @@
     </div>
 
     <div class="mb-3">
-        <label for="mata_pelajaran" class="form-label">Mata Pelajaran</label>
-        <input type="text" class="form-control" id="mata_pelajaran" value="{{ $dataGuru->mata_pelajaran }}" disabled>
+        <label for="jam_mengajar_awal" class="form-label">Jam Mengajar Awal</label>
+        <input type="time" class="form-control" id="jam_mengajar_awal" value="{{ $dataGuru->jam_mengajar_awal }}" name="jam_mengajar_awal" required>
     </div>
+    @error('jam_mengajar_awal')
+    <div class="alert alert-danger">{{ $message }}</div>
+    @enderror
 
     <div class="mb-3">
-        <label for="jam_mengajar" class="form-label">Jam Mengajar</label>
-        <input type="datetime-local" class="form-control" id="jam_mengajar" value="{{ $dataGuru->jam_mengajar }}" name="jam_mengajar" required>
+        <label for="jam_mengajar_akhir" class="form-label">Jam Mengajar Akhir</label>
+        <input type="time" class="form-control" id="jam_mengajar_akhir" value="{{ $dataGuru->jam_mengajar_akhir }}" name="jam_mengajar_akhir" required>
     </div>
-    @error('jam_mengajar')
+    @error('jam_mengajar_akhir')
     <div class="alert alert-danger">{{ $message }}</div>
     @enderror
 

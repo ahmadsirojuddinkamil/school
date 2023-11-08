@@ -18,7 +18,7 @@ class GuruDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        Guru::factory(5)->create();
+        Guru::factory(10)->create();
 
         // $this->call("OthersTableSeeder");
     }

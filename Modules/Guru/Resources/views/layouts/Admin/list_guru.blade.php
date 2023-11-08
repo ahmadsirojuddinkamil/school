@@ -50,7 +50,9 @@
 
                             <div class="wordset">
                                 <ul>
+                                    @if (in_array($dataUserAuth[1], ['super_admin']))
                                     @include('guru::components.add_new_guru')
+                                    @endif
 
                                     <a href="{{ route('data.guru.download.list.pdf.zip') }}" class="link-with-margin">
                                         <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
@@ -72,7 +74,8 @@
                                         <th>nuptk</th>
                                         <th>nip</th>
                                         {{-- <th>mata pelajaran</th> --}}
-                                        <th>jam mengajar</th>
+                                        <th>jam mengajar Awal</th>
+                                        <th>jam mengajar Akhir</th>
                                         <th>no telpon</th>
                                         <th>Action</th>
                                     </tr>
@@ -92,7 +95,8 @@
                                         @endif
 
                                         {{-- <td>{{ $guru->mata_pelajaran }}</td> --}}
-                                        <td>{{ $guru->jam_mengajar }}</td>
+                                        <td>{{ $guru->jam_mengajar_awal }}</td>
+                                        <td>{{ $guru->jam_mengajar_akhir }}</td>
                                         <td>{{ $guru->no_telpon }}</td>
                                         <td class="actions">
                                             <a class="action-link" href="{{ route('data.guru.biodata', $guru->uuid) }}">

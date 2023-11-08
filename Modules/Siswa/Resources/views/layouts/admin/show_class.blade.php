@@ -52,6 +52,70 @@
 
                             <div class="wordset">
                                 <ul>
+                                    @if(in_array($saveClassFromCall, ['10', '11']))
+                                    <a class="link-with-margin" data-bs-toggle="modal" data-bs-target="#modalUpgradeClass">
+                                        <img src="{{ asset('assets/dashboard/img/icons/plus.svg') }}" alt="img">
+                                    </a>
+
+                                    <div class="modal fade" id="modalUpgradeClass" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Apakah anda
+                                                        yakin?</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    Semua siswa akan naik kelas!
+                                                </div>
+
+                                                <div class="modal-footer d-flex justify-content-end">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+
+                                                    <form action="{{ route('siswa.active.class.upgrade') }}" method="POST" class="action-form">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <input type="hidden" name="kelas" value="{{ $saveClassFromCall }}">
+                                                        <button type="submit" class="btn btn-submit me-2">Submit</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @else
+                                    <a class="link-with-margin" data-bs-toggle="modal" data-bs-target="#modalUpgradeClass">
+                                        <img src="{{ asset('assets/dashboard/img/icons/plus.svg') }}" alt="img">
+                                    </a>
+
+                                    <div class="modal fade" id="modalUpgradeClass" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">Apakah anda
+                                                        yakin?</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                </div>
+
+                                                <div class="modal-body">
+                                                    Semua siswa kelas 12 akan lulus!
+                                                </div>
+
+                                                <div class="modal-footer d-flex justify-content-end">
+                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+
+                                                    <form action="{{ route('siswa.active.class.activeToGraduated') }}" method="POST" class="action-form">
+                                                        @csrf
+                                                        @method('PATCH')
+                                                        <input type="hidden" name="kelas" value="{{ $saveClassFromCall }}">
+                                                        <button type="submit" class="btn btn-submit me-2">Submit</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
+
                                     <a href="{{ route('siswa.active.download.zip.pdf', ['save_class_from_event' => $saveClassFromCall ]) }}" class="link-with-margin">
                                         <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
                                     </a>

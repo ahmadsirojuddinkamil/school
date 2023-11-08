@@ -28,7 +28,7 @@
     @enderror
 
     <div class="mb-3">
-        <label for="asal-sekolah-siswa" class="form-label">Asal Sekolah</label>
+        <label for="asal-sekolah-siswa" class="form-label">Asal Sekolah Smp / Mts</label>
         <input type="text" class="form-control" id="asal-sekolah-siswa" placeholder="smp negeri 1 semarang" name="asal_sekolah" required>
     </div>
     @error('asal_sekolah')

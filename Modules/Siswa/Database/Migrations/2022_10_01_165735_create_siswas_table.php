@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::create('siswas', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable();
-            $table->foreignId('mata_pelajaran_id')->nullable();
+            $table->foreignUuid('user_uuid')->nullable();
+            $table->foreignUuid('mata_pelajaran_uuid')->nullable();
             $table->uuid('uuid')->unique();
 
             $table->string('name');

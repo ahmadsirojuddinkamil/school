@@ -27,7 +27,7 @@ class PpdbService
     public function openPpdb($validateData)
     {
         OpenPpdb::create([
-            'uuid' => Uuid::uuid4()->toString(),
+            'uuid' => Uuid::uuid4(),
             'tanggal_mulai' => $validateData['tanggal_mulai'],
             'tanggal_akhir' => $validateData['tanggal_akhir'],
         ]);
@@ -40,7 +40,7 @@ class PpdbService
         $changePublicToStoragePath = str_replace('public/', 'storage/', $buktiPendaftaranPpdbPath);
 
         Ppdb::create([
-            'uuid' => Uuid::uuid4()->toString(),
+            'uuid' => Uuid::uuid4(),
             'name' => $validateData['name'],
             'email' => $validateData['email'],
             'nisn' => $validateData['nisn'],
@@ -100,9 +100,9 @@ class PpdbService
         $dataPpdb = Ppdb::where('uuid', $saveUuidFromController)->lockForUpdate()->first();
 
         $siswa = Siswa::create([
-            'user_id' => null,
-            'mata_pelajaran_id' => null,
-            'uuid' => Uuid::uuid4()->toString(),
+            'user_uuid' => null,
+            'mata_pelajaran_uuid' => null,
+            'uuid' => Uuid::uuid4(),
             'name' => $dataPpdb->name,
             'nisn' => $dataPpdb->nisn,
             'kelas'  => 10,
@@ -133,7 +133,7 @@ class PpdbService
         ]);
 
         $user = User::create([
-            'uuid' => Uuid::uuid4()->toString(),
+            'uuid' => Uuid::uuid4(),
             'name' => $dataPpdb->name,
             'email' => $dataPpdb->email,
             'password' => $dataPpdb->nisn,
@@ -141,13 +141,13 @@ class PpdbService
         $user->assignRole('siswa');
 
         $siswa->update([
-            'user_id' => $user->id,
+            'user_uuid' => $user->uuid,
         ]);
 
         Absen::create([
-            'siswa_id' => $siswa->id,
-            'guru_id' => null,
-            'uuid' => Uuid::uuid4()->toString(),
+            'siswa_uuid' => $siswa->uuid,
+            'guru_uuid' => null,
+            'uuid' => Uuid::uuid4(),
             'status' => $siswa->kelas,
             'keterangan' => 'hadir',
             'persetujuan' => 'setuju',
@@ -163,15 +163,15 @@ class PpdbService
 
     public function editPpdb($validateData, $saveUuidFromController)
     {
-        $getPpdb = Ppdb::where('uuid', $saveUuidFromController)->first();
+        $dataPpdb = Ppdb::where('uuid', $saveUuidFromController)->first();
 
         if (isset($validateData['bukti_pendaftaran_new'])) {
             $changeBuktiPendaftaranPpdbPath = $validateData['bukti_pendaftaran_new']->store('public/document_bukti_pendaftaran_siswa_baru');
             $changePublicToStoragePath = str_replace('public/', 'storage/', $changeBuktiPendaftaranPpdbPath);
-            File::delete($getPpdb->bukti_pendaftaran);
+            File::delete($dataPpdb->bukti_pendaftaran);
         }
 
-        $getPpdb->update([
+        $dataPpdb->update([
             'name' => $validateData['name'],
             'email' => $validateData['email'],
             'nisn' => $validateData['nisn'],
@@ -196,11 +196,13 @@ class PpdbService
         $folderPath = $saveFolderPathFromCall;
 
         $zip->open($zipFileName, ZipArchive::CREATE);
+        $zip->addEmptyDir($saveFileNameFromCall);
 
         $files = glob($folderPath . '/*');
         foreach ($files as $file) {
             $fileName = basename($file);
-            $zip->addFile($file, $fileName);
+            $relativePath = $saveFileNameFromCall . '/' . $fileName;
+            $zip->addFile($file, $relativePath);
         }
 
         $zip->close();

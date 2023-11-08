@@ -59,7 +59,7 @@
 
                                         </style>
 
-                                        <form action="{{ route('laporan.absen.pdf', ['id' => $idRole, 'role' => $dataUserAuth[1]]) }}" method="POST">
+                                        <form action="{{ route('laporan.absen.pdf', ['uuid' => $uuidRole, 'role' => $dataUserAuth[1]]) }}" method="POST">
                                             @csrf
 
                                             <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="pdf" class="no-background-button">

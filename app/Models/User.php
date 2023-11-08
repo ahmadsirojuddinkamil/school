@@ -51,11 +51,11 @@ class User extends Authenticatable
     // relasi
     public function siswa()
     {
-        return $this->hasOne(Siswa::class);
+        return $this->hasOne(Siswa::class, 'user_uuid', 'uuid');
     }
 
     public function guru()
     {
-        return $this->hasOne(Guru::class);
+        return $this->hasOne(Guru::class, 'user_uuid', 'uuid');
     }
 }

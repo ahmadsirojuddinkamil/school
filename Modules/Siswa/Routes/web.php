@@ -6,7 +6,11 @@ use Modules\Siswa\Http\Controllers\SiswaController;
 Route::controller(SiswaController::class)->middleware('auth')->group(function () {
     Route::group(['middleware' => ['role:admin|super_admin']], function () {
         Route::get('/data-siswa/status/aktif/kelas', 'listClass')->name('siswa.active');
+        Route::get('/data-siswa/create', 'create')->name('siswa.create');
+        Route::post('/data-siswa/create', 'store')->name('siswa.store');
         Route::get('/data-siswa/status/aktif/kelas/{save_class_from_event}', 'showClass')->name('siswa.active.class');
+        Route::patch('/data-siswa/status/aktif/kelas', 'upgradeClass')->name('siswa.active.class.upgrade');
+        Route::patch('/data-siswa/status/aktif/lulus', 'activeToGraduated')->name('siswa.active.class.activeToGraduated');
 
         Route::get('/data-siswa/aktif/{save_class_from_event}/download/pdf/zip', 'downloadZipSiswaActivePdf')->name('siswa.active.download.zip.pdf');
         Route::get('/data-siswa/aktif/{save_class_from_event}/download/excel', 'downloadExcelSiswaActive')->name('siswa.active.download.excel');

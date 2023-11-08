@@ -1,0 +1,11 @@
+{
+    "name": "MataPelajaran",
+    "alias": "matapelajaran",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\MataPelajaran\\Providers\\MataPelajaranServiceProvider"
+    ],
+    "files": []
+}
