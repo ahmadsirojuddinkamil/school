@@ -2,55 +2,60 @@
 
 namespace Modules\Guru\Http\Controllers;
 
-use App\Models\User;
-use App\Services\UserService;
 use Illuminate\Routing\Controller;
 use Modules\Guru\Entities\Guru;
 use Modules\Guru\Http\Requests\{StoreGuruRequest, UpdateBiodataGuruRequest, UpdateTeachingHoursRequest};
 use Modules\Guru\Services\GuruService;
 use Illuminate\Support\Facades\File;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
+use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
 use Modules\Guru\Exports\{ExportExcelBiodataGuru, ExportExcelListGuru};
 
 class GuruController extends Controller
 {
-    protected $userService;
     protected $guruService;
 
-    public function __construct(UserService $userService, GuruService $guruService)
+    public function __construct(GuruService $guruService)
     {
-        $this->userService = $userService;
         $this->guruService = $guruService;
     }
 
     public function listGuru()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $dataGuru = Guru::latest()->get();
 
         return view('guru::layouts.Admin.list_guru', compact('dataUserAuth', 'dataGuru'));
     }
 
-    public function biodata($saveUuidFromCall)
+    public function show($saveUuidFromCall)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
             return redirect('/data-guru')->with('error', 'Data guru tidak valid!');
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
+
+        if ($dataUserAuth[1] == 'guru') {
+            $guru = $dataUserAuth[0]->load('guru')->guru;
+            if ($guru->uuid != $saveUuidFromCall) {
+                return redirect('/data-guru/' . $guru->uuid)->with('error', 'Data guru tidak valid!');
+            }
+        }
+
         $dataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataGuru) {
             return redirect('/data-guru')->with('error', 'Data guru tidak ditemukan!');
         }
 
-        return view('guru::layouts.biodata', compact('dataUserAuth', 'dataGuru'));
+        return view('guru::layouts.show', compact('dataUserAuth', 'dataGuru'));
     }
 
     public function create()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
 
         return view('guru::layouts.Admin.create', compact('dataUserAuth'));
     }
@@ -58,18 +63,6 @@ class GuruController extends Controller
     public function store(StoreGuruRequest $request)
     {
         $validateData = $request->validated();
-
-        // $existsGuruOrNot = Guru::where('nuptk', $validateData['nuptk'])->first();
-
-        // if ($existsGuruOrNot) {
-        //     return redirect('/data-guru')->with('error', 'Data guru sudah ada!');
-        // }
-
-        // $existsEmailOrNot = Guru::where('email', $validateData['email'])->first();
-
-        // if ($existsEmailOrNot) {
-        //     return redirect('/data-guru')->with('error', 'Email sudah digunakan!');
-        // }
 
         $createGuru = $this->guruService->createGuru($validateData);
 
@@ -161,6 +154,15 @@ class GuruController extends Controller
             return redirect('/data-guru')->with('error', 'Data guru tidak valid!');
         }
 
+        $dataUserAuth = Session::get('userData');
+
+        if ($dataUserAuth[1] == 'guru') {
+            $guru = $dataUserAuth[0]->load('guru')->guru;
+            if ($guru->uuid != $saveUuidFromCall) {
+                return redirect('/data-guru/' . $guru->uuid)->with('error', 'Data guru tidak valid!');
+            }
+        }
+
         $dataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataGuru) {
@@ -183,7 +185,7 @@ class GuruController extends Controller
         $dataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataGuru) {
-            return redirect('/data-guru')->with('error', 'Data tidak ditemukan!');
+            return redirect('/data-guru')->with('error', 'Data guru tidak ditemukan!');
         }
 
         return ExportExcel::download(new ExportExcelBiodataGuru($saveUuidFromCall), 'laporan excel ' . $dataGuru['name'] . '.xlsx');
@@ -195,7 +197,15 @@ class GuruController extends Controller
             return redirect('/data-guru')->with('error', 'Data guru tidak valid!');
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
+
+        if ($dataUserAuth[1] == 'guru') {
+            $guru = $dataUserAuth[0]->load('guru')->guru;
+            if ($guru->uuid != $saveUuidFromCall) {
+                return redirect('/data-guru/' . $guru->uuid)->with('error', 'Data guru tidak valid!');
+            }
+        }
+
         $dataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataGuru) {
@@ -213,9 +223,17 @@ class GuruController extends Controller
             return redirect('/data-guru')->with('error', 'Data guru tidak valid!');
         }
 
+        $dataUserAuth = Session::get('userData');
+
+        if ($dataUserAuth[1] == 'guru') {
+            $guru = $dataUserAuth[0]->load('guru')->guru;
+            if ($guru->uuid != $saveUuidFromCall) {
+                return redirect('/data-guru/' . $guru->uuid)->with('error', 'Data guru tidak valid!');
+            }
+        }
+
         $this->guruService->updateGuru($validateData, $saveUuidFromCall);
 
-        $dataUserAuth = $this->userService->getProfileUser();
         if ($dataUserAuth[1] == 'guru') {
             return redirect('/data-guru/' . $saveUuidFromCall)->with(['success' => 'Data anda berhasil di edit!']);
         }

@@ -21,28 +21,26 @@ class SiswaTest extends TestCase
 
     public function test_status_siswa_page_is_displayed(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
         $response = $this->get('/data-siswa/status');
         $response->assertStatus(200);
         $response->assertViewIs('siswa::layouts.admin.status');
         $response->assertSeeText('Status Siswa');
-        $response->assertViewHas('dataUserAuth');
 
-        $dataUserAuth = $response->original->getData()['dataUserAuth'];
-        $this->assertIsArray($dataUserAuth);
-        $this->assertNotEmpty($dataUserAuth);
-
-        $response->assertViewHas('getStatusSiswa');
-        $getStatusSiswa = $response->original->getData()['getStatusSiswa'];
-        $this->assertIsArray($getStatusSiswa);
-        $this->assertNotEmpty($getStatusSiswa);
+        $response->assertViewHas('statusSiswa');
+        $statusSiswa = $response->original->getData()['statusSiswa'];
+        $this->assertIsArray($statusSiswa);
+        $this->assertNotEmpty($statusSiswa);
     }
 
     public function test_status_siswa_page_failed_displayed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         Siswa::SiswaActiveFactory()->create();

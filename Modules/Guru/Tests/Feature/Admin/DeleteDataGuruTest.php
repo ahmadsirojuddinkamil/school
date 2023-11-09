@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Guru\Entities\Guru;
 use Tests\TestCase;
 
-class DeleteBiodataGuruTest extends TestCase
+class DeleteDataGuruTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -19,9 +19,10 @@ class DeleteBiodataGuruTest extends TestCase
         $this->roleService = new UserService();
     }
 
-    public function test_delete_biodata_guru_success(): void
+    public function test_delete_data_guru_success(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
         $guru = Guru::factory()->create();
@@ -29,12 +30,13 @@ class DeleteBiodataGuruTest extends TestCase
         $response->assertStatus(302);
         $response->assertRedirect('/data-guru');
         $this->assertTrue(session()->has('success'));
-        $this->assertEquals('Biodata guru berhasil di hapus!', session('success'));
+        $this->assertEquals('Data guru berhasil di hapus!', session('success'));
     }
 
-    public function test_delete_biodata_guru_failed_because_not_super_admin(): void
+    public function test_delete_data_guru_failed_because_not_super_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $guru = Guru::factory()->create();
@@ -42,18 +44,23 @@ class DeleteBiodataGuruTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_delete_biodata_guru_failed_because_not_uuid(): void
+    public function test_delete_data_guru_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
         $response = $this->delete('/data-guru/uuid');
-        $response->assertStatus(404);
+        $response->assertStatus(302);
+        $response->assertRedirect('/data-guru');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data guru tidak valid!', session('error'));
     }
 
-    public function test_delete_biodata_guru_failed_because_data_not_found(): void
+    public function test_delete_data_guru_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
         Guru::factory()->create();
@@ -61,6 +68,6 @@ class DeleteBiodataGuruTest extends TestCase
         $response->assertStatus(302);
         $response->assertRedirect('/data-guru');
         $this->assertTrue(session()->has('error'));
-        $this->assertEquals('Biodata guru gagal di hapus!', session('error'));
+        $this->assertEquals('Data guru gagal di hapus!', session('error'));
     }
 }

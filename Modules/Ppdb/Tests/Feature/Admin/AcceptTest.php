@@ -21,19 +21,21 @@ class AcceptTest extends TestCase
 
     public function test_ppdb_accept_new_user_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
         $response = $this->post('/data-ppdb/' . $ppdb->uuid . '/accept');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('success'));
-        $this->assertEquals('Peserta ppdb berhasil menjadi siswa!', session('success'));
+        $this->assertEquals('Peserta ppdb berhasil di terima!', session('success'));
     }
 
     public function test_ppdb_accept_new_user_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
@@ -43,21 +45,27 @@ class AcceptTest extends TestCase
 
     public function test_ppdb_accept_new_user_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
         $response = $this->post('/data-ppdb/uuid/accept');
-        $response->assertStatus(404);
+        $response->assertRedirect('/data-ppdb/tahun-daftar');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data tidak valid!', session('error'));
     }
 
     public function test_ppdb_accept_new_user_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
         $response = $this->post('/data-ppdb/482401ca-cec5-4fb8-8bc6-fc74070073be/accept');
-        $response->assertStatus(404);
+        $response->assertRedirect('/data-ppdb/482401ca-cec5-4fb8-8bc6-fc74070073be');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data peserta ini tidak ada!', session('error'));
     }
 }

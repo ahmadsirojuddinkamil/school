@@ -22,7 +22,9 @@ class EditTest extends TestCase
 
     public function test_ppdb_edit_page_is_displayed(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
@@ -31,15 +33,10 @@ class EditTest extends TestCase
         $response->assertViewIs('ppdb::layouts.admin.edit');
         $response->assertSeeText('Edit PPDB');
 
-        $response->assertViewHas('dataUserAuth');
-        $dataUserAuth = $response->original->getData()['dataUserAuth'];
-        $this->assertIsArray($dataUserAuth);
-        $this->assertNotEmpty($dataUserAuth);
-
-        $response->assertViewHas('getDataUserPpdb');
-        $getDataUserPpdb = $response->original->getData()['getDataUserPpdb'];
-        $this->assertNotNull($getDataUserPpdb);
-        $this->assertInstanceOf(\Modules\Ppdb\Entities\Ppdb::class, $getDataUserPpdb);
+        $response->assertViewHas('dataPpdb');
+        $dataPpdb = $response->original->getData()['dataPpdb'];
+        $this->assertNotNull($dataPpdb);
+        $this->assertInstanceOf(\Modules\Ppdb\Entities\Ppdb::class, $dataPpdb);
 
         $response->assertViewHas('timeBox', function ($timeBox) {
             return is_array($timeBox);
@@ -48,7 +45,8 @@ class EditTest extends TestCase
 
     public function test_ppdb_edit_page_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
@@ -58,32 +56,39 @@ class EditTest extends TestCase
 
     public function test_ppdb_edit_page_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
         $response = $this->get('/data-ppdb/uuid/edit');
-        $response->assertStatus(404);
+        $response->assertRedirect('/data-ppdb/tahun-daftar');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data tidak valid!', session('error'));
     }
 
     public function test_ppdb_edit_page_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->get('/data-ppdb/3343ecac-b140-4e31-889f-a2ecd31e9168/uuid');
-        $response->assertStatus(404);
+        $response = $this->get('/data-ppdb/3343ecac-b140-4e31-889f-a2ecd31e9168/edit');
+        $response->assertRedirect('/data-ppdb/3343ecac-b140-4e31-889f-a2ecd31e9168');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data peserta ini tidak ada!', session('error'));
     }
 
     public function test_ppdb_update_data_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
         $response = $this->put('/data-ppdb/' . $ppdb->uuid, [
-            'nama_lengkap' => 'name ppdb change',
+            'name' => 'name ppdb change',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
             'asal_sekolah' => 'smp negeri 1 change',
@@ -107,7 +112,8 @@ class EditTest extends TestCase
 
     public function test_ppdb_update_data_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
@@ -134,12 +140,13 @@ class EditTest extends TestCase
 
     public function test_ppdb_update_data_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
         $response = $this->put('/data-ppdb/uuid', [
-            'nama_lengkap' => 'name ppdb change',
+            'name' => 'name ppdb change',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
             'asal_sekolah' => 'smp negeri 1 change',
@@ -156,12 +163,15 @@ class EditTest extends TestCase
             'bukti_pendaftaran_new' => UploadedFile::fake()->image('bukti_pendaftaran.jpg'),
             'bukti_pendaftaran_old' => 'localstorage',
         ]);
-        $response->assertStatus(404);
+        $response->assertRedirect('/data-ppdb/tahun-daftar');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data tidak valid!', session('error'));
     }
 
     public function test_ppdb_update_data_failed_because_form_has_not_been(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();

@@ -22,7 +22,9 @@ class UpdateTeachingHoursTest extends TestCase
 
     public function test_update_teaching_hours_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
         $guru = Guru::factory()->create();
@@ -30,7 +32,8 @@ class UpdateTeachingHoursTest extends TestCase
         $newTime = $now->addMinutes(5);
         $newTimeString = $newTime->format('Y-m-d H:i:s');
         $response = $this->put('/data-guru/' . $guru->uuid . '/edit/teaching-hours', [
-            'jam_mengajar' => $newTimeString,
+            'jam_mengajar_awal' => $newTimeString,
+            'jam_mengajar_akhir' => $newTimeString,
         ]);
         $response->assertStatus(302);
         $response->assertRedirect('/data-guru');
@@ -40,7 +43,8 @@ class UpdateTeachingHoursTest extends TestCase
 
     public function test_update_teaching_hours_failed_because_not_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $guru = Guru::factory()->create();
@@ -48,14 +52,16 @@ class UpdateTeachingHoursTest extends TestCase
         $newTime = $now->addMinutes(5);
         $newTimeString = $newTime->format('Y-m-d H:i:s');
         $response = $this->put('/data-guru/' . $guru->uuid . '/edit/teaching-hours', [
-            'jam_mengajar' => $newTimeString,
+            'jam_mengajar_awal' => $newTimeString,
+            'jam_mengajar_akhir' => $newTimeString,
         ]);
         $response->assertStatus(404);
     }
 
     public function test_update_teaching_hours_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         Guru::factory()->create();
@@ -63,14 +69,20 @@ class UpdateTeachingHoursTest extends TestCase
         $newTime = $now->addMinutes(5);
         $newTimeString = $newTime->format('Y-m-d H:i:s');
         $response = $this->put('/data-guru/uuid/edit/teaching-hours', [
-            'jam_mengajar' => $newTimeString,
+            'jam_mengajar_awal' => $newTimeString,
+            'jam_mengajar_akhir' => $newTimeString,
         ]);
-        $response->assertStatus(404);
+        $response->assertStatus(302);
+        $response->assertRedirect('/data-guru');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data guru tidak valid!', session('error'));
     }
 
     public function test_update_teaching_hours_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
         Guru::factory()->create();
@@ -78,10 +90,11 @@ class UpdateTeachingHoursTest extends TestCase
         $newTime = $now->addMinutes(5);
         $newTimeString = $newTime->format('Y-m-d H:i:s');
         $response = $this->put('/data-guru/8347f28d-6afa-4091-b493-e5832546bd93/edit/teaching-hours', [
-            'jam_mengajar' => $newTimeString,
+            'jam_mengajar_awal' => $newTimeString,
+            'jam_mengajar_akhir' => $newTimeString,
         ]);
         $response->assertStatus(302);
         $this->assertTrue(session()->has('error'));
-        $this->assertEquals('Jam mengajar guru gagal di edit!', session('error'));
+        $this->assertEquals('Data guru tidak ditemukan!', session('error'));
     }
 }

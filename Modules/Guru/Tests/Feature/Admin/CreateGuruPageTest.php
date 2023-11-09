@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Guru\Entities\Guru;
 use Tests\TestCase;
 
-class CreateNewGuruPageTest extends TestCase
+class CreateGuruPageTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -19,9 +19,11 @@ class CreateNewGuruPageTest extends TestCase
         $this->roleService = new UserService();
     }
 
-    public function test_create_new_guru_page_success_displayed(): void
+    public function test_create_guru_page_success_displayed(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
+        session(['userData' => [$user, 'super_admin']]);
         $this->actingAs($user);
 
         Guru::factory()->create();
@@ -35,9 +37,10 @@ class CreateNewGuruPageTest extends TestCase
         $this->assertNotEmpty($dataUserAuth);
     }
 
-    public function test_create_new_guru_page_failed_because_not_super_admin(): void
+    public function test_create_guru_page_failed_because_not_super_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         Guru::factory()->create();

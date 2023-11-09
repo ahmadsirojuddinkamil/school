@@ -3,6 +3,9 @@
 namespace Modules\Ppdb\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Modules\Ppdb\Entities\Ppdb;
 
 class UpdatePpdbRequest extends FormRequest
 {
@@ -11,11 +14,15 @@ class UpdatePpdbRequest extends FormRequest
      *
      * @return array
      */
+
     public function rules()
     {
+        $uuid = last(request()->segments());
+        $ppdb = preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $uuid) ? Ppdb::where('uuid', $uuid)->first() : Ppdb::first();
+
         return [
-            'email' => 'email|required|unique:ppdbs',
-            'nisn' => 'numeric|required',
+            'email' => 'required|email|unique:ppdbs,email,' . $ppdb->id,
+            'nisn' => 'required|numeric|unique:ppdbs,nisn,' . $ppdb->id,
             'name' => 'string|required',
             'asal_sekolah' => 'string|required',
             'alamat' => 'string|required',

@@ -34,7 +34,7 @@ class PpdbFactory extends Factory
             'jenis_kelamin' => $faker->randomElement(['laki-laki', 'perempuan']),
             'tempat_lahir' => $faker->city,
             'tanggal_lahir' => $faker->dateTimeBetween('-21 years', 'now')->format('Y-m-d'),
-            'tahun_daftar' => $faker->dateTimeBetween('2000-01-01', '2023-12-31')->format('Y'),
+            'tahun_daftar' => $faker->dateTimeBetween('2010-01-01', '2023-12-31')->format('Y'),
             'nama_ayah' => $faker->name('male'),
             'nama_ibu' => $faker->name('female'),
             'telpon_orang_tua' => '0' . $faker->unique()->numberBetween(821, 899) . $faker->randomNumber(6),

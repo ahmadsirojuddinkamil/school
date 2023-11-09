@@ -2,10 +2,10 @@
 
 namespace Modules\Ppdb\Http\Controllers;
 
-use App\Services\UserService;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
 use Modules\Ppdb\Entities\{OpenPpdb, Ppdb};
 use Modules\Ppdb\Exports\{ExportPpdb};
@@ -15,12 +15,10 @@ use Modules\Siswa\Entities\Siswa;
 
 class PpdbController extends Controller
 {
-    protected $userService;
     protected $ppdbService;
 
-    public function __construct(UserService $userService, PpdbService $ppdbService)
+    public function __construct(PpdbService $ppdbService)
     {
-        $this->userService = $userService;
         $this->ppdbService = $ppdbService;
     }
 
@@ -50,7 +48,7 @@ class PpdbController extends Controller
 
     public function year()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $allYears = Ppdb::orderBy('tahun_daftar', 'desc')->pluck('tahun_daftar');
         $listYearPpdb = $this->ppdbService->listYearPpdb($allYears);
         $timeBox = $this->ppdbService->openPpdbTime();
@@ -81,13 +79,14 @@ class PpdbController extends Controller
             return redirect('/data-ppdb/tahun-daftar')->with('error', 'Data tidak valid!');
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $dataPpdb = Ppdb::where('tahun_daftar', $saveYearFromCall)->latest()->get();
-        $totalPpdb = $dataPpdb->count();
 
         if ($dataPpdb->isEmpty()) {
             return redirect('/data-ppdb/tahun-daftar')->with('error', 'Data ppdb di tahun ini tidak ada!');
         }
+
+        $totalPpdb = $dataPpdb->count();
 
         return view('ppdb::layouts.admin.show_year', compact('dataUserAuth', 'dataPpdb', 'totalPpdb', 'saveYearFromCall'));
     }
@@ -155,10 +154,14 @@ class PpdbController extends Controller
     public function downloadZipLaporanPpdbExcel($saveYearFromCall)
     {
         // Star EXCEL
+        if (!preg_match('/^\d{4}$/', $saveYearFromCall)) {
+            return redirect('/data-ppdb/tahun-daftar')->with('error', 'Data tidak valid!');
+        }
+
         $listPpdb =  Ppdb::where('tahun_daftar', $saveYearFromCall)->latest()->get();
 
         if ($listPpdb->isEmpty()) {
-            return redirect('/data-ppdb/tahun-daftar/' . $saveYearFromCall)->with('error', 'Data ppdb tidak ditemukan!');
+            return redirect('/data-ppdb/tahun-daftar/' . $saveYearFromCall)->with('error', 'Data ppdb di tahun ini tidak ada!');
         }
 
         foreach ($listPpdb as $ppdb) {
@@ -213,7 +216,7 @@ class PpdbController extends Controller
             return redirect('/data-ppdb/tahun-daftar')->with('error', 'Data tidak valid!');
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $dataPpdb = Ppdb::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataPpdb) {
@@ -248,7 +251,7 @@ class PpdbController extends Controller
             return redirect('/data-ppdb/tahun-daftar')->with('error', 'Data tidak valid!');
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $dataPpdb = Ppdb::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataPpdb) {
@@ -260,13 +263,13 @@ class PpdbController extends Controller
         return view('ppdb::layouts.admin.edit', compact('dataUserAuth', 'dataPpdb', 'timeBox'));
     }
 
-    public function update(UpdatePpdbRequest $request, $saveUuidFromCall)
+    public function update($saveUuidFromCall, UpdatePpdbRequest $request)
     {
-        $validateData = $request->validated();
-
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
             return redirect('/data-ppdb/tahun-daftar')->with('error', 'Data tidak valid!');
         }
+
+        $validateData = $request->validated();
 
         $this->ppdbService->editPpdb($validateData, $saveUuidFromCall);
 
