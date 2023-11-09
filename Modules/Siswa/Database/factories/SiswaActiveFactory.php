@@ -26,11 +26,11 @@ class SiswaActiveFactory extends Factory
         return [
             'user_uuid' => null,
             'mata_pelajaran_uuid' => null,
-            'uuid' => Uuid::uuid4()->toString(),
+            'uuid' => Uuid::uuid4(),
 
             'name' => $faker->name,
             'nisn' => $faker->numberBetween(1234524534, 4332498964),
-            'kelas' => $faker->shuffle(['10', '11', '12'])[1],
+            'kelas' => $faker->randomElement(['10', '11', '12']),
             'tempat_lahir' => $faker->city,
             'tanggal_lahir' => $faker->dateTimeBetween('-21 years', 'now')->format('Y-m-d'),
             'agama' => $faker->randomElement(['islam', 'kristen', 'katolik', 'hindu', 'buddha', 'konghucu',]),

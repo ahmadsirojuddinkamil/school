@@ -3,6 +3,8 @@
 namespace Modules\Siswa\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Session;
+use Modules\Siswa\Entities\Siswa;
 
 class UpdateSiswaRequest extends FormRequest
 {
@@ -13,9 +15,30 @@ class UpdateSiswaRequest extends FormRequest
      */
     public function rules()
     {
+        $dataUserAuth = Session::get('userData');
+
+        // untuk siswa
+        if ($dataUserAuth[1] == 'siswa') {
+            $siswa = $dataUserAuth[0]->load('siswa')->siswa;
+        }
+
+        // untuk admin
+        $uuid = last(request()->segments());
+        if (preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $uuid)) {
+            $siswa = Siswa::where('uuid', $uuid)->first();
+        } else {
+            $latestSiswa = Siswa::first();
+            $siswa = Siswa::where('uuid', $latestSiswa->uuid)->first();
+        }
+
+        // kalau bukan uuid
+        if (!$siswa) {
+            return [];
+        }
+
         return [
             'name' => 'required|string',
-            'nisn' => 'required|numeric|unique:siswas',
+            'nisn' => 'required|numeric|unique:siswas,nisn,' . $siswa->id,
             'kelas' => 'nullable|string',
             'tempat_lahir' => 'required|string',
             'tanggal_lahir' => 'required|string',
@@ -29,7 +52,7 @@ class UpdateSiswaRequest extends FormRequest
             'kecamatan' => 'nullable|string',
             'kelurahan' => 'nullable|string',
             'kode_pos' => 'nullable|numeric',
-            'email' => 'required|email|unique:siswas',
+            'email' => 'required|email|unique:siswas,email,' . $siswa->id,
             'no_telpon' => 'required|numeric',
             'tahun_daftar' => 'required|string',
             'tahun_keluar' => 'nullable|string',

@@ -21,51 +21,50 @@ class DownloadExcelActiveTest extends TestCase
 
     public function test_siswa_active_download_file_excel_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
-        $response = $this->post('/data-siswa/aktif/download/excel', [
-            'kelas' => $siswa->kelas,
-        ]);
+        $response = $this->get('/data-siswa/aktif/' . $siswa->uuid . '/download/excel');
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     }
 
-    public function test_siswa_active_download_file_excel_failed_because_not_class(): void
+    public function test_siswa_active_download_file_excel_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
-        Siswa::SiswaActiveFactory()->create();
-        $response = $this->post('/data-siswa/aktif/download/excel', [
-            'kelas' => 'kelas',
-        ]);
+        $response = $this->get('/data-siswa/aktif/uuid/download/excel');
         $response->assertStatus(302);
+        $response->assertRedirect('/data-siswa/status/aktif/kelas');
         $this->assertTrue(session()->has('error'));
-        $this->assertEquals('Kelas tidak di temukan!', session('error'));
+        $this->assertEquals('Data siswa tidak valid!', session('error'));
     }
 
     public function test_siswa_active_download_file_excel_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
-        $response = $this->post('/data-siswa/aktif/download/excel', [
-            'kelas' => '10',
-        ]);
-        $response->assertStatus(404);
+        $response = $this->get('/data-siswa/aktif/99e49795-537b-426d-8425-eb2dc34c22fc/download/excel');
+        $response->assertStatus(302);
+        $response->assertRedirect('/data-siswa/status/aktif/kelas');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data siswa tidak ditemukan!', session('error'));
     }
 
     public function test_siswa_active_download_file_excel_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
-        $response = $this->post('/data-siswa/aktif/download/excel', [
-            'kelas' => $siswa->kelas,
-        ]);
+        $response = $this->get('/data-siswa/aktif/' . $siswa->uuid . '/download/excel');
         $response->assertStatus(404);
     }
 }

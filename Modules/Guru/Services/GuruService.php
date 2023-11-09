@@ -75,7 +75,7 @@ class GuruService
         $biodataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
 
         if (!$biodataGuru) {
-            return redirect('/data-guru')->with(['error' => 'Biodata guru gagal di edit!']);
+            return redirect('/data-guru')->with(['error' => 'Data guru gagal di edit!']);
         }
 
         if (isset($validateData['foto_new'])) {

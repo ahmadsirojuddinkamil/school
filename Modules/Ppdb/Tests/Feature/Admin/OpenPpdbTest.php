@@ -21,7 +21,8 @@ class OpenPpdbTest extends TestCase
 
     public function test_ppdb_open_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         $response = $this->post('/data-ppdb/open', [
@@ -36,7 +37,8 @@ class OpenPpdbTest extends TestCase
 
     public function test_ppdb_open_failed_because_form_has_not_been(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         $response = $this->post('/data-ppdb/open', [
@@ -50,7 +52,8 @@ class OpenPpdbTest extends TestCase
 
     public function test_ppdb_open_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $response = $this->post('/data-ppdb/open', [
@@ -63,7 +66,8 @@ class OpenPpdbTest extends TestCase
 
     public function test_ppdb_close_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
         OpenPpdb::factory()->create();
 
@@ -75,7 +79,8 @@ class OpenPpdbTest extends TestCase
 
     public function test_ppdb_close_failed_because_not_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
         OpenPpdb::factory()->create();
 

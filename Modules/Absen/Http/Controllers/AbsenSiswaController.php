@@ -2,10 +2,10 @@
 
 namespace Modules\Absen\Http\Controllers;
 
-use App\Services\UserService;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Session;
 use Modules\Absen\Entities\Absen;
 use Modules\Absen\Http\Requests\{DeleteDateAbsenSiswaRequest, DeleteReportAbsenRequest, UpdateDateAbsenRequest};
 use Modules\Absen\Services\AbsenService;
@@ -16,20 +16,18 @@ use Modules\Absen\Exports\ExportAbsen;
 
 class AbsenSiswaController extends Controller
 {
-    protected $userService;
     protected $absenService;
     protected $siswaService;
 
-    public function __construct(UserService $userService, AbsenService $absenService, SiswaService $siswaService)
+    public function __construct(AbsenService $absenService, SiswaService $siswaService)
     {
-        $this->userService = $userService;
         $this->absenService = $absenService;
         $this->siswaService = $siswaService;
     }
 
     public function listClass()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $listSiswaInClass = $this->siswaService->listSiswaInClass();
 
         return view('absen::layouts.admin.siswa.list_class', compact('dataUserAuth', 'listSiswaInClass'));
@@ -41,7 +39,7 @@ class AbsenSiswaController extends Controller
             return redirect('/data-absen/siswa')->with(['error' => 'Kelas tidak di valid!']);
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
 
         $listSiswa = Siswa::where('kelas', $saveClassFromCall)
             ->latest()
@@ -62,7 +60,7 @@ class AbsenSiswaController extends Controller
             return redirect('/data-absen/siswa')->with(['error' => 'Data absen tidak valid!']);
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataSiswa) {
@@ -266,7 +264,7 @@ class AbsenSiswaController extends Controller
             return redirect('/data-absen/siswa')->with('error', 'Data tanggal absen tidak ditemukan!');
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $dataAbsen = Absen::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataAbsen) {

@@ -43,13 +43,13 @@ class RegistrationTest extends TestCase
         $response->assertSeeText('Pendaftaran ppdb belum dibuka!');
     }
 
-    public function test_ppdb_register_create_success(): void
+    public function test_ppdb_register_store_success(): void
     {
         OpenPpdb::factory()->create();
 
         $response = $this->post('/ppdb', [
             'uuid' => '95d4c1b1-b856-41b5-90f7-62aa38673bd1',
-            'nama_lengkap' => 'name ppdb',
+            'name' => 'name ppdb',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
             'asal_sekolah' => 'smp negeri 1',
@@ -70,13 +70,13 @@ class RegistrationTest extends TestCase
         $this->assertEquals('Data ppdb anda berhasil dikirim! Tolong check email dalam 24 jam', session('success'));
     }
 
-    public function test_ppdb_register_failed_because_form_has_not_been(): void
+    public function test_ppdb_register_store_failed_because_form_has_not_been(): void
     {
         OpenPpdb::factory()->create();
 
         $response = $this->post('/ppdb', [
             'uuid' => '',
-            'nama_lengkap' => '',
+            'name' => '',
             'email' => '',
             'nisn' => '',
             'asal_sekolah' => '',
@@ -102,7 +102,7 @@ class RegistrationTest extends TestCase
 
         $response = $this->post('/ppdb', [
             'uuid' => '95d4c1b1-b856-41b5-90f7-62aa38673bd1',
-            'nama_lengkap' => 'name ppdb',
+            'name' => 'name ppdb',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
             'asal_sekolah' => 'smp negeri 1',
@@ -124,7 +124,7 @@ class RegistrationTest extends TestCase
 
         $response = $this->post('/ppdb', [
             'uuid' => '95d4c1b1-b856-41b5-90f7-62aa38673bd1',
-            'nama_lengkap' => 'name ppdb',
+            'name' => 'name ppdb',
             'email' => 'ppdb@gmail.com',
             'nisn' => '0064772666',
             'asal_sekolah' => 'smp negeri 1',

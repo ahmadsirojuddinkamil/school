@@ -2,7 +2,6 @@
 
 namespace Modules\Absen\Services;
 
-use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Illuminate\Support\Facades\DB;
 use Modules\Absen\Entities\Absen;
 use Ramsey\Uuid\Uuid;

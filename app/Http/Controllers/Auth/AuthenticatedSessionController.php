@@ -24,48 +24,38 @@ class AuthenticatedSessionController extends Controller
     /**
      * Handle an incoming authentication request.
      */
-    // public function store(LoginRequest $request): RedirectResponse
-    // {
-    //     $request->authenticate();
-
-    //     $request->session()->regenerate();
-
-    //     return redirect()->intended(RouteServiceProvider::HOME);
-    // }
-
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
-        // $findUser = User::find(Auth::id());
-        // $roles = [
-        //     'super_admin' => 'super_admin',
-        //     'admin' => 'admin',
-        //     'tata_usaha' => 'tata_usaha',
-        //     'satpam' => 'satpam',
-        //     'pramukantor' => 'pramukantor',
-        //     'kepala_sekolah' => 'kepala_sekolah',
-        //     'guru' => 'guru',
-        //     'orang_tua_siswa' => 'orang_tua_siswa',
-        //     'siswa' => 'siswa',
-        // ];
+        $user = User::find(Auth::id());
+        $listRole = [
+            'super_admin' => 'super_admin',
+            'admin' => 'admin',
+            'tata_usaha' => 'tata_usaha',
+            'satpam' => 'satpam',
+            'pramukantor' => 'pramukantor',
+            'kepala_sekolah' => 'kepala_sekolah',
+            'guru' => 'guru',
+            'orang_tua_siswa' => 'orang_tua_siswa',
+            'siswa' => 'siswa',
+        ];
 
-        // $userRole = null;
+        $role = null;
 
-        // foreach ($roles as $roleName) {
-        //     if ($findUser->hasRole($roleName)) {
-        //         $userRole = $roleName;
-        //         break;
-        //     }
-        // }
+        foreach ($listRole as $roleName) {
+            if ($user->hasRole($roleName)) {
+                $role = $roleName;
+                break;
+            }
+        }
 
-        // session(['user_data' => [$findUser, $userRole]]);
+        session(['userData' => [$user, $role]]);
 
         $request->session()->regenerate();
 
         return redirect()->intended(RouteServiceProvider::HOME);
     }
-
 
     /**
      * Destroy an authenticated session.

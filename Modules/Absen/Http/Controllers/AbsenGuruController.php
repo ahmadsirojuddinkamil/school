@@ -2,7 +2,6 @@
 
 namespace Modules\Absen\Http\Controllers;
 
-use App\Services\UserService;
 use Illuminate\Routing\Controller;
 use Modules\Absen\Entities\Absen;
 use Modules\Absen\Http\Requests\{DeleteDateAbsenGuruRequest, UpdateDateAbsenRequest, DeleteAbsenGuruRequest};
@@ -12,24 +11,23 @@ use Modules\Siswa\Services\SiswaService;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Session;
 use Modules\Absen\Exports\ExportAbsen;
 
 class AbsenGuruController extends Controller
 {
-    protected $userService;
     protected $absenService;
     protected $siswaService;
 
-    public function __construct(UserService $userService, AbsenService $absenService, SiswaService $siswaService)
+    public function __construct(AbsenService $absenService, SiswaService $siswaService)
     {
-        $this->userService = $userService;
         $this->absenService = $absenService;
         $this->siswaService = $siswaService;
     }
 
     public function listGuru()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $listGuru = Guru::latest()->get();
 
         return view('absen::layouts.admin.guru.list', compact('dataUserAuth', 'listGuru'));
@@ -135,7 +133,7 @@ class AbsenGuruController extends Controller
             return redirect('/data-absen/guru')->with(['error' => 'Data absen tidak valid!']);
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $dataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataGuru) {
@@ -233,7 +231,7 @@ class AbsenGuruController extends Controller
             return redirect('/data-absen/guru/' . $saveUuidFromCall)->with('error', 'Data tanggal absen tidak valid!');
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $dataAbsen = Absen::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataAbsen) {

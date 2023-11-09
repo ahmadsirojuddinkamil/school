@@ -26,7 +26,7 @@ class SiswaGraduatedFactory extends Factory
         return [
             'user_uuid' => null,
             'mata_pelajaran_uuid' => null,
-            'uuid' => Uuid::uuid4()->toString(),
+            'uuid' => Uuid::uuid4(),
 
             'name' => $faker->name,
             'nisn' => $faker->numberBetween(1234524534, 4332498964),
