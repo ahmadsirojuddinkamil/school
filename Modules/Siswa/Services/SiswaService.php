@@ -55,12 +55,12 @@ class SiswaService
         return $listClass;
     }
 
-    public function updateDataSiswa($validateData, $saveUuidFromCaller)
+    public function updateDataSiswa($validateData, $saveUuidFromCall)
     {
-        $getDataSiswa = Siswa::where('uuid', $saveUuidFromCaller)->first();
+        $getDataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
 
         if (!$getDataSiswa) {
-            return redirect('/data-siswa/' . $saveUuidFromCaller . '/edit')->with('error', 'Data siswa tidak ditemukan!');
+            return redirect('/data-siswa/' . $saveUuidFromCall . '/edit')->with('error', 'Data siswa tidak ditemukan!');
         }
 
         if (isset($validateData['foto_new'])) {

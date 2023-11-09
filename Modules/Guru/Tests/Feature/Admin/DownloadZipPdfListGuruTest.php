@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Guru\Entities\Guru;
 use Tests\TestCase;
 
-class DownloadPdfListGuruTest extends TestCase
+class DownloadZipPdfListGuruTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -21,35 +21,38 @@ class DownloadPdfListGuruTest extends TestCase
 
     public function test_download_pdf_list_guru_success(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
         Guru::factory(10)->create();
-        $response = $this->post('/data-guru/download/zip/pdf');
+        $response = $this->get('/data-guru/download/zip/pdf');
         $response->assertStatus(200);
         $response->assertHeader('Content-Type', 'application/zip');
-
-        unlink('pdf_daftar_biodata_guru.zip');
+        unlink('laporan_pdf_guru.zip');
     }
 
     public function test_download_pdf_list_guru_failed_because_not_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
-        Guru::factory()->create();
-        $response = $this->post('/data-guru/download/zip/pdf');
+        $response = $this->get('/data-guru/download/zip/pdf');
         $response->assertStatus(404);
     }
 
     public function test_download_pdf_list_guru_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
-        $response = $this->post('/data-guru/download/zip/pdf');
+        $response = $this->get('/data-guru/download/zip/pdf');
         $response->assertStatus(302);
         $this->assertTrue(session()->has('error'));
-        $this->assertEquals('Biodata guru tidak ditemukan!', session('error'));
+        $this->assertEquals('Data guru tidak ditemukan!', session('error'));
     }
 }

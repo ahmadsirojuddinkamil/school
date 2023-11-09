@@ -21,7 +21,8 @@ class DeleteSiswaTest extends TestCase
 
     public function test_delete_siswa_success(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
@@ -34,7 +35,8 @@ class DeleteSiswaTest extends TestCase
 
     public function test_delete_siswa_failed_because_not_role_super_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $siswa = Siswa::SiswaActiveFactory()->create();
@@ -44,20 +46,23 @@ class DeleteSiswaTest extends TestCase
 
     public function test_delete_siswa_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
-        Siswa::SiswaActiveFactory()->create();
         $response = $this->delete('/data-siswa/uuid');
-        $response->assertStatus(404);
+        $response->assertStatus(302);
+        $response->assertRedirect('/data-siswa/status');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data siswa tidak valid!', session('error'));
     }
 
     public function test_delete_siswa_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
-        Siswa::SiswaActiveFactory()->create();
         $response = $this->delete('/data-siswa/4824e120-a611-4273-b0d4-7a0f7dbaa3f8');
         $response->assertStatus(302);
         $response->assertRedirect('/data-siswa/status');

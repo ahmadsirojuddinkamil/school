@@ -2,23 +2,18 @@
 
 namespace Modules\MataPelajaran\Http\Controllers;
 
-use App\Services\UserService;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Session;
 
 class MataPelajaranController extends Controller
 {
-    protected $userService;
-
-    public function __construct(UserService $userService)
+    public function __construct()
     {
-        $this->userService = $userService;
     }
 
     public function listMataPelajaran()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
 
         return view('matapelajaran::layouts.Admin.list', compact('dataUserAuth'));
     }

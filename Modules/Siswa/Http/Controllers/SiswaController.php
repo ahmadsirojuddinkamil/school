@@ -3,7 +3,6 @@
 namespace Modules\Siswa\Http\Controllers;
 
 use App\Models\User;
-use App\Services\UserService;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\File;
@@ -16,18 +15,16 @@ use Modules\Siswa\Services\SiswaService;
 
 class SiswaController extends Controller
 {
-    protected $userService;
     protected $siswaService;
 
-    public function __construct(UserService $userService, SiswaService $siswaService)
+    public function __construct(SiswaService $siswaService)
     {
-        $this->userService = $userService;
         $this->siswaService = $siswaService;
     }
 
     public function status()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $statusSiswa = $this->siswaService->statusSiswaActiveOrNot();
 
         return view('siswa::layouts.admin.status', compact('dataUserAuth', 'statusSiswa'));
@@ -35,7 +32,7 @@ class SiswaController extends Controller
 
     public function listClass()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $listSiswaInClass = $this->siswaService->listSiswaInClass();
 
         if (!$listSiswaInClass) {
@@ -47,7 +44,7 @@ class SiswaController extends Controller
 
     public function create()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
 
         return view('siswa::layouts.admin.create', compact('dataUserAuth'));
     }
@@ -55,18 +52,6 @@ class SiswaController extends Controller
     public function store(CreateSiswaRequest $request)
     {
         $validateData = $request->validated();
-
-        // $existsSiswaOrNot = Siswa::where('nisn', $validateData['nisn'])->first();
-
-        // if ($existsSiswaOrNot) {
-        //     return redirect('/data-siswa/status/aktif/kelas')->with(['error' => 'Nisn siswa sudah terdaftar!']);
-        // }
-
-        // $existsEmailOrNot = Siswa::where('email', $validateData['email'])->first();
-
-        // if ($existsEmailOrNot) {
-        //     return redirect('/data-siswa/status/aktif/kelas')->with('error', 'Email sudah digunakan!');
-        // }
 
         $createSiswa = $this->siswaService->createSiswa($validateData);
 
@@ -83,7 +68,7 @@ class SiswaController extends Controller
             return redirect('/data-siswa/status/aktif/kelas')->with(['error' => 'Data tidak valid!']);
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $listSiswa = Siswa::where('kelas', $saveClassFromCall)->latest()->get();
 
         if ($listSiswa->isEmpty()) {
@@ -145,7 +130,12 @@ class SiswaController extends Controller
             return redirect('/data-siswa/status/aktif/kelas/' . $saveClassFromCall)->with(['error' => 'Data tidak valid!']);
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
+        if ($dataUserAuth[1] == 'siswa' && $dataUserAuth[0]->load('siswa')->siswa->uuid != $saveUuidFromCall) {
+            return redirect('/dashboard')->with('error', 'Data siswa tidak valid!');
+        }
+
+        $dataUserAuth = Session::get('userData');
         $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataSiswa) {
@@ -245,6 +235,14 @@ class SiswaController extends Controller
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
             return redirect('/data-siswa/status/aktif/kelas')->with(['error' => 'Data siswa tidak valid!']);
+        }
+
+        $dataUserAuth = Session::get('userData');
+        if ($dataUserAuth[1] == 'siswa') {
+            $siswa = $dataUserAuth[0]->load('siswa')->siswa;
+            if ($siswa->uuid != $saveUuidFromCall) {
+                return redirect('/data-siswa/status/aktif/kelas/' . $siswa->kelas . '/' . $siswa->uuid)->with('error', 'Data siswa tidak valid!');
+            }
         }
 
         $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
@@ -397,8 +395,12 @@ class SiswaController extends Controller
 
     public function siswaGraduated()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $dataSiswa = Siswa::whereNotNull('tahun_keluar')->latest()->get();
+
+        if ($dataSiswa->isEmpty()) {
+            return redirect('/data-siswa/status')->with('error', 'Data siswa lulus tidak ditemukan!');
+        }
 
         $listYearGraduated = Siswa::whereNotNull('tahun_keluar')
             ->distinct()
@@ -415,7 +417,7 @@ class SiswaController extends Controller
             return redirect('/data-siswa/status/sudah-lulus')->with(['error' => 'Data siswa tidak valid!']);
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
 
         $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
 
@@ -429,14 +431,21 @@ class SiswaController extends Controller
     public function edit($saveUuidFromCall)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
-            return redirect('/data-siswa/status/sudah-lulus')->with(['error' => 'Data siswa tidak valid!']);
+            return redirect('/data-siswa/status')->with(['error' => 'Data siswa tidak valid!']);
         }
 
-        $dataUserAuth = $this->userService->getProfileUser();
         $dataSiswa = Siswa::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataSiswa) {
-            return redirect('/data-siswa/status/sudah-lulus')->with(['error' => 'Data siswa tidak ditemukan!']);
+            return redirect('/data-siswa/status')->with(['error' => 'Data siswa tidak ditemukan!']);
+        }
+
+        $dataUserAuth = Session::get('userData');
+        if ($dataUserAuth[1] == 'siswa') {
+            $siswa = $dataUserAuth[0]->load('siswa')->siswa;
+            if ($siswa->uuid != $saveUuidFromCall) {
+                return redirect('/data-siswa/status/aktif/kelas/' . $siswa->kelas . '/' . $siswa->uuid)->with('error', 'Data siswa tidak valid!');
+            }
         }
 
         $timeBox = $this->siswaService->getEditTime();
@@ -452,11 +461,22 @@ class SiswaController extends Controller
             return redirect('/data-siswa/status')->with(['error' => 'Data siswa tidak valid!']);
         }
 
+        if (empty($validateData)) {
+            return redirect('/data-siswa/status')->with(['error' => 'Data siswa tidak ditemukan!']);
+        }
+
+        $dataUserAuth = Session::get('userData');
+        if ($dataUserAuth[1] == 'siswa') {
+            $siswa = $dataUserAuth[0]->load('siswa')->siswa;
+            if ($siswa->uuid != $saveUuidFromCall) {
+                return redirect('/data-siswa/status/aktif/kelas/' . $siswa->kelas . '/' . $siswa->uuid)->with('error', 'Data siswa tidak valid!');
+            }
+        }
+
         $this->siswaService->updateDataSiswa($validateData, $saveUuidFromCall);
 
-        $dataUserAuth = $this->userService->getProfileUser();
         if ($dataUserAuth[1] == 'siswa') {
-            return redirect('/data-siswa/status/aktif/kelas/' . $dataUserAuth[0]->siswa->kelas . '/' . $dataUserAuth[0]->siswa->uuid)->with(['success' => 'Data siswa berhasil di edit!']);
+            return redirect('/data-siswa/status/aktif/kelas/' . $dataUserAuth[0]->siswa->kelas . '/' . $dataUserAuth[0]->siswa->uuid)->with(['success' => 'Data anda berhasil di edit!']);
         }
 
         return redirect('/data-siswa/status')->with(['success' => 'Data siswa berhasil di edit!']);

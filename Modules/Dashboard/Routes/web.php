@@ -5,6 +5,6 @@ use Modules\Dashboard\Http\Controllers\DashboardController;
 
 Route::controller(DashboardController::class)->group(function () {
     Route::middleware('auth')->group(function () {
-        Route::get('/dashboard', 'index');
+        Route::get('/dashboard', 'index')->name('dashboard');
     });
-})->middleware(['auth', 'verified']);
+});

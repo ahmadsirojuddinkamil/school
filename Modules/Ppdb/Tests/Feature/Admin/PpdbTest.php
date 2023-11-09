@@ -21,7 +21,9 @@ class PpdbTest extends TestCase
 
     public function test_ppdb_list_year_page_is_displayed(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
         Ppdb::factory()->create();
 
@@ -29,11 +31,6 @@ class PpdbTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('ppdb::layouts.admin.year');
         $response->assertSeeText('Data PPDB');
-
-        $response->assertViewHas('dataUserAuth');
-        $dataUserAuth = $response->original->getData()['dataUserAuth'];
-        $this->assertIsArray($dataUserAuth);
-        $this->assertNotEmpty($dataUserAuth);
 
         $response->assertViewHas('listYearPpdb');
         $listYearPpdb = $response->original->getData()['listYearPpdb'];
@@ -43,12 +40,14 @@ class PpdbTest extends TestCase
         $response->assertViewHas('timeBox', function ($timeBox) {
             return is_array($timeBox);
         });
+
         $response->assertViewHas('openOrClosePpdb');
     }
 
     public function test_ppdb_list_year_page_failed_because_not_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
@@ -58,7 +57,9 @@ class PpdbTest extends TestCase
 
     public function test_ppdb_show_data_year_success_displayed(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
@@ -67,31 +68,27 @@ class PpdbTest extends TestCase
         $response->assertViewIs('ppdb::layouts.admin.show_year');
         $response->assertSeeText('PPDB tahun');
 
-        $response->assertViewHas('dataUserAuth');
-        $dataUserAuth = $response->original->getData()['dataUserAuth'];
-        $this->assertIsArray($dataUserAuth);
-        $this->assertNotEmpty($dataUserAuth);
+        $response->assertViewHas('dataPpdb');
+        $dataPpdb = $response->original->getData()['dataPpdb'];
+        $this->assertNotNull($dataPpdb);
+        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $dataPpdb);
+        $this->assertInstanceOf(\Modules\Ppdb\Entities\Ppdb::class, $dataPpdb->first());
 
-        $response->assertViewHas('getDataPpdb');
-        $getDataPpdb = $response->original->getData()['getDataPpdb'];
-        $this->assertNotNull($getDataPpdb);
-        $this->assertInstanceOf(\Illuminate\Database\Eloquent\Collection::class, $getDataPpdb);
-        $this->assertInstanceOf(\Modules\Ppdb\Entities\Ppdb::class, $getDataPpdb->first());
+        $response->assertViewHas('totalPpdb');
+        $totalPpdb = $response->original->getData()['totalPpdb'];
+        $this->assertNotNull($totalPpdb);
+        $this->assertIsInt($totalPpdb);
 
-        $response->assertViewHas('totalDataPpdb');
-        $totalDataPpdb = $response->original->getData()['totalDataPpdb'];
-        $this->assertNotNull($totalDataPpdb);
-        $this->assertIsInt($totalDataPpdb);
-
-        $response->assertViewHas('saveYearFromRoute');
-        $saveYearFromRoute = $response->original->getData()['saveYearFromRoute'];
-        $this->assertNotNull($saveYearFromRoute);
-        $this->assertIsString($saveYearFromRoute);
+        $response->assertViewHas('saveYearFromCall');
+        $saveYearFromCall = $response->original->getData()['saveYearFromCall'];
+        $this->assertNotNull($saveYearFromCall);
+        $this->assertIsString($saveYearFromCall);
     }
 
     public function test_ppdb_show_data_year_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
@@ -101,44 +98,47 @@ class PpdbTest extends TestCase
 
     public function test_ppdb_show_data_year_failed_because_not_year(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
         $response = $this->get('/data-ppdb/tahun-daftar/tahun');
-        $response->assertStatus(404);
+        $response->assertRedirect('/data-ppdb/tahun-daftar');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data tidak valid!', session('error'));
     }
 
     public function test_ppdb_show_data_year_failed_because_year_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
-        $response = $this->get('/data-ppdb/year/500000');
-        $response->assertStatus(404);
+        $response = $this->get('/data-ppdb/tahun-daftar/5000');
+        $response->assertRedirect('/data-ppdb/tahun-daftar');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data ppdb di tahun ini tidak ada!', session('error'));
     }
 
     public function test_ppdb_show_data_user_success_is_displayed(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
         $response = $this->get('/data-ppdb/' . $ppdb->uuid);
         $response->assertStatus(200);
         $response->assertViewIs('ppdb::layouts.admin.show');
-        $response->assertSeeText('Peserta PPDB Details');
+        $response->assertSeeText('Biodata Peserta Didik Baru');
 
-        $response->assertViewHas('dataUserAuth');
-        $dataUserAuth = $response->original->getData()['dataUserAuth'];
-        $this->assertIsArray($dataUserAuth);
-        $this->assertNotEmpty($dataUserAuth);
-
-        $response->assertViewHas('getDataUserPpdb');
-        $getDataUserPpdb = $response->original->getData()['getDataUserPpdb'];
-        $this->assertNotNull($getDataUserPpdb);
-        $this->assertInstanceOf(\Modules\Ppdb\Entities\Ppdb::class, $getDataUserPpdb);
+        $response->assertViewHas('dataPpdb');
+        $dataPpdb = $response->original->getData()['dataPpdb'];
+        $this->assertNotNull($dataPpdb);
+        $this->assertInstanceOf(\Modules\Ppdb\Entities\Ppdb::class, $dataPpdb);
 
         $response->assertViewHas('checkSiswaOrNot');
         $checkSiswaOrNot = $response->original->getData()['checkSiswaOrNot'];
@@ -147,7 +147,8 @@ class PpdbTest extends TestCase
 
     public function test_ppdb_show_data_user_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $ppdb = Ppdb::factory()->create();
@@ -157,21 +158,27 @@ class PpdbTest extends TestCase
 
     public function test_ppdb_show_data_user_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
         $response = $this->get('/data-ppdb/uuid');
-        $response->assertStatus(404);
+        $response->assertRedirect('/data-ppdb/tahun-daftar');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data tidak valid!', session('error'));
     }
 
     public function test_ppdb_show_data_user_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         Ppdb::factory()->create();
         $response = $this->get('/data-ppdb/3343ecac-b140-4e31-889f-a2ecd31e9168');
-        $response->assertStatus(404);
+        $response->assertRedirect('/data-ppdb/3343ecac-b140-4e31-889f-a2ecd31e9168');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data peserta ini tidak ada!', session('error'));
     }
 }

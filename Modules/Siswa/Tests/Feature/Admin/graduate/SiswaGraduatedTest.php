@@ -21,41 +21,45 @@ class SiswaGraduatedTest extends TestCase
 
     public function test_status_siswa_graduated_page_success_displayed(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
-        Siswa::siswaGraduatedFactory()->create();
+        Siswa::siswaGraduatedFactory()->count(10)->create();
 
         $response = $this->get('/data-siswa/status/sudah-lulus');
         $response->assertStatus(200);
         $response->assertViewIs('siswa::layouts.admin.graduated');
         $response->assertSeeText('Daftar Siswa Lulus');
 
-        $response->assertViewHas('dataUserAuth');
-        $dataUserAuth = $response->original->getData()['dataUserAuth'];
-        $this->assertIsArray($dataUserAuth);
-        $this->assertNotEmpty($dataUserAuth);
+        $response->assertViewHas('dataSiswa');
+        $dataSiswa = $response->original->getData()['dataSiswa'];
+        $this->assertNotEmpty($dataSiswa);
 
-        $response->assertViewHas('getSiswaGraduated');
-        $getSiswaGraduated = $response->original->getData()['getSiswaGraduated'];
-        $this->assertNotEmpty($getSiswaGraduated);
+        $response->assertViewHas('listYearGraduated');
+        $listYearGraduated = $response->original->getData()['listYearGraduated'];
+        $this->assertIsArray($listYearGraduated);
+        $this->assertNotEmpty($listYearGraduated);
     }
 
     public function test_status_siswa_graduated_page_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         $response = $this->get('/data-siswa/status/sudah-lulus');
         $response->assertStatus(302);
         $response->assertRedirect('/data-siswa/status');
-        $response->assertStatus(302);
         $this->assertTrue(session()->has('error'));
         $this->assertEquals('Data siswa lulus tidak ditemukan!', session('error'));
     }
 
     public function test_show_siswa_graduated_page_success_displayed(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
         $siswa = Siswa::siswaGraduatedFactory()->create();
 
@@ -64,19 +68,15 @@ class SiswaGraduatedTest extends TestCase
         $response->assertViewIs('siswa::layouts.admin.show_graduated');
         $response->assertSeeText('Biodata Siswa');
 
-        $response->assertViewHas('dataUserAuth');
-        $dataUserAuth = $response->original->getData()['dataUserAuth'];
-        $this->assertIsArray($dataUserAuth);
-        $this->assertNotEmpty($dataUserAuth);
-
-        $response->assertViewHas('getDataSiswa', function ($getDataSiswa) {
-            return $getDataSiswa !== null && $getDataSiswa instanceof \Modules\Siswa\Entities\Siswa;
+        $response->assertViewHas('dataSiswa', function ($dataSiswa) {
+            return $dataSiswa !== null && $dataSiswa instanceof \Modules\Siswa\Entities\Siswa;
         });
     }
 
     public function test_show_siswa_graduated_page_failed_because_not_role_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserSiswa();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $siswa = Siswa::siswaGraduatedFactory()->create();
@@ -86,19 +86,21 @@ class SiswaGraduatedTest extends TestCase
 
     public function test_show_siswa_graduated_page_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
-        $responseParameterNotUuid = $this->get('/data-siswa/uuid/status/sudah-lulus');
-        $responseParameterNotUuid->assertStatus(302);
-        $responseParameterNotUuid->assertRedirect('/data-siswa/status/sudah-lulus');
+        $response = $this->get('/data-siswa/uuid/status/sudah-lulus');
+        $response->assertStatus(302);
+        $response->assertRedirect('/data-siswa/status/sudah-lulus');
         $this->assertTrue(session()->has('error'));
-        $this->assertEquals('Data siswa tidak ditemukan!', session('error'));
+        $this->assertEquals('Data siswa tidak valid!', session('error'));
     }
 
     public function test_show_siswa_graduated_page_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         $responseNotFoundUuid = $this->get('/data-siswa/3fee2c98-ee76-4972-96ad-53bdad460df8/status/sudah-lulus');

@@ -7,14 +7,12 @@ use App\Services\UserService;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Modules\Guru\Entities\Guru;
 use Ramsey\Uuid\Uuid;
 use Tests\TestCase;
 
-class StoreNewGuruTest extends TestCase
+class StoreGuruTest extends TestCase
 {
-    use RefreshDatabase, DatabaseMigrations;
+    use RefreshDatabase;
 
     protected $roleService;
 
@@ -24,16 +22,18 @@ class StoreNewGuruTest extends TestCase
         $this->roleService = new UserService();
     }
 
-    public function test_create_new_guru_success(): void
+    public function test_create_guru_success(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
-        $this->actingAs($user);
+        $this->roleService->createRole();
+        $userAdmin = $this->roleService->createUserSuperAdmin();
+        $this->actingAs($userAdmin);
 
         $file = UploadedFile::fake()->image('sample.jpg');
         $user = User::factory()->create();
 
         $response = $this->post('/data-guru/create', [
-            'user_id' => $user->id,
+            'user_uuid' => $user->uuid,
+            'mata_pelajaran_uuid' => null,
             'uuid' => Uuid::uuid4()->toString(),
             'name' => 'zainal kurniawan',
             'nuptk' => '1953688939623496',
@@ -44,7 +44,8 @@ class StoreNewGuruTest extends TestCase
             'agama' => 'hindu',
             'jenis_kelamin' => 'laki-laki',
             'status_perkawinan' => 'sudah-menikah',
-            'jam_mengajar' => '2007-12-25 05:24:36',
+            'jam_mengajar_awal' => '2007-12-25 05:24:36',
+            'jam_mengajar_akhir' => '2007-12-25 07:24:36',
             'pendidikan_terakhir' => 's1',
             'nama_tempat_pendidikan' => 'Yayasan Padmasari Gunawan (Persero) Tbk',
             'ipk' => '3.97',
@@ -69,16 +70,18 @@ class StoreNewGuruTest extends TestCase
         $this->assertEquals('Data guru berhasil dibuat!', session('success'));
     }
 
-    public function test_create_new_guru_failed_because_not_super_admin(): void
+    public function test_create_guru_failed_because_not_super_admin(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
         $this->actingAs($user);
 
         $file = UploadedFile::fake()->image('sample.jpg');
         $user = User::factory()->create();
 
         $response = $this->post('/data-guru/create', [
-            'user_id' => $user->id,
+            'user_uuid' => $user->uuid,
+            'mata_pelajaran_uuid' => null,
             'uuid' => Uuid::uuid4()->toString(),
             'name' => 'zainal kurniawan',
             'nuptk' => '1953688939623496',
@@ -89,7 +92,8 @@ class StoreNewGuruTest extends TestCase
             'agama' => 'hindu',
             'jenis_kelamin' => 'laki-laki',
             'status_perkawinan' => 'sudah-menikah',
-            'jam_mengajar' => '2007-12-25 05:24:36',
+            'jam_mengajar_awal' => '2007-12-25 05:24:36',
+            'jam_mengajar_akhir' => '2007-12-25 07:24:36',
             'pendidikan_terakhir' => 's1',
             'nama_tempat_pendidikan' => 'Yayasan Padmasari Gunawan (Persero) Tbk',
             'ipk' => '3.97',
@@ -111,16 +115,18 @@ class StoreNewGuruTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_create_new_guru_failed_because_data_already_exists(): void
+    public function test_create_guru_failed_because_data_already_exists(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
         $file = UploadedFile::fake()->image('sample.jpg');
         $user = User::factory()->create();
 
         $response = $this->post('/data-guru/create', [
-            'user_id' => $user->id,
+            'user_uuid' => $user->uuid,
+            'mata_pelajaran_uuid' => null,
             'uuid' => Uuid::uuid4()->toString(),
             'name' => 'zainal kurniawan',
             'nuptk' => '1953688939623496',
@@ -131,7 +137,8 @@ class StoreNewGuruTest extends TestCase
             'agama' => 'hindu',
             'jenis_kelamin' => 'laki-laki',
             'status_perkawinan' => 'sudah-menikah',
-            'jam_mengajar' => '2007-12-25 05:24:36',
+            'jam_mengajar_awal' => '2007-12-25 05:24:36',
+            'jam_mengajar_akhir' => '2007-12-25 07:24:36',
             'pendidikan_terakhir' => 's1',
             'nama_tempat_pendidikan' => 'Yayasan Padmasari Gunawan (Persero) Tbk',
             'ipk' => '3.97',
@@ -152,7 +159,8 @@ class StoreNewGuruTest extends TestCase
         ]);
 
         $response = $this->post('/data-guru/create', [
-            'user_id' => $user->id,
+            'user_uuid' => $user->uuid,
+            'mata_pelajaran_uuid' => null,
             'uuid' => Uuid::uuid4()->toString(),
             'name' => 'zainal kurniawan',
             'nuptk' => '1953688939623496',
@@ -163,7 +171,8 @@ class StoreNewGuruTest extends TestCase
             'agama' => 'hindu',
             'jenis_kelamin' => 'laki-laki',
             'status_perkawinan' => 'sudah-menikah',
-            'jam_mengajar' => '2007-12-25 05:24:36',
+            'jam_mengajar_awal' => '2007-12-25 05:24:36',
+            'jam_mengajar_akhir' => '2007-12-25 07:24:36',
             'pendidikan_terakhir' => 's1',
             'nama_tempat_pendidikan' => 'Yayasan Padmasari Gunawan (Persero) Tbk',
             'ipk' => '3.97',
@@ -183,19 +192,19 @@ class StoreNewGuruTest extends TestCase
             'no_rekening' => '2342342',
         ]);
         $response->assertStatus(302);
-        $response->assertRedirect('/data-guru');
-        $this->assertTrue(session()->has('error'));
-        $this->assertEquals('Data guru sudah ada!', session('error'));
+        $this->assertTrue(session()->has('errors'));
     }
 
-    public function test_create_new_guru_failed_because_form_has_not_been(): void
+    public function test_create_guru_failed_because_form_has_not_been(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSuperAdmin();
         $this->actingAs($user);
 
         $user = User::factory()->create();
         $response = $this->post('/data-guru/create', [
-            'user_id' => $user->id,
+            'user_uuid' => $user->uuid,
+            'mata_pelajaran_uuid' => null,
             'uuid' => Uuid::uuid4()->toString(),
             'name' => '',
             'nuptk' => '',

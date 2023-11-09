@@ -19,19 +19,7 @@ class DashboardController extends Controller
 
     public function index()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
-
-        // $id = Auth::id();
-        // $user = User::with('guru', 'siswa')->find($id);
-        // $user = User::with('guru.absens', 'siswa.absens')->find($id);
-        // dd($user);
-
-        // dd($user->siswa->with('absens')->latest()->get());
-        // dd($user->siswa->user()->latest()->get());
-        // dd($user->siswa->absens()->latest()->get());
-
-        // $userProfile = Session::get('user_data');
-        // dd($userProfile);
+        $dataUserAuth = Session::get('userData');
 
         return view('dashboard::layouts.index', compact('dataUserAuth'));
     }

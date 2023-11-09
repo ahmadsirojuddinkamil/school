@@ -2,7 +2,6 @@
 
 namespace Modules\Absen\Http\Controllers;
 
-use App\Services\UserService;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Absen\Entities\Absen;
@@ -10,23 +9,22 @@ use Modules\Absen\Http\Requests\{StoreAbsenRequest, UserDownloadPdfAbsenRequest}
 use Modules\Absen\Services\AbsenService;
 use Modules\Siswa\Services\SiswaService;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
+use Illuminate\Support\Facades\Session;
 
 class AbsenController extends Controller
 {
-    protected $userService;
     protected $absenService;
     protected $siswaService;
 
-    public function __construct(UserService $userService, AbsenService $absenService, SiswaService $siswaService)
+    public function __construct(AbsenService $absenService, SiswaService $siswaService)
     {
-        $this->userService = $userService;
         $this->absenService = $absenService;
         $this->siswaService = $siswaService;
     }
 
     public function absen()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $today = now()->format('Y-m-d');
 
         $latestAbsen = null;
@@ -45,7 +43,7 @@ class AbsenController extends Controller
     public function store(StoreAbsenRequest $request)
     {
         $validateData = $request->validated();
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $today = now()->format('Y-m-d');
         $role = $dataUserAuth[1];
 
@@ -65,7 +63,7 @@ class AbsenController extends Controller
 
     public function laporan()
     {
-        $dataUserAuth = $this->userService->getProfileUser();
+        $dataUserAuth = Session::get('userData');
         $role = $dataUserAuth[1];
         $uuidRole = null;
 

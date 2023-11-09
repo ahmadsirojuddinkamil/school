@@ -22,7 +22,7 @@ Route::controller(GuruController::class)->middleware('auth')->group(function () 
     });
 
     Route::group(['middleware' => ['role:super_admin|admin|guru']], function () {
-        Route::get('/data-guru/{save_uuid_from_event}', 'biodata')->name('data.guru.biodata');
+        Route::get('/data-guru/{save_uuid_from_event}', 'show')->name('data.guru.show');
         Route::get('/data-guru/{save_uuid_from_event}/download/pdf', 'downloadPdfBiodataGuru')->name('data.guru.download.pdf');
         Route::get('/data-guru/{save_uuid_from_event}/edit', 'edit')->name('data.guru.edit');
         Route::put('/data-guru/{save_uuid_from_event}/edit', 'update')->name('data.guru.update');

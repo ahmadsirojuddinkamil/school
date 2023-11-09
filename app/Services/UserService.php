@@ -4,7 +4,6 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Session;
 use Spatie\Permission\Models\Role;
 
 class UserService
@@ -37,7 +36,7 @@ class UserService
         return [$findUser, $userRole];
     }
 
-    public function createRoleAndUserSuperAdmin()
+    public function createRole()
     {
         Role::create(['name' => 'super_admin']);
         Role::create(['name' => 'admin']);
@@ -48,6 +47,19 @@ class UserService
         Role::create(['name' => 'guru']);
         Role::create(['name' => 'orang_tua_siswa']);
         Role::create(['name' => 'siswa']);
+    }
+
+    public function createUserSuperAdmin()
+    {
+        // Role::create(['name' => 'super_admin']);
+        // Role::create(['name' => 'admin']);
+        // Role::create(['name' => 'tata_usaha']);
+        // Role::create(['name' => 'satpam']);
+        // Role::create(['name' => 'pramukantor']);
+        // Role::create(['name' => 'kepala_sekolah']);
+        // Role::create(['name' => 'guru']);
+        // Role::create(['name' => 'orang_tua_siswa']);
+        // Role::create(['name' => 'siswa']);
 
         $user = User::factory()->create();
         $user->assignRole('super_admin');
@@ -55,17 +67,17 @@ class UserService
         return $user;
     }
 
-    public function createRoleAndUserAdmin()
+    public function createUserAdmin()
     {
-        Role::create(['name' => 'super_admin']);
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'tata_usaha']);
-        Role::create(['name' => 'satpam']);
-        Role::create(['name' => 'pramukantor']);
-        Role::create(['name' => 'kepala_sekolah']);
-        Role::create(['name' => 'guru']);
-        Role::create(['name' => 'orang_tua_siswa']);
-        Role::create(['name' => 'siswa']);
+        // Role::create(['name' => 'super_admin']);
+        // Role::create(['name' => 'admin']);
+        // Role::create(['name' => 'tata_usaha']);
+        // Role::create(['name' => 'satpam']);
+        // Role::create(['name' => 'pramukantor']);
+        // Role::create(['name' => 'kepala_sekolah']);
+        // Role::create(['name' => 'guru']);
+        // Role::create(['name' => 'orang_tua_siswa']);
+        // Role::create(['name' => 'siswa']);
 
         $user = User::factory()->create();
         $user->assignRole('admin');
@@ -73,43 +85,35 @@ class UserService
         return $user;
     }
 
-    public function createRoleAndUserSiswa()
-    {
-        Role::create(['name' => 'super_admin']);
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'tata_usaha']);
-        Role::create(['name' => 'satpam']);
-        Role::create(['name' => 'pramukantor']);
-        Role::create(['name' => 'kepala_sekolah']);
-        Role::create(['name' => 'guru']);
-        Role::create(['name' => 'orang_tua_siswa']);
-        Role::create(['name' => 'siswa']);
-
-        $user = User::factory()->create();
-        $user->assignRole('siswa');
-
-        return $user;
-    }
-
     public function createUserSiswa()
     {
+        // Role::create(['name' => 'super_admin']);
+        // Role::create(['name' => 'admin']);
+        // Role::create(['name' => 'tata_usaha']);
+        // Role::create(['name' => 'satpam']);
+        // Role::create(['name' => 'pramukantor']);
+        // Role::create(['name' => 'kepala_sekolah']);
+        // Role::create(['name' => 'guru']);
+        // Role::create(['name' => 'orang_tua_siswa']);
+        // Role::create(['name' => 'siswa']);
+
         $user = User::factory()->create();
         $user->assignRole('siswa');
 
         return $user;
     }
 
-    public function createRoleAndUserGuru()
+    public function createUserGuru()
     {
-        Role::create(['name' => 'super_admin']);
-        Role::create(['name' => 'admin']);
-        Role::create(['name' => 'tata_usaha']);
-        Role::create(['name' => 'satpam']);
-        Role::create(['name' => 'pramukantor']);
-        Role::create(['name' => 'kepala_sekolah']);
-        Role::create(['name' => 'guru']);
-        Role::create(['name' => 'orang_tua_siswa']);
-        Role::create(['name' => 'siswa']);
+        // Role::create(['name' => 'super_admin']);
+        // Role::create(['name' => 'admin']);
+        // Role::create(['name' => 'tata_usaha']);
+        // Role::create(['name' => 'satpam']);
+        // Role::create(['name' => 'pramukantor']);
+        // Role::create(['name' => 'kepala_sekolah']);
+        // Role::create(['name' => 'guru']);
+        // Role::create(['name' => 'orang_tua_siswa']);
+        // Role::create(['name' => 'siswa']);
 
         $user = User::factory()->create();
         $user->assignRole('guru');

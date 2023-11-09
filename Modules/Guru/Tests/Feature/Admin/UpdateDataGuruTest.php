@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Modules\Guru\Entities\Guru;
 use Tests\TestCase;
 
-class UpdateBiodataGuruTest extends TestCase
+class UpdateDataGuruTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -19,12 +19,19 @@ class UpdateBiodataGuruTest extends TestCase
         $this->roleService = new UserService();
     }
 
-    public function test_update_biodata_guru_success_user_admin(): void
+    public function test_admin_update_data_guru_success(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
-        $this->actingAs($user);
+        $this->roleService->createRole();
+        $userAdmin = $this->roleService->createUserAdmin();
+        session(['userData' => [$userAdmin, 'admin']]);
+        $this->actingAs($userAdmin);
 
         $guru = Guru::factory()->create();
+        $userGuru = $this->roleService->createUserGuru();
+        $guru->update([
+            'user_uuid' => $userGuru->uuid,
+        ]);
+
         $response = $this->put('/data-guru/' . $guru->uuid . '/edit', [
             'name' => 'zainal kurniawan',
             'nuptk' => $guru['nuptk'],
@@ -35,7 +42,8 @@ class UpdateBiodataGuruTest extends TestCase
             'agama' => $guru['agama'],
             'jenis_kelamin' => $guru['jenis_kelamin'],
             'status_perkawinan' => $guru['status_perkawinan'],
-            'jam_mengajar' => $guru['jam_mengajar'],
+            'jam_mengajar_awal' => $guru['jam_mengajar_awal'],
+            'jam_mengajar_akhir' => $guru['jam_mengajar_akhir'],
             'pendidikan_terakhir' => $guru['pendidikan_terakhir'],
             'nama_tempat_pendidikan' => $guru['nama_tempat_pendidikan'],
             'ipk' => $guru['ipk'],
@@ -57,15 +65,21 @@ class UpdateBiodataGuruTest extends TestCase
         $response->assertStatus(302);
         $response->assertRedirect('/data-guru');
         $this->assertTrue(session()->has('success'));
-        $this->assertEquals('Biodata guru berhasil di edit!', session('success'));
+        $this->assertEquals('Data guru berhasil di edit!', session('success'));
     }
 
-    public function test_update_biodata_guru_success_user_guru(): void
+    public function test_user_update_data_guru_success(): void
     {
-        $user = $this->roleService->createRoleAndUserGuru();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserGuru();
+        session(['userData' => [$user, 'guru']]);
         $this->actingAs($user);
 
         $guru = Guru::factory()->create();
+        $guru->update([
+            'user_uuid' => $user->uuid,
+        ]);
+
         $response = $this->put('/data-guru/' . $guru->uuid . '/edit', [
             'name' => 'zainal kurniawan',
             'nuptk' => $guru['nuptk'],
@@ -76,7 +90,8 @@ class UpdateBiodataGuruTest extends TestCase
             'agama' => $guru['agama'],
             'jenis_kelamin' => $guru['jenis_kelamin'],
             'status_perkawinan' => $guru['status_perkawinan'],
-            'jam_mengajar' => $guru['jam_mengajar'],
+            'jam_mengajar_awal' => $guru['jam_mengajar_awal'],
+            'jam_mengajar_akhir' => $guru['jam_mengajar_akhir'],
             'pendidikan_terakhir' => $guru['pendidikan_terakhir'],
             'nama_tempat_pendidikan' => $guru['nama_tempat_pendidikan'],
             'ipk' => $guru['ipk'],
@@ -98,12 +113,13 @@ class UpdateBiodataGuruTest extends TestCase
         $response->assertStatus(302);
         $response->assertRedirect('/data-guru/' . $guru->uuid);
         $this->assertTrue(session()->has('success'));
-        $this->assertEquals('Biodata anda berhasil di edit!', session('success'));
+        $this->assertEquals('Data anda berhasil di edit!', session('success'));
     }
 
-    public function test_update_biodata_guru_failed_because_not_super_admin(): void
+    public function test_update_data_guru_failed_because_not_role(): void
     {
-        $user = $this->roleService->createRoleAndUserAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserSiswa();
         $this->actingAs($user);
 
         $guru = Guru::factory()->create();
@@ -117,7 +133,8 @@ class UpdateBiodataGuruTest extends TestCase
             'agama' => $guru['agama'],
             'jenis_kelamin' => $guru['jenis_kelamin'],
             'status_perkawinan' => $guru['status_perkawinan'],
-            'jam_mengajar' => $guru['jam_mengajar'],
+            'jam_mengajar_awal' => $guru['jam_mengajar_awal'],
+            'jam_mengajar_akhir' => $guru['jam_mengajar_akhir'],
             'pendidikan_terakhir' => $guru['pendidikan_terakhir'],
             'nama_tempat_pendidikan' => $guru['nama_tempat_pendidikan'],
             'ipk' => $guru['ipk'],
@@ -139,12 +156,18 @@ class UpdateBiodataGuruTest extends TestCase
         $response->assertStatus(404);
     }
 
-    public function test_update_biodata_guru_failed_because_not_uuid(): void
+    public function test_update_data_guru_failed_because_not_uuid(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
         $guru = Guru::factory()->create();
+        $guru->update([
+            'user_uuid' => $user->uuid,
+        ]);
+
         $response = $this->put('/data-guru/uuid/edit', [
             'name' => 'zainal kurniawan',
             'nuptk' => $guru['nuptk'],
@@ -155,7 +178,8 @@ class UpdateBiodataGuruTest extends TestCase
             'agama' => $guru['agama'],
             'jenis_kelamin' => $guru['jenis_kelamin'],
             'status_perkawinan' => $guru['status_perkawinan'],
-            'jam_mengajar' => $guru['jam_mengajar'],
+            'jam_mengajar_awal' => $guru['jam_mengajar_awal'],
+            'jam_mengajar_akhir' => $guru['jam_mengajar_akhir'],
             'pendidikan_terakhir' => $guru['pendidikan_terakhir'],
             'nama_tempat_pendidikan' => $guru['nama_tempat_pendidikan'],
             'ipk' => $guru['ipk'],
@@ -174,15 +198,24 @@ class UpdateBiodataGuruTest extends TestCase
             'nama_buku_rekening' => $guru['nama_buku_rekening'],
             'no_rekening' => $guru['no_rekening'],
         ]);
-        $response->assertStatus(404);
+        $response->assertStatus(302);
+        $response->assertRedirect('/data-guru');
+        $this->assertTrue(session()->has('error'));
+        $this->assertEquals('Data guru tidak valid!', session('error'));
     }
 
-    public function test_update_biodata_guru_failed_because_data_not_found(): void
+    public function test_update_data_guru_failed_because_data_not_found(): void
     {
-        $user = $this->roleService->createRoleAndUserSuperAdmin();
+        $this->roleService->createRole();
+        $user = $this->roleService->createUserAdmin();
+        session(['userData' => [$user, 'admin']]);
         $this->actingAs($user);
 
         $guru = Guru::factory()->create();
+        $guru->update([
+            'user_uuid' => $user->uuid,
+        ]);
+
         $response = $this->put('/data-guru/d68ea3e5-02e5-4e7a-9167-703f391c0443/edit', [
             'name' => 'zainal kurniawan',
             'nuptk' => $guru['nuptk'],
@@ -193,7 +226,8 @@ class UpdateBiodataGuruTest extends TestCase
             'agama' => $guru['agama'],
             'jenis_kelamin' => $guru['jenis_kelamin'],
             'status_perkawinan' => $guru['status_perkawinan'],
-            'jam_mengajar' => $guru['jam_mengajar'],
+            'jam_mengajar_awal' => $guru['jam_mengajar_awal'],
+            'jam_mengajar_akhir' => $guru['jam_mengajar_akhir'],
             'pendidikan_terakhir' => $guru['pendidikan_terakhir'],
             'nama_tempat_pendidikan' => $guru['nama_tempat_pendidikan'],
             'ipk' => $guru['ipk'],
@@ -214,6 +248,6 @@ class UpdateBiodataGuruTest extends TestCase
         ]);
         $response->assertStatus(302);
         $this->assertTrue(session()->has('error'));
-        $this->assertEquals('Biodata guru gagal di edit!', session('error'));
+        $this->assertEquals('Data guru gagal di edit!', session('error'));
     }
 }

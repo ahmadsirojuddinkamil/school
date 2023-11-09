@@ -99,7 +99,7 @@
                                         <td>{{ $guru->jam_mengajar_akhir }}</td>
                                         <td>{{ $guru->no_telpon }}</td>
                                         <td class="actions">
-                                            <a class="action-link" href="{{ route('data.guru.biodata', $guru->uuid) }}">
+                                            <a class="action-link" href="{{ route('data.guru.show', $guru->uuid) }}">
                                                 <img src="{{ asset('assets/dashboard/img/icons/eye.svg') }}" alt="img">
                                             </a>
 
