@@ -10,7 +10,7 @@ Route::controller(AbsenController::class)->middleware('auth')->group(function ()
         Route::get('/absen', 'absen')->name('page.absen');
         Route::post('/absen', 'store')->name('page.absen.store');
         Route::get('/laporan-absen', 'laporan')->name('laporan.absen');
-        Route::post('/laporan-absen/pdf', 'userDownloadPdfLaporanAbsen')->name('laporan.absen.pdf');
+        Route::get('/laporan-absen/pdf', 'userDownloadPdfLaporanAbsen')->name('laporan.absen.pdf');
     });
 });
 
@@ -38,10 +38,9 @@ Route::controller(AbsenSiswaController::class)->middleware('auth')->group(functi
 Route::controller(AbsenGuruController::class)->middleware('auth')->group(function () {
     Route::group(['middleware' => ['role:admin|super_admin']], function () {
         Route::get('/data-absen/guru', 'listGuru')->name('data.absen.guru');
-        Route::delete('/data-absen/guru', 'deleteAbsen')->name('data.absen.guru.delete');
         Route::get('/data-absen/guru/download/pdf/zip', 'downloadZipAbsenGuruPdf')->name('data.absen.guru.download.pdf.zip');
         Route::get('/data-absen/guru/download/excel/zip', 'downloadZipAbsenGuruExcel')->name('data.absen.guru.download.excel.zip');
-        Route::get('/data-absen/guru/{save_uuid_from_event}', 'dataAbsen')->name('data.absen.guru.show');
+        Route::get('/data-absen/guru/{save_uuid_from_event}', 'showAbsen')->name('data.absen.guru.show');
         Route::get('/data-absen/guru/{save_uuid_from_event}/download/pdf', 'downloadPdfAbsenGuru')->name('data.absen.guru.download.pdf');
         Route::get('/data-absen/guru/{save_uuid_from_event}/download/excel', 'downloadExcelAbsenGuru')->name('data.absen.guru.download.excel');
         Route::get('/data-absen/guru/{save_uuid_from_event}/{save_date_from_event}/edit', 'editAbsen')->name('data.absen.guru.date.edit');
@@ -49,6 +48,7 @@ Route::controller(AbsenGuruController::class)->middleware('auth')->group(functio
     });
 
     Route::group(['middleware' => ['role:super_admin']], function () {
+        Route::delete('/data-absen/guru/report', 'deleteLaporanAbsen')->name('data.absen.guru.delete');
         Route::delete('/data-absen/guru/date', 'deleteDateAbsen')->name('data.absen.guru.date.delete');
     });
 });

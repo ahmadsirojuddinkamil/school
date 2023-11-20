@@ -155,9 +155,7 @@
                                                                 @csrf
                                                                 @method('DELETE')
 
-                                                                <input type="hidden" name="tanggal" value="{{ $absen->updated_at->format('Y-m-d H:i:s') }}" required>
                                                                 <input type="hidden" name="uuid" value="{{ $absen->uuid }}" required>
-                                                                <input type="hidden" name="kelas" value="{{ $dataSiswa->kelas }}" required>
                                                                 <button type="submit" class="btn btn-submit me-2">Submit</button>
                                                             </form>
                                                         </div>

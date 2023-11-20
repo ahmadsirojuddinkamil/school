@@ -26,7 +26,7 @@
             <div class="content">
                 <div class="page-header">
                     <div class="page-title">
-                        <h4>Absen</h4>
+                        <h4></h4>
                     </div>
                 </div>
 

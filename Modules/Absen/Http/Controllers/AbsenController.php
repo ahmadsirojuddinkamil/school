@@ -5,7 +5,7 @@ namespace Modules\Absen\Http\Controllers;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Modules\Absen\Entities\Absen;
-use Modules\Absen\Http\Requests\{StoreAbsenRequest, UserDownloadPdfAbsenRequest};
+use Modules\Absen\Http\Requests\{StoreAbsenRequest};
 use Modules\Absen\Services\AbsenService;
 use Modules\Siswa\Services\SiswaService;
 use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
@@ -51,7 +51,7 @@ class AbsenController extends Controller
             $latestAbsenTime = $dataUserAuth[0]->load("{$role}.absens")->{"{$role}"}
                 ->absens()->latest()->value('created_at');
 
-            if ($latestAbsenTime === $today) {
+            if ($latestAbsenTime->format('Y-m-d') === $today) {
                 return redirect('/absen')->with('error', 'Anda sudah melakukan absen!');
             }
 
@@ -82,11 +82,11 @@ class AbsenController extends Controller
         return view('absen::layouts.laporan', compact('dataUserAuth', 'listAbsen', 'uuidRole', 'listKehadiran'));
     }
 
-    public function userDownloadPdfLaporanAbsen(UserDownloadPdfAbsenRequest $request)
+    public function userDownloadPdfLaporanAbsen()
     {
-        $validateData = $request->validated();
-        $role = $validateData['role'];
-        $uuid = $validateData['uuid'];
+        $dataUserAuth = Session::get('userData');
+        $role = $dataUserAuth[1];
+        $uuid = $dataUserAuth[0]->$role->uuid;
 
         $listAbsen = Absen::where("{$role}_uuid", $uuid)->latest()->get();
 

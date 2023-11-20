@@ -38,7 +38,7 @@ class AbsenGuruController extends Controller
         $dataGuru = Guru::latest()->get();
 
         if ($dataGuru->isEmpty()) {
-            return redirect('/data-absen/guru')->with('error', 'Data guru tidak ditemukan!');
+            return redirect('/data-absen/guru')->with('error', 'Data absen guru tidak ditemukan!');
         }
 
         foreach ($dataGuru as $guru) {
@@ -88,7 +88,7 @@ class AbsenGuruController extends Controller
         $dataGuru = Guru::latest()->get();
 
         if ($dataGuru->isEmpty()) {
-            return redirect('/data-absen/guru')->with('error', 'Data guru tidak ditemukan!');
+            return redirect('/data-absen/guru')->with('error', 'Data absen guru tidak ditemukan!');
         }
 
         foreach ($dataGuru as $guru) {
@@ -127,7 +127,7 @@ class AbsenGuruController extends Controller
         // End ZIP
     }
 
-    public function dataAbsen($saveUuidFromCall)
+    public function showAbsen($saveUuidFromCall)
     {
         if (!preg_match('/^[a-f\d]{8}-(?:[a-f\d]{4}-){3}[a-f\d]{12}$/i', $saveUuidFromCall)) {
             return redirect('/data-absen/guru')->with(['error' => 'Data absen tidak valid!']);
@@ -151,7 +151,7 @@ class AbsenGuruController extends Controller
         return view('absen::layouts.admin.guru.report', compact('dataUserAuth', 'dataGuru', 'listKehadiran', 'listAbsen'));
     }
 
-    public function deleteAbsen(DeleteAbsenGuruRequest $request)
+    public function deleteLaporanAbsen(DeleteAbsenGuruRequest $request)
     {
         $validateData = $request->validated();
 
@@ -176,6 +176,11 @@ class AbsenGuruController extends Controller
         }
 
         $dataGuru = Guru::where('uuid', $saveUuidFromCall)->first();
+
+        if (!$dataGuru) {
+            return redirect('/data-absen/guru')->with('error', 'Data guru tidak ditemukan!');
+        }
+
         $dataAbsen = $dataGuru->load('absens')->absens()->latest()->get();
 
         if ($dataAbsen->isEmpty()) {
@@ -235,7 +240,7 @@ class AbsenGuruController extends Controller
         $dataAbsen = Absen::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataAbsen) {
-            return redirect('/data-absen/guru/' . $saveUuidFromCall)->with('error', 'Data absen tidak ditemukan!');
+            return redirect('/data-absen/guru')->with('error', 'Data absen tidak ditemukan!');
         }
 
         return view('absen::layouts.admin.guru.edit_date', compact('dataUserAuth', 'dataAbsen'));
