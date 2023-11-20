@@ -17,7 +17,7 @@ class AbsenDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        Absen::AbsenSiswaFactory()->count(30)->create();
+        Absen::AfterAbsenFactory()->count(10)->create();
 
         // $this->call("OthersTableSeeder");
     }

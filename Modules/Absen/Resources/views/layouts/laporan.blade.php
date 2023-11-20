@@ -50,22 +50,9 @@
                             <div class="wordset">
                                 <ul>
                                     <li>
-                                        <style>
-                                            .no-background-button {
-                                                background: none;
-                                                border: none;
-                                                padding: 0;
-                                            }
-
-                                        </style>
-
-                                        <form action="{{ route('laporan.absen.pdf', ['uuid' => $uuidRole, 'role' => $dataUserAuth[1]]) }}" method="POST">
-                                            @csrf
-
-                                            <button type="submit" data-bs-toggle="tooltip" data-bs-placement="top" title="pdf" class="no-background-button">
-                                                <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
-                                            </button>
-                                        </form>
+                                        <a href="{{ route('laporan.absen.pdf') }}">
+                                            <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
+                                        </a>
                                     </li>
                                 </ul>
                             </div>
