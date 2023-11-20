@@ -14,9 +14,7 @@ class DeleteDateAbsenSiswaRequest extends FormRequest
     public function rules()
     {
         return [
-            'tanggal' => 'required|string',
-            'uuid' => 'required|string|uuid',
-            'kelas' => 'required|integer',
+            'uuid' => 'required|uuid',
         ];
     }
 

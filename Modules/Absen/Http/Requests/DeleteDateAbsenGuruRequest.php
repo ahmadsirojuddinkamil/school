@@ -14,7 +14,7 @@ class DeleteDateAbsenGuruRequest extends FormRequest
     public function rules()
     {
         return [
-            'uuid' => 'required|string|uuid',
+            'uuid' => 'required|uuid',
         ];
     }
 

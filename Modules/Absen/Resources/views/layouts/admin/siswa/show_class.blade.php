@@ -111,7 +111,7 @@
                                                             <form action="{{ route('data.absen.delete') }}" method="POST" class="action-form">
                                                                 @csrf
                                                                 @method('DELETE')
-                                                                <input type="hidden" name="data_absen" value="{{ $siswa->absens()->latest()->get() }}">
+                                                                <input type="hidden" name="uuid" value="{{ $siswa->uuid }}">
                                                                 <button type="submit" class="btn btn-primary me-2">Submit</button>
                                                             </form>
                                                         </div>

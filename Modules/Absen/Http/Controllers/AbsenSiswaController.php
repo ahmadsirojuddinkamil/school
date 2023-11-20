@@ -127,7 +127,7 @@ class AbsenSiswaController extends Controller
         $dataAbsen = $dataSiswa->load('absens')->absens()->latest()->get();
 
         if ($dataAbsen->isEmpty()) {
-            return redirect('/data-absen/siswa/' . $saveUuidFromCall . '/show')->with(['error' => 'Data absen tidak ditemukan!']);
+            return redirect('/data-absen/siswa/' . $saveUuidFromCall . '/show')->with(['error' => 'Data absen belum ada!']);
         }
 
         return ExportExcel::download(new ExportAbsen($dataAbsen), 'laporan excel absen ' . $dataSiswa['name'] . '.xlsx');
@@ -136,15 +136,16 @@ class AbsenSiswaController extends Controller
     public function deleteLaporanAbsenSiswa(DeleteReportAbsenRequest $request)
     {
         $validateData = $request->validated();
-        $dataAbsen = json_decode($validateData['data_absen']);
 
-        if (empty($dataAbsen)) {
+        $dataSiswa = Siswa::where('uuid', $validateData['uuid'])->first()->load('absens');
+        $dataAbsen = $dataSiswa->absens;
+
+        if ($dataAbsen->isEmpty()) {
             return redirect('/data-absen/siswa')->with('error', 'Data laporan tidak ditemukan!');
         }
 
         foreach ($dataAbsen as $absen) {
-            $absenModel = Absen::where('uuid', $absen->uuid)->first();
-            $absenModel->delete();
+            $absen->delete();
         }
 
         return redirect('/data-absen/siswa')->with('success', 'Data laporan absen berhasil dihapus!');
@@ -159,7 +160,7 @@ class AbsenSiswaController extends Controller
         $dataSiswa = Siswa::where('kelas', $saveClassFromCall)->latest()->get();
 
         if ($dataSiswa->isEmpty()) {
-            return redirect('/data-absen/siswa/' . $saveClassFromCall)->with('error', 'Data absen tidak ditemukan!');
+            return redirect('/data-absen/siswa/' . $saveClassFromCall)->with('error', 'Data siswa kelas ini tidak ditemukan!');
         }
 
         foreach ($dataSiswa as $siswa) {
@@ -285,7 +286,7 @@ class AbsenSiswaController extends Controller
         $dataSiswa = Absen::where('uuid', $saveUuidFromCall)->first();
 
         if (!$dataSiswa) {
-            return redirect('/data-absen')->with('error', 'Data siswa tidak ditemukan!');
+            return redirect('/data-absen/siswa')->with('error', 'Data siswa tidak ditemukan!');
         }
 
         $dataSiswa->update([
@@ -299,14 +300,14 @@ class AbsenSiswaController extends Controller
     {
         $validateData = $request->validated();
 
-        $getDataAbsen = Absen::where('uuid', $validateData['uuid'])->first();
+        $dataAbsen = Absen::where('uuid', $validateData['uuid'])->first();
 
-        if (!$getDataAbsen) {
+        if (!$dataAbsen) {
             return redirect('/data-absen/siswa')->with('error', 'Data tanggal absen tidak ditemukan!');
         }
 
-        $getDataAbsen->delete();
+        $dataAbsen->delete();
 
-        return redirect('/data-absen/siswa/' . $validateData['kelas'])->with('success', 'Data tanggal absen berhasil dihapus!');
+        return redirect('/data-absen/siswa/' . $dataAbsen->status)->with('success', 'Data tanggal absen berhasil dihapus!');
     }
 }

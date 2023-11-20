@@ -21,9 +21,14 @@ class Absen extends Model
     ];
 
     // factory
-    protected static function AbsenSiswaFactory()
+    protected static function AfterAbsenFactory()
     {
-        return \Modules\Absen\Database\factories\AbsenSiswaFactory::new();
+        return \Modules\Absen\Database\factories\AfterAbsenFactory::new();
+    }
+
+    protected static function BeforeAbsenFactory()
+    {
+        return \Modules\Absen\Database\factories\BeforeAbsenFactory::new();
     }
 
     protected static function LaporanZipAbsenSiswaFactory()

@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Ramsey\Uuid\Uuid;
 
-class AbsenSiswaFactory extends Factory
+class AfterAbsenFactory extends Factory
 {
     /**
      * The name of the factory's corresponding model.
@@ -38,8 +38,8 @@ class AbsenSiswaFactory extends Factory
             'status' => 12,
             'keterangan' => $faker->randomElement(['hadir', 'sakit', 'acara', 'musibah', 'tidak_hadir']),
             'persetujuan' => 'setuju',
-            // 'created_at' => $randomDate->toDateTimeString(),
-            // 'updated_at' => $randomDate->toDateTimeString(),
+            // 'created_at' => $randomDate,
+            // 'updated_at' => $randomDate,
         ];
     }
 }
