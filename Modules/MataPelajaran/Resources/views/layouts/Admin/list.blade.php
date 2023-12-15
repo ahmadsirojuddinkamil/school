@@ -6,8 +6,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Dashboard | Data Mata Pelajaran</title>
 
-    @include('guru::bases.css')
-    @include('guru::bases.js')
+    @include('matapelajaran::bases.css')
+    @include('matapelajaran::bases.js')
 
     <style>
         .link-with-margin {
@@ -45,20 +45,20 @@
                                 </div>
                             </div>
 
-                            @include('guru::components.sweetalert-success')
-                            @include('guru::components.sweetalert-error')
+                            @include('matapelajaran::components.sweetalert-success')
+                            @include('matapelajaran::components.sweetalert-error')
 
                             <div class="wordset">
                                 <ul>
-                                    {{-- @if (in_array($dataUserAuth[1], ['super_admin']))
-                                    @include('guru::components.add_new_guru')
-                                    @endif --}}
+                                    <a href="{{ route('create.mata.pelajaran') }}" class="link-with-margin">
+                                        <img src="{{ asset('assets/dashboard/img/icons/plus.svg') }}" alt="img">
+                                    </a>
 
-                                    <a href="" class="link-with-margin">
+                                    <a href="{{ route('download.all.mata.pelajaran', 'pdf') }}" class="link-with-margin">
                                         <img src="{{ asset('assets/dashboard/img/icons/pdf.svg') }}" alt="img">
                                     </a>
 
-                                    <a href="" class="link-with-margin">
+                                    <a href="{{ route('download.all.mata.pelajaran', 'excel') }}" class="link-with-margin">
                                         <img src="{{ asset('assets/dashboard/img/icons/excel.svg') }}" alt="img">
                                     </a>
                                 </ul>
@@ -70,69 +70,65 @@
                                 <thead>
                                     <tr>
                                         <td>#</td>
-                                        <th>nama</th>
+                                        <th>Mapel</th>
+                                        <th>Jam Awal</th>
+                                        <th>Jam Akhir</th>
+                                        <th>Kelas</th>
+                                        <th>Guru</th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
 
-                                {{-- <tbody>
-                                    @foreach ($dataGuru as $guru)
+                                <tbody>
+                                    @foreach ($listMataPelajaran as $mapel)
                                     <tr>
                                         <td>{{ $loop->iteration }}</td>
-                                <td></td>
-                                <td>{{ $guru->nuptk }}</td>
+                                        <td>{{ $mapel->name }}</td>
+                                        <td>{{ $mapel->jam_awal }}</td>
+                                        <td>{{ $mapel->jam_akhir }}</td>
+                                        <td>{{ $mapel->kelas }}</td>
+                                        <td>{{ $mapel->guru ? $mapel->guru->name : '' }}</td>
+                                        <td class="actions">
+                                            <a class="action-link" href="{{ route('show.mata.pelajaran', $mapel->uuid) }}">
+                                                <img src="{{ asset('assets/dashboard/img/icons/eye.svg') }}" alt="img">
+                                            </a>
 
-                                @if($guru->nip)
-                                <td>{{ $guru->nip }}</td>
-                                @else
-                                <td>belum ada</td>
-                                @endif
+                                            <a class="action-link" href="{{ route('edit.mata.pelajaran', $mapel->uuid) }}">
+                                                <img src="{{ asset('assets/dashboard/img/icons/edit.svg') }}" alt="img">
+                                            </a>
 
-                                <td>{{ $guru->jam_mengajar_awal }}</td>
-                                <td>{{ $guru->jam_mengajar_akhir }}</td>
-                                <td>{{ $guru->no_telpon }}</td>
-                                <td class="actions">
-                                    <a class="action-link" href="{{ route('data.guru.biodata', $guru->uuid) }}">
-                                        <img src="{{ asset('assets/dashboard/img/icons/eye.svg') }}" alt="img">
-                                    </a>
+                                            <button class="action-button" data-bs-toggle="modal" data-bs-target="#modalDelete">
+                                                <img src="{{ asset('assets/dashboard/img/icons/delete.svg') }}" alt="img">
+                                            </button>
 
-                                    <a class="action-link" href="{{ $dataUserAuth[1] == 'super_admin' ? route('data.guru.edit', $guru->uuid) : route('data.guru.edit.teaching.hours', $guru->uuid) }}">
-                                        <img src="{{ asset('assets/dashboard/img/icons/edit.svg') }}" alt="img">
-                                    </a>
+                                            <div class="modal fade" id="modalDelete" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">Apakah anda yakin?</h5>
+                                                        </div>
 
-                                    @if($dataUserAuth[1] == 'super_admin')
-                                    <button class="action-button" data-bs-toggle="modal" data-bs-target="#modalDelete{{ $guru->uuid }}">
-                                        <img src="{{ asset('assets/dashboard/img/icons/delete.svg') }}" alt="img">
-                                    </button>
+                                                        <div class="modal-body">
+                                                            Data mata pelajaran <span style="font-weight: bold"></span> akan terhapus!
+                                                        </div>
 
-                                    <div class="modal fade" id="modalDelete{{ $guru->uuid }}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                    <h5 class="modal-title" id="exampleModalLabel">Apakah anda yakin?</h5>
-                                                </div>
+                                                        <div class="modal-footer d-flex justify-content-end">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
+                                                            <form action="{{ route('delete.mata.pelajaran', $mapel->uuid) }}" method="POST">
+                                                                @csrf
+                                                                @method('DELETE')
 
-                                                <div class="modal-body">
-                                                    Data guru <span style="font-weight: bold">{{ $guru->name }}</span> akan terhapus!
-                                                </div>
-
-                                                <div class="modal-footer d-flex justify-content-end">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tidak</button>
-                                                    <form action="{{ route('data.guru.delete', $guru->uuid) }}" method="POST">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-submit me-2">Submit</button>
-                                                    </form>
+                                                                <button type="submit" class="btn btn-submit me-2">Submit</button>
+                                                            </form>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    </div>
-                                    @endif
-                                </td>
+                                        </td>
 
-                                </tr>
-                                @endforeach
-                                </tbody> --}}
+                                    </tr>
+                                    @endforeach
+                                </tbody>
                             </table>
                         </div>
                     </div>

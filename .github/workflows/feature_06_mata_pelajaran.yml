@@ -1,9 +1,9 @@
 on:
   push:
     branches:
-      - refactor_05
+      - feature_06_mata_pelajaran
 
-name: refactor_05
+name: feature_06_mata_pelajaran
 
 jobs:
   ContinuousIntegration:
