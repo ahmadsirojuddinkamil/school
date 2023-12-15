@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Absen\Entities\Absen;
+use Modules\MataPelajaran\Entities\MataPelajaran;
 
 class Guru extends Model
 {
@@ -59,5 +60,10 @@ class Guru extends Model
     public function absens()
     {
         return $this->hasMany(Absen::class, 'guru_uuid', 'uuid');
+    }
+
+    public function mata_pelajaran()
+    {
+        return $this->belongsTo(MataPelajaran::class);
     }
 }

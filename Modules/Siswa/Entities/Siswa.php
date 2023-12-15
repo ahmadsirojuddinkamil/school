@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Absen\Entities\Absen;
+use Modules\MataPelajaran\Entities\MataPelajaran;
 
 class Siswa extends Model
 {
@@ -44,6 +45,7 @@ class Siswa extends Model
         'telpon_orang_tua',
     ];
 
+    // factory
     protected static function SiswaActiveFactory()
     {
         return \Modules\Siswa\Database\factories\SiswaActiveFactory::new();
@@ -73,5 +75,10 @@ class Siswa extends Model
     public function absens()
     {
         return $this->hasMany(Absen::class, 'siswa_uuid', 'uuid');
+    }
+
+    public function mataPelajarans()
+    {
+        return $this->belongsToMany(MataPelajaran::class, 'pivot_mata_pelajaran_siswas', 'siswa_uuid', 'mata_pelajaran_uuid', 'uuid', 'uuid');
     }
 }

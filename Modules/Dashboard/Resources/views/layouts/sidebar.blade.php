@@ -106,7 +106,7 @@
                     <ul>
                         @if (in_array($dataUserAuth[1], ['super_admin', 'admin']))
                         <li>
-                            <a href="{{ route('data.mata.pelajaran') }}" class="{{ Request::is('data-mata-pelajaran*') ? 'active' : '' }}">Daftar Mata Pelajaran</a>
+                            <a href="{{ route('data.mata.pelajaran') }}" class="{{ Request::is('data-mata-pelajaran*') ? 'active' : '' }}">Daftar</a>
                         </li>
                         @endif
                     </ul>
