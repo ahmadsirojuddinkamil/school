@@ -15,16 +15,23 @@ return new class extends Migration
     {
         Schema::create('mata_pelajarans', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('siswa_id')->nullable();
-            $table->foreignId('guru_id')->nullable();
-            $table->foreignId('nilai_id')->nullable();
-            $table->uuid('uuid');
-
+            $table->uuid('uuid')->unique();
             $table->string('name');
             $table->string('jam_awal');
             $table->string('jam_akhir');
-            $table->string('materi')->nullable();
+            $table->string('kelas');
+            $table->string('name_guru')->nullable();
+            $table->string('materi_pdf')->nullable();
+            $table->string('materi_ppt')->nullable();
             $table->string('video')->nullable();
+            $table->string('foto')->nullable();
+            $table->timestamps();
+        });
+
+        Schema::create('pivot_mata_pelajaran_siswas', function (Blueprint $table) {
+            $table->id();
+            $table->foreignUuid('siswa_uuid')->nullable();
+            $table->foreignUuid('mata_pelajaran_uuid')->nullable();
             $table->timestamps();
         });
     }
@@ -37,5 +44,6 @@ return new class extends Migration
     public function down()
     {
         Schema::dropIfExists('mata_pelajarans');
+        Schema::dropIfExists('pivot_siswa_mata_pelajarans');
     }
 };
