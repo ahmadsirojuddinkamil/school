@@ -140,29 +140,64 @@ class MataPelajaranService
         }
     }
 
-    public function downloadZipAllMapelPdf($savePdfPathFromCall)
+    public function createExcelAllMapel($saveDataMapelFromCall, $saveExcelPathFromCall)
     {
-        $pdfFolderPath = $savePdfPathFromCall;
-        $zip = new ZipArchive;
-        $zipFileName = 'data_pdf_all_mapel.zip';
+        $dataAllMapel = $saveDataMapelFromCall;
+        $excelFolderPath = $saveExcelPathFromCall;
+        $randomStringNumber = $this->generateStringNumberRandom();
 
-        if (is_dir($pdfFolderPath) && $zip->open(public_path($zipFileName), ZipArchive::CREATE) === TRUE) {
+        foreach ($dataAllMapel as $mapel) {
+            $folderPath = $excelFolderPath . '/' . $mapel->name;
+            File::makeDirectory($folderPath, 0777, true);
+
+            $fileExcelName = 'Jadwal mapel ' . $mapel->name . '_' . $randomStringNumber[0] . $randomStringNumber[1] . '.xlsx';
+            ExportExcel::store(new ExportExcelMapel($mapel->uuid), $fileExcelName, 'public');
+
+            $sourcePath = storage_path('app/public/' . $fileExcelName);
+
+            $destinationFileName = str_replace(['_', $randomStringNumber[0], $randomStringNumber[1]], '', $fileExcelName);
+            $destinationPath = $folderPath . '/' . $destinationFileName;
+
+            File::move($sourcePath, $destinationPath);
+
+            foreach (['materi_pdf', 'materi_ppt'] as $materiType) {
+                $pathFileMateri = $this->getMateriMapel($mapel[$materiType] ?? null);
+                if (File::exists($pathFileMateri)) {
+                    $destinationFileZipPath = $folderPath . '/' . $materiType . '_' . $mapel->name . '.zip';
+                    copy($pathFileMateri, $destinationFileZipPath);
+                }
+            }
+
+            if ($pathYoutubeLink = $mapel['video'] ?? null) {
+                $destinationFileTxtPath = $folderPath . '/Link youtube.txt';
+                file_put_contents($destinationFileTxtPath, $pathYoutubeLink);
+            }
+        }
+    }
+
+    public function downloadZipAllMapelPdf($saveFolderPathFromCall, $saveNameFromCall)
+    {
+        $folderPath = $saveFolderPathFromCall;
+        $zip = new ZipArchive;
+        $zipFileName = 'data_' . $saveNameFromCall . '_all_mapel.zip';
+
+        if (is_dir($folderPath) && $zip->open(public_path($zipFileName), ZipArchive::CREATE) === TRUE) {
             $filesToZip = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($pdfFolderPath),
+                new RecursiveDirectoryIterator($folderPath),
                 RecursiveIteratorIterator::LEAVES_ONLY
             );
 
             foreach ($filesToZip as $file) {
                 if (!$file->isDir()) {
-                    $relativePath = substr($file->getPathname(), strlen($pdfFolderPath) + 1);
-                    $zip->addFile($file->getRealPath(), 'data pdf all mapel/' . $relativePath);
+                    $relativePath = substr($file->getPathname(), strlen($folderPath) + 1);
+                    $zip->addFile($file->getRealPath(), 'data ' . $saveNameFromCall . ' all mapel/' . $relativePath);
                 }
             }
 
             $zip->close();
 
             $files = new RecursiveIteratorIterator(
-                new RecursiveDirectoryIterator($pdfFolderPath, RecursiveDirectoryIterator::SKIP_DOTS),
+                new RecursiveDirectoryIterator($folderPath, RecursiveDirectoryIterator::SKIP_DOTS),
                 RecursiveIteratorIterator::CHILD_FIRST
             );
 
@@ -170,7 +205,7 @@ class MataPelajaranService
                 $file->isDir() ? rmdir($file->getRealPath()) : unlink($file->getRealPath());
             }
 
-            rmdir($pdfFolderPath);
+            rmdir($folderPath);
 
             $result = [
                 response(),
@@ -190,34 +225,11 @@ class MataPelajaranService
             'dataMapel' => $dataMapel,
         ]);
 
-        $randomString = Str::random(8);
-        $randomNumber = rand(1000, 9999);
-        $fileName = $dataMapel->name . '_' . $randomString . $randomNumber . '.pdf';
+        $randomStringNumber = $this->generateStringNumberRandom();
+        $fileName = $dataMapel->name . '_' . $randomStringNumber[0] . $randomStringNumber[1] . '.pdf';
         $pdf->save(public_path('storage/document_mata_pelajaran_temporary/Jadwal mapel ' . $fileName));
 
         return 'Jadwal mapel ' . $fileName;
-    }
-
-    public function createExcelDataMapel($saveDataMapelFromCall)
-    {
-        $dataAllMapel = $saveDataMapelFromCall;
-        $listNameFile = [];
-        $randomString = Str::random(8);
-        $randomNumber = rand(1000, 9999);
-
-        foreach ($dataAllMapel as $mapel) {
-            $fileExcelName = 'Jadwal mapel ' . $mapel->name . '_' . $randomString . $randomNumber . '.xlsx';
-            ExportExcel::store(new ExportExcelMapel($mapel->uuid), $fileExcelName, 'public');
-
-            $sourcePath = storage_path('app/public/' . $fileExcelName);
-            $destinationPath = storage_path('app/public/document_mata_pelajaran_temporary/' . $fileExcelName);
-
-            File::move($sourcePath, $destinationPath);
-
-            $listNameFile[] = $fileExcelName;
-        }
-
-        return $listNameFile;
     }
 
     public function getMateriMapel($savePathMateriMapelFromCall)
@@ -240,5 +252,13 @@ class MataPelajaranService
             $relativePath = 'Data mapel ' . $zipFileName . '/' . $fileName;
             $zip->addFromString($relativePath, $filePath);
         }
+    }
+
+    public function generateStringNumberRandom()
+    {
+        return [
+            Str::random(8),
+            rand(1000, 9999)
+        ];
     }
 }
