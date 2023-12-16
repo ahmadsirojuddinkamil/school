@@ -15,7 +15,7 @@ Route::controller(MataPelajaranController::class)->middleware('auth')->group(fun
     });
 
     Route::group(['middleware' => ['role:admin|super_admin|guru|siswa']], function () {
-        Route::get('/data-mata-pelajaran/{save_name_from_event}/data/materi/{save_uuid_from_event}', 'downloadFullDataMateri')->name('download.data.mata.pelajaran');
+        Route::get('/data-mata-pelajaran/{save_name_from_event}/data/materi/{save_uuid_from_event}', 'downloadDataMapel')->name('download.data.mata.pelajaran');
         Route::get('/data-mata-pelajaran/{save_uuid_from_event}/materi/pdf', 'downloadMateriPdf')->name('download.pdf.mata.pelajaran');
         Route::get('/data-mata-pelajaran/{save_uuid_from_event}/materi/ppt', 'downloadMateriPpt')->name('download.ppt.mata.pelajaran');
     });

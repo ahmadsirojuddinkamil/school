@@ -10,15 +10,9 @@ use Modules\MataPelajaran\Http\Requests\{StoreMataPelajaranRequest, UpdateMataPe
 use Modules\MataPelajaran\Services\MataPelajaranService;
 use Maatwebsite\Excel\Facades\Excel as ExportExcel;
 use Modules\MataPelajaran\Exports\ExportExcelMapel;
-use Barryvdh\DomPDF\Facade\Pdf as DomPDF;
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use RecursiveDirectoryIterator;
-use RecursiveIteratorIterator;
 use ZipArchive;
-
-use function PHPUnit\Framework\isEmpty;
 
 class MataPelajaranController extends Controller
 {
@@ -65,19 +59,27 @@ class MataPelajaranController extends Controller
         }
 
         if ($saveNameFromCall === 'pdf') {
-            $randomString = Str::random(8);
-            $randomNumber = rand(1000, 9999);
-            $pdfFolderPath = public_path('storage/document_mata_pelajaran_temporary/data pdf all mapel_' . $randomString . $randomNumber);
+            $randomStringNumber = $this->mataPelajaranService->generateStringNumberRandom();
+            $pdfFolderPath = public_path('storage/document_mata_pelajaran_temporary/data pdf all mapel_' . $randomStringNumber[0] . $randomStringNumber[1]);
 
             File::makeDirectory($pdfFolderPath, 0777, true);
+
             $this->mataPelajaranService->createPdfAllMapel($dataAllMapel, $pdfFolderPath);
 
-            $downloadZip = $this->mataPelajaranService->downloadZipAllMapelPdf($pdfFolderPath);
+            $downloadZip = $this->mataPelajaranService->downloadZipAllMapelPdf($pdfFolderPath, 'pdf');
             return $downloadZip[0]->download(public_path($downloadZip[1]))->deleteFileAfterSend(true);
         }
 
         if ($saveNameFromCall === 'excel') {
-            $listFileName = $this->mataPelajaranService->createExcelDataMapel($dataAllMapel);
+            $randomStringNumber = $this->mataPelajaranService->generateStringNumberRandom();
+            $excelFolderPath = public_path('storage/document_mata_pelajaran_temporary/data excel all mapel_' . $randomStringNumber[0] . $randomStringNumber[1]);
+
+            File::makeDirectory($excelFolderPath, 0777, true);
+
+            $this->mataPelajaranService->createExcelAllMapel($dataAllMapel, $excelFolderPath);
+
+            $downloadZip = $this->mataPelajaranService->downloadZipAllMapelPdf($excelFolderPath, 'excel');
+            return $downloadZip[0]->download(public_path($downloadZip[1]))->deleteFileAfterSend(true);
         }
     }
 
@@ -98,7 +100,7 @@ class MataPelajaranController extends Controller
         return view('matapelajaran::layouts.Admin.show', compact('dataUserAuth', 'dataMataPelajaran'));
     }
 
-    public function downloadFullDataMateri($saveNameFromCall, $saveUuidFromCall)
+    public function downloadDataMapel($saveNameFromCall, $saveUuidFromCall)
     {
         if (!in_array($saveNameFromCall, ['pdf', 'excel'])) {
             return redirect('/data-mata-pelajaran')->with('error', 'Data mata pelajaran tidak valid!');
